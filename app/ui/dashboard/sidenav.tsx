@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import NavLinks from '@/app/ui/dashboard/nav-links';
 import NuwaLogo from '@/app/ui/nuwa-logo';
-import { PowerIcon } from '@heroicons/react/24/outline';
+// import { PowerIcon } from '@heroicons/react/24/outline';
 // import { signOut } from '@/auth';
 
 export default function SideNav() {

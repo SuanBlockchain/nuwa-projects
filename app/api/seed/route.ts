@@ -79,6 +79,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Database seeded successfully!" });
 
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ message: "Error processing file" }, { status: 500 });
   }
 }

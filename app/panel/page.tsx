@@ -13,7 +13,7 @@ export default function UploadForm() {
 
   const handleUpload = async () => {
     if (!file) {
-      setMessage("Please select a file first."); 
+      setMessage("Please select a file first.");
       return;
     }
 

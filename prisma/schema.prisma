@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "erd.svg"
+}
+
+// model Units {
+//   id          Int     @id @default(autoincrement())
+//   name        String  @unique
+//   symbol      String  @unique
+//   unit_type   String
+//   is_standard Boolean @default(false)
+
+//   from_conversions UnitConversions[] @relation("FromUnit")
+//   to_conversions   UnitConversions[] @relation("ToUnit")
+
+//   Params Params[]
+// }
+
+// model UnitConversions {
+//   id           Int     @id @default(autoincrement())
+//   from_unit_id Int
+//   to_unit_id   Int
+//   factor       Float
+//   offset       Float   @default(0.0)
+
+//   from_unit    Units   @relation("FromUnit", fields: [from_unit_id], references: [id])
+//   to_unit      Units   @relation("ToUnit", fields: [to_unit_id], references: [id])
+// }
+
+model Ecosystem {
+  id          Int     @id @default(autoincrement())
+  Type        String  @unique
+  description String?
+  // params      Params[]
+  // paramId     Int?
+  values      Json
+
+}
+
+// model Params {
+//   id          Int     @id @default(autoincrement())
+//   name        String
+//   description String?
+//   unit        Units?  @relation(fields: [unitId], references: [id])
+//   unitId      Int?
+//   ecosystem   Ecosystem? @relation(fields: [ecosystemId], references: [id])
+//   ecosystemId Int?
+// }
+
+model Keyword {
+  id        Int     @id @default(autoincrement())
+  name      String   @unique
+  projects  Project[]
+}
+
+model User {
+  id      Int     @id @default(autoincrement())
+  name    String?
+  email   String   @unique
+  project   Project[]
+  role    Role     @default(GESTOR)
+}
+
+model Project {
+  id        Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String   @db.VarChar(255)
+  abstract String?
+  creator    User     @relation(fields: [creatorId], references: [id])
+  creatorId  Int
+  keywords  Keyword[]
+  status    Status   @default(Seed)
+  country  String   @db.VarChar(255)
+  department String   @db.VarChar(255)
+  values   Json?
+}
+enum Role {
+  GESTOR
+  ADMIN
+}
+
+enum Status {
+  Seed
+  InProgress
+  Finished
+  Canceled
+}

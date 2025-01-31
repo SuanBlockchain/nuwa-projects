@@ -1,21 +1,15 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 generator erd {
   provider = "prisma-erd-generator"
   output   = "erd.svg"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // model Units {
@@ -42,16 +36,6 @@ generator erd {
 //   to_unit      Units   @relation("ToUnit", fields: [to_unit_id], references: [id])
 // }
 
-model Ecosystem {
-  id          Int     @id @default(autoincrement())
-  Type        String  @unique
-  description String?
-  // params      Params[]
-  // paramId     Int?
-  values      Json
-
-}
-
 // model Params {
 //   id          Int     @id @default(autoincrement())
 //   name        String
@@ -62,34 +46,51 @@ model Ecosystem {
 //   ecosystemId Int?
 // }
 
+model Ecosystem {
+  id          Int     @id @default(autoincrement())
+  Type        String  @unique
+  description String?
+  values      Json
+}
+
 model Keyword {
-  id        Int     @id @default(autoincrement())
-  name      String   @unique
-  projects  Project[]
+  id              String @id @default(uuid()) @db.Uuid
+  name            String           @unique
+  projectKeywords ProjectKeyword[]
 }
 
 model User {
-  id      Int     @id @default(autoincrement())
+  id      Int       @id @default(autoincrement())
   name    String?
-  email   String   @unique
-  project   Project[]
-  role    Role     @default(GESTOR)
+  email   String    @unique
+  role    Role      @default(GESTOR)
+  project Project[]
 }
 
 model Project {
-  id        Int     @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  abstract String?
-  creator    User     @relation(fields: [creatorId], references: [id])
+  id         String @id @default(uuid()) @db.Uuid
+  title      String           @db.VarChar(255)
+  abstract   String?
+  country    String           @db.VarChar(255)
+  status     Status           @default(Seed)
+  department String           @db.VarChar(255)
   creatorId  Int
-  keywords  Keyword[]
-  status    Status   @default(Seed)
-  country  String   @db.VarChar(255)
-  department String   @db.VarChar(255)
-  values   Json?
+  creator    User             @relation(fields: [creatorId], references: [id])
+  keywords   ProjectKeyword[]
+  values     Json?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 }
+
+model ProjectKeyword {
+  projectId String @db.Uuid
+  keywordId String @db.Uuid
+  keyword   Keyword @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, keywordId])
+}
+
 enum Role {
   GESTOR
   ADMIN

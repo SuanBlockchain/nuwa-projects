@@ -10,7 +10,7 @@ export const config = {
 };
 
 const prisma = new PrismaClient(
-  {log: ['query', 'info', 'warn', 'error'],}
+  // {log: ['query', 'info', 'warn', 'error'],}
 );
 
 // ✅ Define validation schema for keywords

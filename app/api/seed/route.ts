@@ -5,8 +5,6 @@ import fs from "fs";
 import path from "path";
 import { z } from "zod";
 
-// import { prisma } from "@/app/lib/prisma"; // ✅ Import from `lib/prisma.ts`
-
 export const config = {
   api: { bodyParser: false },
 };

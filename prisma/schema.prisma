@@ -54,32 +54,34 @@ model Ecosystem {
 }
 
 model Keyword {
-  id              String @id @default(uuid()) @db.Uuid
-  name            String           @unique
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
   projectKeywords ProjectKeyword[]
 }
 
 model User {
-  id      Int       @id @default(autoincrement())
-  name    String?
-  email   String    @unique
-  role    Role      @default(GESTOR)
-  project Project[]
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String?
+  password String
+  email    String  @unique
+  role     Role    @default(GESTOR)
+  projects Project[]
 }
 
 model Project {
-  id         String @id @default(uuid()) @db.Uuid
-  title      String           @db.VarChar(255)
+  id         String    @id @default(uuid()) @db.Uuid
+  title      String    @db.VarChar(255)
   abstract   String?
-  country    String           @db.VarChar(255)
-  status     Status           @default(Seed)
-  department String           @db.VarChar(255)
-  creatorId  Int
-  creator    User             @relation(fields: [creatorId], references: [id])
+  country    String    @db.VarChar(255)
+  status     Status    @default(Seed)
+  department String    @db.VarChar(255)
   keywords   ProjectKeyword[]
   values     Json?
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  creatorId  String           @db.Uuid @unique
+  creator    User             @relation(fields: [creatorId], references: [id])
 }
 
 model ProjectKeyword {
@@ -90,6 +92,15 @@ model ProjectKeyword {
 
   @@id([projectId, keywordId])
 }
+
+// model ProjectUser {
+//   projectId String @db.Uuid
+//   userId    String @db.Uuid
+//   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+//   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@id([projectId, userId])
+// }
 
 enum Role {
   GESTOR

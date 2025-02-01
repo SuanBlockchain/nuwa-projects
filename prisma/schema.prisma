@@ -71,10 +71,10 @@ model User {
 model Project {
   id         String    @id @default(uuid()) @db.Uuid
   title      String    @db.VarChar(255)
-  abstract   String?
-  country    String    @db.VarChar(255)
+  description   String?
+  country    String?    @db.VarChar(255)
   status     Status    @default(Seed)
-  department String    @db.VarChar(255)
+  department String?    @db.VarChar(255)
   keywords   ProjectKeyword[]
   values     Json?
   createdAt  DateTime  @default(now())

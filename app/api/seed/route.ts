@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import {  PrismaClient, Prisma } from "@prisma/client";
+import {  PrismaClient } from "@prisma/client";
 import ExcelJS from "exceljs";
 import fs from "fs";
-import path from "path";
-// import { z } from "zod";
-import { formatValuesEcosystem } from "@/app/lib/helper";
+import { ecosystemsParser, keywordsParser, projectsParser, saveFile } from "@/app/lib/seed/helper";
 
 export const config = {
   api: { bodyParser: false },
@@ -13,14 +11,6 @@ export const config = {
 const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
-
-// ✅ Helper function to save the file
-async function saveFile(file: File) {
-  const data = Buffer.from(await file.arrayBuffer());
-  const filePath = path.join("/tmp", file.name);
-  await fs.promises.writeFile(filePath, data);
-  return filePath;
-}
 
 // ✅ Named export for POST method (Next.js App Router)
 export async function POST(req: Request) {
@@ -43,28 +33,19 @@ export async function POST(req: Request) {
     for (const worksheet of workbook.worksheets) {
       const sheetName = worksheet.name;
 
-      if (sheetName === "Ecosystem") {
-        const ecosystems: Prisma.EcosystemCreateManyInput[] = [];
+      if (sheetName === "Keywords") {
+        const validatedKeywords = keywordsParser(worksheet);
 
-        // ✅ Extract Ecosystem data
-        worksheet.eachRow((row, rowNumber) => {
-          if (rowNumber === 1) return; // Skip header row
-
-          const type = row.getCell(1).value as string; // Column A
-          const description = row.getCell(2).value as string | null; // Column B
-          const BD = row.getCell(3).value as number | null; // Column C
-          const C = row.getCell(4).value as number | null; // Column D
-          const Profundidad = row.getCell(5).value as number | null; // Column E
-          const SOC = row.getCell(6).value as number | null; // Column F
-
-          const values: Prisma.InputJsonValue = formatValuesEcosystem(BD, C, Profundidad, SOC);
-
-          ecosystems.push({
-            type,
-            description: description ?? null,
-            values,
-          });
+        await prisma.keyword.createMany({
+          data: validatedKeywords,
+          skipDuplicates: true,
         });
+
+        console.log("✅ Keywords inserted successfully:", validatedKeywords);
+      }
+
+      if (sheetName === "Ecosystem") {
+        const ecosystems = ecosystemsParser(worksheet);
 
         // ✅ Insert ecosystems into Prisma
         await prisma.ecosystem.createMany({
@@ -73,6 +54,18 @@ export async function POST(req: Request) {
         });
 
         console.log("✅ Ecosystems inserted successfully:", ecosystems);
+      }
+
+      if (sheetName === "Project") {
+        const projects = await projectsParser(worksheet);
+
+        // ✅ Insert projects into Prisma
+        await prisma.project.createMany({
+          data: projects,
+          skipDuplicates: true,
+        });
+
+        console.log("✅ Projects inserted successfully:", projects);
       }
     }
 

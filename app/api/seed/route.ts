@@ -4,19 +4,26 @@ import ExcelJS from "exceljs";
 import fs from "fs";
 import path from "path";
 import { z } from "zod";
+import { formatValuesEcosystem } from "@/app/lib/helper";
 
 export const config = {
   api: { bodyParser: false },
 };
 
-const prisma = new PrismaClient(
-  {log: ['query', 'info', 'warn', 'error'],}
-);
-
+const prisma = new PrismaClient({
+  log: ["query", "info", "warn", "error"],
+});
 
 // ✅ Define validation schema for keywords
 const keywordSchema = z.object({
   name: z.string(),
+});
+
+// ✅ Define validation schema for ecosystems
+const ecosystemSchema = z.object({
+  type: z.string(),
+  description: z.string().optional(),
+  values: z.record(z.any()), // Ensures JSON storage in Prisma
 });
 
 // Helper function to save the file
@@ -47,22 +54,22 @@ export async function POST(req: Request) {
 
     for (const worksheet of workbook.worksheets) {
       const sheetName = worksheet.name;
-      const rows: { name: string }[] = [];
 
-      // ✅ Extract only the first column values
-      worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return; // Skip header row
-        const keyword = row.getCell(1).value; // Get only first column (A)
-
-        if (keyword && typeof keyword === "string") {
-          rows.push({ name: keyword });
-        }
-      });
-
-      // ✅ Seed Keywords (Fix applied here)
       if (sheetName === "Keywords") {
-        const validatedKeywords = rows.map((row) => keywordSchema.parse(row));
-        console.log(validatedKeywords);
+        const keywords: { name: string }[] = [];
+
+        // ✅ Extract keywords from Column A
+        worksheet.eachRow((row, rowNumber) => {
+          if (rowNumber === 1) return; // Skip header row
+          const keyword = row.getCell(1).value; // Column A
+
+          if (keyword && typeof keyword === "string") {
+            keywords.push({ name: keyword });
+          }
+        });
+
+        // ✅ Validate and insert keywords
+        const validatedKeywords = keywords.map((row) => keywordSchema.parse(row));
 
         await prisma.keyword.createMany({
           data: validatedKeywords,
@@ -71,6 +78,40 @@ export async function POST(req: Request) {
 
         console.log("✅ Keywords inserted successfully:", validatedKeywords);
       }
+
+      if (sheetName === "Ecosystem") {
+        const ecosystems: any[] = [];
+
+        // ✅ Extract Ecosystem data
+        worksheet.eachRow((row, rowNumber) => {
+          if (rowNumber === 1) return; // Skip header row
+
+          const type = row.getCell(1).value as string; // Column A
+          const description = row.getCell(2).value as string; // Column B
+          const BD = row.getCell(3).value; // Column C
+          const C = row.getCell(4).value; // Column D
+          const Profundidad = row.getCell(5).value; // Column E
+          const SOC = row.getCell(6).value; // Column F
+
+          const values = formatValuesEcosystem(BD, C, Profundidad, SOC);
+
+          ecosystems.push(
+            ecosystemSchema.parse({
+              type,
+              description,
+              values,
+            })
+          );
+        });
+
+        // ✅ Insert ecosystems into Prisma
+        await prisma.ecosystem.createMany({
+          data: ecosystems,
+          skipDuplicates: true,
+        });
+
+        console.log("✅ Ecosystems inserted successfully:", ecosystems);
+      }
     }
 
     // ✅ Delete file after processing
@@ -78,9 +119,8 @@ export async function POST(req: Request) {
     console.log(`Deleted file: ${filePath}`);
 
     return NextResponse.json({ message: "Database seeded successfully!" });
-
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error processing file:", error);
     return NextResponse.json({ message: "Error processing file" }, { status: 500 });
   }
 }

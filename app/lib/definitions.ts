@@ -48,3 +48,8 @@ export const ProjectUnitsMapping = {
     token_granularity: "-",
 };
 
+export type TotalImpactResult = { total_impact: bigint };
+export type TotalInvestmentResult = { total_investment: bigint };
+export type TotalBankableInvestmentResult = { total_bankable_investment: bigint };
+export type TotalIncomeResult = { total_income: bigint };
+

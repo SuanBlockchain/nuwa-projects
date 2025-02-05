@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import { EcosystemUnitsMapping, EcosystemValues, ProjectUnitsMapping, ProjectValues } from "./definitions";
+import { EcosystemUnitsMapping, EcosystemValues, ProjectUnitsMapping, ProjectValues } from "../definitions";
 import ExcelJS from "exceljs";
 import { PrismaClient, Prisma, Status } from "@prisma/client";
 import { z } from "zod";

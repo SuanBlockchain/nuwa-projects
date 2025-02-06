@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {  PrismaClient } from "@prisma/client";
 import ExcelJS from "exceljs";
 import fs from "fs";
-import { ecosystemsParser, keywordsParser, projectsParser, saveFile } from "@/app/lib/seed/helper";
+import { constantsParser, ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser } from "@/app/lib/seed/helper";
 
 export const config = {
   api: { bodyParser: false },
@@ -33,7 +33,41 @@ export async function POST(req: Request) {
     for (const worksheet of workbook.worksheets) {
       const sheetName = worksheet.name;
 
-      if (sheetName === "Keywords") {
+      if (sheetName === "Constants") {
+        const validatedConstants = constantsParser(worksheet);
+
+        await prisma.constants.createMany({
+          data: validatedConstants,
+          skipDuplicates: true,
+        });
+
+        console.log("✅ Constants inserted successfully:", validatedConstants);
+      }
+
+      else if (sheetName === "MathModels") {
+        const validatedMathModels = mathModelsParser(worksheet);
+
+        await prisma.mathModels.createMany({
+          data: validatedMathModels,
+          skipDuplicates: true,
+        });
+
+        console.log("✅ MathModels inserted successfully:", validatedMathModels);
+      }
+      
+      else if (sheetName === "Species") {
+        const validatedSpecies = speciesParser(worksheet);
+
+        await prisma.species.createMany({
+          data: validatedSpecies,
+          skipDuplicates: true,
+        });
+
+        console.log("✅ MathModels inserted successfully:", validatedSpecies);
+      }
+      
+
+      else if (sheetName === "Keywords") {
         const validatedKeywords = keywordsParser(worksheet);
 
         await prisma.keyword.createMany({
@@ -44,7 +78,7 @@ export async function POST(req: Request) {
         console.log("✅ Keywords inserted successfully:", validatedKeywords);
       }
 
-      if (sheetName === "Ecosystem") {
+      else if (sheetName === "Ecosystem") {
         const ecosystems = ecosystemsParser(worksheet);
 
         // ✅ Insert ecosystems into Prisma
@@ -56,7 +90,7 @@ export async function POST(req: Request) {
         console.log("✅ Ecosystems inserted successfully:", ecosystems);
       }
 
-      if (sheetName === "Project") {
+      else if (sheetName === "Project") {
         const projects = await projectsParser(worksheet);
 
         // ✅ Insert projects into Prisma

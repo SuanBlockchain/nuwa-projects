@@ -46,11 +46,36 @@ datasource db {
 //   ecosystemId Int?
 // }
 
-model Ecosystem {
-  id          String   @id @default(uuid()) @db.Uuid
-  type        String  @unique
+model User {
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String?
+  password String
+  email    String  @unique
+  role     Role    @default(GESTOR)
+  projects Project[]
+}
+
+model Constants {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
   description String?
-  values      Json
+  value       Float
+  unit        String
+}
+
+model MathModels {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+}
+
+model Species {
+  id          String  @id @default(uuid()) @db.Uuid
+  common_name        String  @unique
+  scientific_name    String  @unique
+  family             String?
+  functional_type    String?
+  values             Json
+  comments           String?
 }
 
 model Keyword {
@@ -59,13 +84,11 @@ model Keyword {
   projectKeywords ProjectKeyword[]
 }
 
-model User {
-  id       String  @id @default(uuid()) @db.Uuid
-  name     String?
-  password String
-  email    String  @unique
-  role     Role    @default(GESTOR)
-  projects Project[]
+model Ecosystem {
+  id          String   @id @default(uuid()) @db.Uuid
+  type        String  @unique
+  description String?
+  values      Json
 }
 
 model Project {

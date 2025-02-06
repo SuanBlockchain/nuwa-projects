@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.0",
-    "@prisma/client": "^6.3.0",
+    "@prisma/client": "^6.3.1",
     "@types/formidable": "^3.4.5",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
@@ -35,7 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
-    "prisma": "^6.3.0",
+    "prisma": "^6.3.1",
     "prisma-erd-generator": "^2.0.4",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import {  PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import ExcelJS from "exceljs";
 import fs from "fs";
-import { constantsParser, ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser } from "@/app/lib/seed/helper";
+import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser, parcelsParser } from "@/app/lib/seed/helper";
 
 export const config = {
   api: { bodyParser: false },
@@ -11,6 +11,12 @@ export const config = {
 const prisma = new PrismaClient({
   log: ["query", "info", "warn", "error"],
 });
+
+function handleError(error: unknown): NextResponse {
+  console.error("❌ Error processing:", error);
+  const message = error instanceof Error ? error.message : "Unknown error";
+  return NextResponse.json({ message }, { status: 400 });
+}
 
 // ✅ Named export for POST method (Next.js App Router)
 export async function POST(req: Request) {
@@ -33,73 +39,71 @@ export async function POST(req: Request) {
     for (const worksheet of workbook.worksheets) {
       const sheetName = worksheet.name;
 
-      if (sheetName === "Constants") {
-        const validatedConstants = constantsParser(worksheet);
+      try {
+        if (sheetName === "MathModels") {
+          const validatedMathModels = mathModelsParser(worksheet);
 
-        await prisma.constants.createMany({
-          data: validatedConstants,
-          skipDuplicates: true,
-        });
+          await prisma.mathModels.createMany({
+            data: validatedMathModels,
+            skipDuplicates: true,
+          });
 
-        console.log("✅ Constants inserted successfully:", validatedConstants);
-      }
+          console.log("✅ MathModels inserted successfully:", validatedMathModels);
+        } else if (sheetName === "Species") {
+          const validatedSpecies = speciesParser(worksheet);
 
-      else if (sheetName === "MathModels") {
-        const validatedMathModels = mathModelsParser(worksheet);
+          await prisma.species.createMany({
+            data: validatedSpecies,
+            skipDuplicates: true,
+          });
 
-        await prisma.mathModels.createMany({
-          data: validatedMathModels,
-          skipDuplicates: true,
-        });
+          console.log("✅ Species inserted successfully:", validatedSpecies);
+        } else if (sheetName === "Keywords") {
+          const validatedKeywords = keywordsParser(worksheet);
 
-        console.log("✅ MathModels inserted successfully:", validatedMathModels);
-      }
-      
-      else if (sheetName === "Species") {
-        const validatedSpecies = speciesParser(worksheet);
+          await prisma.keyword.createMany({
+            data: validatedKeywords,
+            skipDuplicates: true,
+          });
 
-        await prisma.species.createMany({
-          data: validatedSpecies,
-          skipDuplicates: true,
-        });
+          console.log("✅ Keywords inserted successfully:", validatedKeywords);
+        } else if (sheetName === "Ecosystem") {
+          const ecosystems = ecosystemsParser(worksheet);
 
-        console.log("✅ MathModels inserted successfully:", validatedSpecies);
-      }
-      
+          // ✅ Insert ecosystems into Prisma
+          await prisma.ecosystem.createMany({
+            data: ecosystems,
+            skipDuplicates: true,
+          });
 
-      else if (sheetName === "Keywords") {
-        const validatedKeywords = keywordsParser(worksheet);
+          console.log("✅ Ecosystems inserted successfully:", ecosystems);
+        } else if (sheetName === "Project") {
+          const projects = await projectsParser(worksheet);
 
-        await prisma.keyword.createMany({
-          data: validatedKeywords,
-          skipDuplicates: true,
-        });
+          await Promise.all(
+            projects.map(async (project) => {
+              // ✅ Upsert project into Prisma
+              await prisma.project.upsert({
+                where: { name: project.name }, // Assuming id is unique
+                update: {}, // No update if it exists
+                create: project,
+              });
+            })
+          );
 
-        console.log("✅ Keywords inserted successfully:", validatedKeywords);
-      }
+          console.log("✅ Projects inserted successfully:", projects);
+        } else if (sheetName === "Parcels") {
+          const parcels = await parcelsParser(worksheet);
+              // ✅ Insert parcel into Prisma
+              await prisma.parcels.createMany({
+                data: parcels,
+                skipDuplicates: false,
+              });
 
-      else if (sheetName === "Ecosystem") {
-        const ecosystems = ecosystemsParser(worksheet);
-
-        // ✅ Insert ecosystems into Prisma
-        await prisma.ecosystem.createMany({
-          data: ecosystems,
-          skipDuplicates: true,
-        });
-
-        console.log("✅ Ecosystems inserted successfully:", ecosystems);
-      }
-
-      else if (sheetName === "Project") {
-        const projects = await projectsParser(worksheet);
-
-        // ✅ Insert projects into Prisma
-        await prisma.project.createMany({
-          data: projects,
-          skipDuplicates: true,
-        });
-
-        console.log("✅ Projects inserted successfully:", projects);
+          console.log("✅ Parcels inserted successfully:", parcels);
+        }
+      } catch (error) {
+        return handleError(error);
       }
     }
 
@@ -109,7 +113,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Database seeded successfully!" });
   } catch (error) {
-    console.error("❌ Error processing file:", error);
-    return NextResponse.json({ message: "Error processing file" }, { status: 500 });
+    return handleError(error);
   }
 }

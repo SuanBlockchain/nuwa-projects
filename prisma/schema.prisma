@@ -12,40 +12,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Units {
-//   id          Int     @id @default(autoincrement())
-//   name        String  @unique
-//   symbol      String  @unique
-//   unit_type   String
-//   is_standard Boolean @default(false)
-
-//   from_conversions UnitConversions[] @relation("FromUnit")
-//   to_conversions   UnitConversions[] @relation("ToUnit")
-
-//   Params Params[]
-// }
-
-// model UnitConversions {
-//   id           Int     @id @default(autoincrement())
-//   from_unit_id Int
-//   to_unit_id   Int
-//   factor       Float
-//   offset       Float   @default(0.0)
-
-//   from_unit    Units   @relation("FromUnit", fields: [from_unit_id], references: [id])
-//   to_unit      Units   @relation("ToUnit", fields: [to_unit_id], references: [id])
-// }
-
-// model Params {
-//   id          Int     @id @default(autoincrement())
-//   name        String
-//   description String?
-//   unit        Units?  @relation(fields: [unitId], references: [id])
-//   unitId      Int?
-//   ecosystem   Ecosystem? @relation(fields: [ecosystemId], references: [id])
-//   ecosystemId Int?
-// }
-
 model User {
   id       String  @id @default(uuid()) @db.Uuid
   name     String?
@@ -53,14 +19,6 @@ model User {
   email    String  @unique
   role     Role    @default(GESTOR)
   projects Project[]
-}
-
-model Constants {
-  id          String  @id @default(uuid()) @db.Uuid
-  name        String  @unique
-  description String?
-  value       Float
-  unit        String
 }
 
 model MathModels {
@@ -76,6 +34,8 @@ model Species {
   functional_type    String?
   values             Json
   comments           String?
+
+  parcels Parcels[]
 }
 
 model Keyword {
@@ -89,11 +49,13 @@ model Ecosystem {
   type        String  @unique
   description String?
   values      Json
+  parcels     Parcels[]
 }
 
 model Project {
   id         String    @id @default(uuid()) @db.Uuid
-  title      String    @db.VarChar(255)
+  name       String    @unique
+  title      String    @db.VarChar(255) 
   description   String?
   country    String?    @db.VarChar(255)
   status     Status    @default(Seed)
@@ -103,8 +65,9 @@ model Project {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  creatorId  String           @db.Uuid @unique
+  creatorId  String           @db.Uuid
   creator    User             @relation(fields: [creatorId], references: [id])
+  parcels    Parcels[]
 }
 
 model ProjectKeyword {
@@ -116,14 +79,22 @@ model ProjectKeyword {
   @@id([projectId, keywordId])
 }
 
-// model ProjectUser {
-//   projectId String @db.Uuid
-//   userId    String @db.Uuid
-//   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-//   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@id([projectId, userId])
-// }
+model Parcels {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  projectId   String?  @db.Uuid
+  project Project? @relation(fields: [projectId], references: [id])
+  ecosystemId String?  @db.Uuid
+  ecosystem   Ecosystem? @relation(fields: [ecosystemId], references: [id])
+  speciesId   String?  @db.Uuid
+  species     Species? @relation(fields: [speciesId], references: [id])
+  area Int
+  municipality String?
+  department String?
+  cadastral_id String?
+  geolocation Json?
+  polygon Json?
+}
 
 enum Role {
   GESTOR

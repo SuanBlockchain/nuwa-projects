@@ -41,3 +41,18 @@ export async function fetchCardData() {
       throw new Error('Failed to fetch card data.');
     }
   }
+
+  // export async function fetchGrowthData(spece: string, horizon: number) {
+  //   try {
+  //     const growthData = await prisma.$queryRaw`
+  //       SELECT * FROM growth_data;
+  //     `;
+
+
+
+  //     return growthData;
+  //   } catch (error) {
+  //     console.error('Database Error:', error);
+  //     throw new Error('Failed to fetch growth data.');
+  //   }
+  // }

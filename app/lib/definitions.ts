@@ -7,6 +7,14 @@ export interface SpeciesValues {
   allometric_coeff_a: number | null; 
   allometric_coeff_b: number | null; 
   r_coeff: number | null; 
+  g_b: number | null; 
+  g_c: number | null; 
+  g_b_dbh: number | null; 
+  g_c_dbh: number | null; 
+  k: number | null; 
+  inflexion: number | null; 
+  k2: string | null; 
+  t_inflexion: string | null; 
   }
 
 export interface EcosystemValues {
@@ -43,6 +51,14 @@ export const SpeciesUnitsMapping = {
   allometric_coeff_a: "-",
   allometric_coeff_b: "-",
   r_coeff: "-",
+  g_b: "m",
+  g_c: "m",
+  g_b_dbh: "kg?",
+  g_c_dbh: "kg?",
+  k: "years⁻¹",
+  inflexion: "?",
+  k2: "years⁻¹-range",
+  t_inflexion: "year-range",
 };
 
 // ✅ Helper function to structure values with units for Ecosystems

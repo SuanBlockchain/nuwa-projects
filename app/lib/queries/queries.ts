@@ -42,17 +42,14 @@ export async function fetchCardData() {
     }
   }
 
-  // export async function fetchGrowthData(spece: string, horizon: number) {
-  //   try {
-  //     const growthData = await prisma.$queryRaw`
-  //       SELECT * FROM growth_data;
-  //     `;
-
-
-
-  //     return growthData;
-  //   } catch (error) {
-  //     console.error('Database Error:', error);
-  //     throw new Error('Failed to fetch growth data.');
-  //   }
-  // }
+  export async function fetchGrowthData(specie: string, horizon: number): Promise<{ month: string; growth: number }[]> {
+    try {
+      const growthData: { month: string; growth: number }[] = await prisma.$queryRaw`
+        SELECT * FROM generate_species_data(${specie}::text, ${horizon}::integer);
+      `;
+      return growthData;
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw new Error('Failed to fetch growth data.');
+    }
+  }

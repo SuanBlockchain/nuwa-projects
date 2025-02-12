@@ -8,7 +8,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { selectedSpecies, selectedYear } = body;
-    // console.log(req);
 
     if (!selectedSpecies || selectedSpecies.length === 0) {
       return NextResponse.json(

@@ -30,6 +30,7 @@ const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
             stacked: false,
             reverse: false,
           }}
+          yFormat={function (y) { return typeof y === 'number' ? y.toPrecision(4) : String(y); }}
           axisTop={null}
           axisRight={null}
           axisBottom={{

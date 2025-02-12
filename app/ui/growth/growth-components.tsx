@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import GrowthChart from './growth-chart';
 import GrowthParamsForm from './growth-params-form';
+import GrowthTable from './growth-table';
+import Pagination from './pagination';
 
 // Helper function to safely convert values to plain JavaScript numbers
 const convertToPlainObject = (value: { toNumber?: () => number } | number): number => {
@@ -41,6 +43,9 @@ const formatGrowthData = (growthData: GrowthData[]) => {
 
 export default function GrowthComponent() {
   const [growthData, setGrowthData] = useState<GrowthData[]>([]);
+  const [activeTab, setActiveTab] = useState<'table' | 'chart'>('chart');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const handleSubmit = async (selectedSpecies: string[], selectedYear: number) => {
     try {
@@ -56,6 +61,8 @@ export default function GrowthComponent() {
 
       const data = await response.json();
       setGrowthData(data);
+      setTotalPages(Math.ceil((selectedSpecies.length * selectedYear) / 10));
+      console.log(totalPages)
     } catch (error) {
       console.error('Error fetching growth data:', error);
     }
@@ -69,7 +76,45 @@ export default function GrowthComponent() {
       <GrowthParamsForm
         onSubmit={handleSubmit}
       />
-      {formattedData.length > 0 && <GrowthChart data={formattedData} />}
+      {formattedData.length > 0 && (
+
+        <div className="mt-6">
+          {/* Tabs */}
+          <div className="flex border-b border-gray-300">
+            <button
+              onClick={() => setActiveTab('chart')}
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === 'chart' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
+              }`}
+            >
+              Graph
+            </button>
+            <button
+              onClick={() => setActiveTab('table')}
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === 'table' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
+              }`}
+            >
+              Table
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="p-4 border border-gray-300 rounded-b-lg">
+            {activeTab === 'chart' && <GrowthChart data={formattedData} />}
+            {activeTab === 'table' && (
+              <>
+                <GrowthTable data={formattedData} currentPage={currentPage}  />
+                <div className="mt-5 flex w-full justify-center">
+                  <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
+                </div>
+              </>
+
+            )}
+          </div>
+        </div>
+        )
+    }
     </div>
   );
 }

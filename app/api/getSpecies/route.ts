@@ -70,7 +70,6 @@ export async function GET() {
       },
     });
     
-    console.log(speciesList);
 
     return NextResponse.json(speciesList.map((species) => species.common_name));
   } catch (error) {

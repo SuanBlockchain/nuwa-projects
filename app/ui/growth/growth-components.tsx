@@ -15,7 +15,7 @@ const convertToPlainObject = (value: { toNumber?: () => number } | number): numb
 interface GrowthData {
   species: string;
   year: number;
-  altura: { toNumber: () => number } | number;
+  co2eq: { toNumber: () => number } | number;
 }
 
 const formatGrowthData = (growthData: GrowthData[]) => {
@@ -26,10 +26,11 @@ const formatGrowthData = (growthData: GrowthData[]) => {
     }
     acc[curr.species].push({
       x: curr.year,
-      y: convertToPlainObject(curr.altura), // Convert `altura` to plain number
+      y: convertToPlainObject(curr.co2eq), // Convert `altura` to plain number
     });
     return acc;
   }, {});
+
 
   // Convert grouped data into Nivo-compatible format
   return Object.keys(groupedData).map((species) => ({
@@ -41,12 +42,12 @@ const formatGrowthData = (growthData: GrowthData[]) => {
 export default function GrowthComponent() {
   const [growthData, setGrowthData] = useState<GrowthData[]>([]);
 
-  const handleSubmit = async (species: string) => {
+  const handleSubmit = async (selectedSpecies: string[], selectedYear: number) => {
     try {
       const response = await fetch('/api/getGrowCurves', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ species }),
+        body: JSON.stringify({ selectedSpecies, selectedYear }),
       });
 
       if (!response.ok) {
@@ -68,7 +69,7 @@ export default function GrowthComponent() {
       <GrowthParamsForm
         onSubmit={handleSubmit}
       />
-      <GrowthChart data={formattedData} />
+      {formattedData.length > 0 && <GrowthChart data={formattedData} />}
     </div>
   );
 }

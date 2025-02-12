@@ -1,4 +1,3 @@
-
 'use client';
 import { ResponsiveLine } from '@nivo/line';
 
@@ -10,9 +9,11 @@ interface LineChartProps {
 }
 
 const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
+
   if (!data || data.length === 0) {
     return <p className="text-center text-gray-500">Please choose your options and press submit</p>;
   }
+
   return (
     <div style={{ height: '500px', width: '100%' }}>
       <ResponsiveLine
@@ -32,7 +33,7 @@ const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'Time',
+          legend: 'year',
           legendOffset: 36,
           legendPosition: 'middle',
         }}
@@ -40,8 +41,8 @@ const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'Growth',
-          legendOffset: -40,
+          legend: 'Co2eq (Kg)',
+          legendOffset: -55,
           legendPosition: 'middle',
         }}
         colors={{ scheme: 'category10' }}

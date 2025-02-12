@@ -1,5 +1,5 @@
 // app/api/getSpecies/route.ts
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -7,8 +7,70 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const speciesList = await prisma.species.findMany({
-      select: { common_name: true }, // Adjust based on your database schema
+      where: {
+        AND: [
+          { 
+            values: {
+              path: ['max_height', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['g_b', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['g_c', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['avg_dbh', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['g_b_dbh', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['g_c_dbh', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['allometric_coeff_a', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['allometric_coeff_b', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          },
+          { 
+            values: {
+              path: ['r_coeff', 'value'],
+              not: Prisma.JsonNullValueFilter.JsonNull
+            }
+          }
+        ]
+      },
+      select: {
+        common_name: true, // Only select the `common_name` field
+      },
     });
+    
+    console.log(speciesList);
 
     return NextResponse.json(speciesList.map((species) => species.common_name));
   } catch (error) {

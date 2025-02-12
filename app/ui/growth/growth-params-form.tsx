@@ -44,7 +44,7 @@ export default function GrowthParamsForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="mb-8">
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <div className="mb-4">
           <label htmlFor="species" className="mb-2 block text-sm font-medium">
@@ -85,14 +85,14 @@ export default function GrowthParamsForm({
             ))}
           </select>
         </div>
-      </div>
-      <div className="mt-6 flex justify-end gap-4">
-        <button
-          type="submit"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Submit
-        </button>
+        <div className="mt-6 flex justify-end gap-4">
+          <button
+            type="submit"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Generate trend
+          </button>
+        </div>
       </div>
     </form>
   );

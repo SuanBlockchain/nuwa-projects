@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 export async function fetchCardData() {
 
-    // TODO: Add units of measure
     try {
 
       const totalInvestmentPromise = prisma.$queryRaw<TotalInvestmentResult[]>`
@@ -42,12 +41,21 @@ export async function fetchCardData() {
     }
   }
 
-  export async function fetchGrowthData(specie: string, horizon: number): Promise<{ month: string; growth: number }[]> {
+  export async function fetchProjectData() {
     try {
-      const growthData: { month: string; growth: number }[] = await prisma.$queryRaw`
-        SELECT * FROM generate_species_data(${specie}::text, ${horizon}::integer);
-      `;
-      return growthData;
+      const projectsData = await prisma.project.findMany(
+        {
+          select: {
+            name: true,
+            title: true,
+            country: true,
+            status: true,
+            description: true,
+          },
+        }
+      );
+
+      return projectsData;
     } catch (error) {
       console.error('Database Error:', error);
       throw new Error('Failed to fetch growth data.');

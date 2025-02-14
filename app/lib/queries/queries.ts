@@ -46,6 +46,7 @@ export async function fetchCardData() {
       const projectsData = await prisma.project.findMany(
         {
           select: {
+            id: true,
             name: true,
             title: true,
             country: true,

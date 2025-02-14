@@ -14,8 +14,7 @@ export default function ProjectStatus({ status }: { status: string }) {
     >
       {status === 'Seed' ? (
           <>
-          <span className="badge">Badge</span>
-          Seed
+          <span className="badge">Seed</span>
           <ClockIcon className="ml-1 w-4 text-gray-500" />
         </>
       ) : null}

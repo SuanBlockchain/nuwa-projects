@@ -40,12 +40,12 @@ export default async function ProjectsTable() {
                     <p className="text-sm text-gray-500">{project.status}</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between pt-4">
+                {/* <div className="flex items-center justify-between pt-4">
                   <div>
                     <p className="text-sm font-medium text-gray-700">Description</p>
                     <p className="text-sm text-gray-500 truncate">{project.description}</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>

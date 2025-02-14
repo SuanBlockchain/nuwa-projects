@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { roboto } from '@/app/ui/fonts';
+import Navbar from "./ui/navbar";
+import "@radix-ui/themes/styles.css";
+
 
 
 export const metadata: Metadata = {
@@ -18,6 +21,7 @@ export default function RootLayout({
       <body
         className={`${roboto.className} antialiased`}
       >
+          <Navbar />
         {children}
       </body>
     </html>

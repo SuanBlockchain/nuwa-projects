@@ -97,7 +97,7 @@ export async function POST(req: Request) {
               // ✅ Insert parcel into Prisma
               await prisma.parcels.createMany({
                 data: parcels,
-                skipDuplicates: false,
+                skipDuplicates: true,
               });
 
           console.log("✅ Parcels inserted successfully:", parcels);

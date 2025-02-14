@@ -1,12 +1,19 @@
-import { CubeTransparentIcon } from '@heroicons/react/24/outline';
-import { roboto } from '@/app/ui/fonts';
+import { inter } from '@/app/ui/fonts';
+import Image from 'next/image';
 
-export default function AcmeLogo() {
+export default function NuwaLogo() {
   return (
     <div
-      className={`${roboto.className} flex flex-col justify-center items-center leading-none text-black`}
+      className={`${inter.className} flex flex-col justify-center items-center leading-none text-black`}
     >
-      <CubeTransparentIcon className="h-12 w-12 rotate-[15deg]" />
+      {/* <CubeTransparentIcon className="h-12 w-12 rotate-[15deg]" />  */}
+      <Image
+        alt=""
+        src="/nuwa-logo1.png"
+        width={32}
+        height={32}
+        className="size-8 rounded-full"
+      />
       <p className="text-[44px]">Nuwa</p>
     </div>
   );

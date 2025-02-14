@@ -47,7 +47,17 @@ export function DataTable<TData, TValue>({
         []
       )
     const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({description: false})
+    React.useState<VisibilityState>({
+      description: false, 
+      createdAt: false, 
+      updatedAt: false,
+      lands: false,
+      abstract: false,
+      polygone: false,
+      geolocation_point: false,
+      investment_teaser: false,
+
+    })
 
     const [rowSelection, setRowSelection] = React.useState({})
 
@@ -81,10 +91,12 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
       </div>
+      <div className="flex items-center justify-between space-x-2 p-2">
+
       <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="flex items-center">
             <Button variant="outline" className="ml-auto">
-              Columns
+              Add columns
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -109,7 +121,8 @@ export function DataTable<TData, TValue>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-    <div className="rounded-md border p-4">
+      </div>
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -152,7 +165,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 py-4 p-2">
         <Button
           variant="outline"
           size="sm"
@@ -170,7 +183,7 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
-      <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex-1 text-sm text-muted-foreground p-2">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>

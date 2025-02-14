@@ -43,18 +43,8 @@ export async function fetchCardData() {
 
   export async function fetchProjectData() {
     try {
-      const projectsData = await prisma.project.findMany(
-        {
-          select: {
-            id: true,
-            name: true,
-            title: true,
-            country: true,
-            status: true,
-            description: true,
-          },
-        }
-      );
+      const projectsData = await prisma.project.findMany();
+      console.log(projectsData, 'projectsData')
 
       return projectsData;
     } catch (error) {

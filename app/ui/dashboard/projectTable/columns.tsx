@@ -26,7 +26,7 @@ export type Growth = {
 export const columns: ColumnDef<Growth>[] = [
   {
     accessorKey: "status",
-    header: () => <div className="text-right">Status</div>,
+    header: "Status",
     cell: ({ row }) => <ProjectStatus status={row.original.status} />,
   },
   {

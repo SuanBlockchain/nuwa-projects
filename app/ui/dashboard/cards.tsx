@@ -5,7 +5,7 @@ import {
   InboxIcon,
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchCardData } from '@/app/lib/queries/queries';
+import { fetchCardData, fetchProjectById } from '@/app/lib/queries/queries';
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -14,15 +14,30 @@ const iconMap = {
   bankable: InboxIcon,
 };
 
-export default async function CardWrapper() {
-  const { totalImpact, totalInvestment, totalBankableInvestment, totalIncome } = await fetchCardData();
+export default async function CardWrapper({ projectId }: { projectId?: string }) {
+  let data;
+  if (projectId) {
+    data = await fetchProjectById(projectId);
+  } else {
+    data = await fetchCardData();
+  }
+
+  const { totalImpact, totalInvestment, totalBankableInvestment, totalIncome, projectName } = data;
+
   return (
-    <>
+    <main>
+      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
+            {projectName}
+      </h1>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
       <Card title="Impact" value={totalImpact} units="TonCO2eq" type="collected" />
       <Card title="Investment" value={totalInvestment} units="USD" type="pending" />
       <Card title="Bankable" value={totalBankableInvestment} units="USD" type="bankable" />
       <Card title="Income" value={totalIncome} units="USD" type="customers"/>
-    </>
+      </div>
+
+    </main>
   );
 }
 

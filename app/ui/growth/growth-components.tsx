@@ -62,7 +62,6 @@ export default function GrowthComponent() {
       const data = await response.json();
       setGrowthData(data);
       setTotalPages(Math.ceil((selectedSpecies.length * selectedYear) / 10));
-      console.log(totalPages)
     } catch (error) {
       console.error('Error fetching growth data:', error);
     }

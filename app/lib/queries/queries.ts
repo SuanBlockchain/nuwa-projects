@@ -33,7 +33,7 @@ export async function fetchCardData() {
       const totalBankableInvestment = Number((data[2] as TotalBankableInvestmentResult[])[0]?.total_bankable_investment);
       const totalIncome = Number((data[3] as TotalIncomeResult[])[0]?.total_income);
 
-    return { totalImpact, totalInvestment, totalBankableInvestment, totalIncome };
+    return { totalImpact, totalInvestment, totalBankableInvestment, totalIncome, projectName: 'ALL PROJECTS' };
 
     } catch (error) {
       console.error('Database Error:', error);
@@ -44,11 +44,36 @@ export async function fetchCardData() {
   export async function fetchProjectData() {
     try {
       const projectsData = await prisma.project.findMany();
-      console.log(projectsData, 'projectsData')
 
       return projectsData;
     } catch (error) {
       console.error('Database Error:', error);
       throw new Error('Failed to fetch growth data.');
+    }
+  }
+
+  export async function fetchProjectById(id: string) {
+    try {
+      const projectData = await prisma.project.findUnique({
+        where: { id },
+        select: {
+          name: true,
+          values: true,
+        },
+      }) as { name: string, values: { impact?: { value: number }, total_investment?: { value: number }, bankable_investment?: { value: number }, income?: { value: number } } };
+
+      if (!projectData || !projectData.values) {
+        throw new Error('Project data not found or values field is empty.');
+      }
+
+      const totalImpact = Number(projectData.values.impact?.value || 0);
+      const totalInvestment = Number(projectData.values.total_investment?.value || 0);
+      const totalBankableInvestment = Number(projectData.values.bankable_investment?.value || 0);
+      const totalIncome = Number(projectData.values.income?.value || 0);
+    
+      return { totalImpact, totalInvestment, totalBankableInvestment, totalIncome, projectName: projectData.name };
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw new Error('Failed to fetch project data.');
     }
   }

@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 import ProjectStatus from "@/app/ui/dashboard/project-status"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -176,7 +177,7 @@ export const columns: ColumnDef<Growth>[] = [
     },
     {
       id: "actions",
-      cell: ({ }) => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -189,7 +190,7 @@ export const columns: ColumnDef<Growth>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <a href="./dashboard/growth">View project details</a>
+              <Link href={`./dashboard/project/${row.original.id}`}>View project details</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

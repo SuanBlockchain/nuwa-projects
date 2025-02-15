@@ -2,77 +2,70 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// generator erd {
-//   provider = "prisma-erd-generator"
-//   output   = "erd.svg"
-// }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       String  @id @default(uuid()) @db.Uuid
   name     String?
+  email    String    @unique
+  role     Role      @default(GESTOR)
   password String
-  email    String  @unique
-  role     Role    @default(GESTOR)
+  id       String    @id @default(uuid()) @db.Uuid
   projects Project[]
 }
 
 model MathModels {
-  id          String  @id @default(uuid()) @db.Uuid
-  name        String  @unique
+  id   String @id @default(uuid()) @db.Uuid
+  name String @unique
 }
 
 model Species {
-  id          String  @id @default(uuid()) @db.Uuid
-  common_name        String  @unique
-  scientific_name    String  @unique
-  family             String?
-  functional_type    String?
-  values             Json
-  comments           String?
-
-  parcels Parcels[]
+  id              String    @id @default(uuid()) @db.Uuid
+  common_name     String    @unique
+  scientific_name String    @unique
+  family          String?
+  functional_type String?
+  values          Json
+  comments        String?
+  parcels         Parcels[]
 }
 
 model Keyword {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String   @unique
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String           @unique
   projectKeywords ProjectKeyword[]
 }
 
 model Ecosystem {
-  id          String   @id @default(uuid()) @db.Uuid
-  type        String  @unique
   description String?
   values      Json
+  type        String    @unique
+  id          String    @id @default(uuid()) @db.Uuid
   parcels     Parcels[]
 }
 
 model Project {
-  id         String    @id @default(uuid()) @db.Uuid
-  name       String    @unique
-  title      String    @db.VarChar(255) 
-  description   String?
-  country    String?    @db.VarChar(255)
-  status     Status    @default(Seed)
-  department String?    @db.VarChar(255)
-  keywords   ProjectKeyword[]
-  values     Json?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  creatorId  String           @db.Uuid
-  creator    User             @relation(fields: [creatorId], references: [id])
-  parcels    Parcels[]
+  id          String           @id @default(uuid()) @db.Uuid
+  title       String           @db.VarChar(255)
+  country     String?          @db.VarChar(255)
+  status      Status           @default(Seed)
+  department  String?          @db.VarChar(255)
+  values      Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  creatorId   String           @db.Uuid
+  description String?
+  name        String           @unique
+  parcels     Parcels[]
+  creator     User             @relation(fields: [creatorId], references: [id])
+  keywords    ProjectKeyword[]
 }
 
 model ProjectKeyword {
-  projectId String @db.Uuid
-  keywordId String @db.Uuid
+  projectId String  @db.Uuid
+  keywordId String  @db.Uuid
   keyword   Keyword @relation(fields: [keywordId], references: [id], onDelete: Cascade)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
@@ -80,20 +73,26 @@ model ProjectKeyword {
 }
 
 model Parcels {
-  id          String  @id @default(uuid()) @db.Uuid
-  name        String  @unique
-  projectId   String?  @db.Uuid
-  project Project? @relation(fields: [projectId], references: [id])
-  ecosystemId String?  @db.Uuid
-  ecosystem   Ecosystem? @relation(fields: [ecosystemId], references: [id])
-  speciesId   String?  @db.Uuid
-  species     Species? @relation(fields: [speciesId], references: [id])
-  area Int
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String     @unique
+  projectId    String?    @db.Uuid
+  ecosystemId  String?    @db.Uuid
+  speciesId    String?    @db.Uuid
+  area         Int
   municipality String?
-  department String?
+  department   String?
   cadastral_id String?
-  geolocation Json?
-  polygon Json?
+  geolocation  Json?
+  polygon      Json?
+  ecosystem    Ecosystem? @relation(fields: [ecosystemId], references: [id])
+  project      Project?   @relation(fields: [projectId], references: [id])
+  species      Species?   @relation(fields: [speciesId], references: [id])
+}
+model TotalImpact {
+  id           Int @unique
+  total_impact Int
+
+  @@map("total_impact")
 }
 
 enum Role {

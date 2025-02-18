@@ -1,3 +1,4 @@
+import { BarDatum } from "@nivo/bar";
 
 export interface SpeciesValues {
   max_height: number | null; 
@@ -42,6 +43,64 @@ export interface ProjectValues {
   tree_quantity: number | null;
   token_granularity: number | null;
   }
+
+export interface ParcelData {
+    project: string;
+    department: string;
+    ecosystem: string;
+    species: string;
+    parcelname: string;
+    parcelId: string;
+    area: number;
+  }
+  
+export interface AggregatedData {
+    ecosystem: string;
+    bgb: number;
+    co2_captured: number;
+    agb: number;
+    soc_total: number;
+  }
+  
+export interface TreeNode {
+    name: string;
+    loc?: number;
+    children?: TreeNode[];
+    total?: number;
+  }
+
+export interface NavigationItem {
+    name: string;
+    href: string;
+    current: boolean;
+}
+
+export interface EcosystemData extends BarDatum {
+  ecosystem: string;
+  bgb: number;
+  co2_captured: number;
+  agb: number;
+  soc_total: number;
+}
+
+export interface Breadcrumb {
+  label: string;
+  href: string;
+  active?: boolean;
+}
+
+export interface LineChartProps {
+  data: {
+    id: string;
+    data: { x: string | number; y: number }[];
+  }[];
+}
+
+export interface GrowthData {
+  species: string;
+  year: number;
+  co2eq: { toNumber: () => number } | number;
+}
 
 export const SpeciesUnitsMapping = {
   max_height: "m",
@@ -90,4 +149,53 @@ export type TotalInvestmentResult = { total_investment: bigint };
 export type TotalBankableInvestmentResult = { total_bankable_investment: bigint };
 export type TotalIncomeResult = { total_income: bigint };
 export type CellValue = string | number | boolean | Date | null;
+
+export type State = { species?: string; errors?: { species?: string[] } };
+
+export type Growth = {
+  id: string
+  name: string
+  title: string
+  description: string | null
+  country: string | null
+  status: string
+  department: string | null
+  values: {
+    total_investment: {
+      value: number
+    },
+    impact: {
+      value: number
+    },
+    bankable_investment: {
+      value: number
+    },
+    income: {
+      value: number
+    },
+    tree_quantity: {
+      value: number
+    },
+    lands: {
+      value: number
+    },
+    abstract: {
+      value: string
+    },
+    polygone: {
+      value: string
+    },
+    geolocation_point: {
+      value: string
+    },
+    investment_teaser: {
+      value: string
+    },
+    token_granularity: {
+      value: number
+    },
+  }
+  createdAt: Date
+  updatedAt: Date
+}
 

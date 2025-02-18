@@ -6,18 +6,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
-interface NavigationItem {
-    name: string;
-    href: string;
-    current: boolean;
-}
+import { NavigationItem } from '@/app/lib/definitions';
 
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '/', current: true },
     { name: 'Dashboard', href: '/dashboard', current: false },
     { name: 'Upload', href: '/upload', current: false },
-    // { name: 'Projects', href: '#', current: false },
-    // { name: 'Calendar', href: '#', current: false },
 ];
 
 function classNames(...classes: (string | boolean | undefined)[]): string {

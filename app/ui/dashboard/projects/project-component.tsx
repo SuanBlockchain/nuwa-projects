@@ -1,37 +1,60 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import MyResponsiveBar from "./bar-chart";
-import { BarDatum } from '@nivo/bar';
+import MyResponsiveTreeMap from "./project-tree-map";
 
-interface ParcelData extends BarDatum {
-  species: string;
-  bgb: number;
-  co2_captured: number;
-  agb: number;
-  soc_total: number;
-}
+import { EcosystemData, TreeNode } from "@/app/lib/definitions";
 
 export default function ProjectComponent({ projectId }: { projectId?: string }) {
-  const [parcelsData, setParcelsData] = useState<ParcelData[]>([]);
+  const [parcelsData, setParcelsData] = useState<EcosystemData[]>([]);
+  const [treeMapData, setTreeMapData] = useState<TreeNode | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch species options from the database
   useEffect(() => {
-    async function getParcels (projectIds: string[]) {
+    async function getParcels(projectIds: string[]) {
       try {
-        const response = await fetch('/api/getParcels', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ projectIds }),
+        setLoading(true);
+
+        // Fetch Aggregated Data
+        const aggregatedResponse = await fetch("/api/getParcels", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectIds, queryType: "aggregated" }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch growth data');
+        if (!aggregatedResponse.ok) {
+          throw new Error("Failed to fetch aggregated data");
         }
 
-        const data: ParcelData[] = await response.json();
-        setParcelsData(data);
+        const aggregatedData = await aggregatedResponse.json();
+        setParcelsData(
+          aggregatedData.map((item: EcosystemData) => ({
+            ecosystem: item.ecosystem,
+            bgb: item.bgb,
+            co2_captured: item.co2_captured,
+            agb: item.agb,
+            soc_total: item.soc_total,
+          }))
+        );
+
+        // Fetch Detailed Data (Tree Map)
+        const detailsResponse = await fetch("/api/getParcels", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectIds, queryType: "details" }),
+        });
+
+        if (!detailsResponse.ok) {
+          throw new Error("Failed to fetch detailed parcel data");
+        }
+
+        const detailsData: TreeNode = await detailsResponse.json();
+        setTreeMapData(detailsData);
+
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching parcels', error);
+        console.error("Error fetching parcels", error);
+        setLoading(false);
       }
     }
 
@@ -44,7 +67,24 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
     <div>
       <h2 className="text-xl font-bold mb-4">AGB, BGB, SOC and CO2 by Specie</h2>
       <div className="p-4 border border-gray-300 rounded-b-lg">
-        <MyResponsiveBar data={parcelsData} />
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            {parcelsData.length > 0 ? (
+              <MyResponsiveBar data={parcelsData} />
+            ) : (
+              <p>No aggregated data available</p>
+            )}
+            <div style={{ height: "500px", marginTop: "20px" }}>
+              {treeMapData ? (
+                <MyResponsiveTreeMap data={treeMapData} />
+              ) : (
+                <p>No detailed parcel data available</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

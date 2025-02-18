@@ -14,52 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export type Growth = {
-  id: string
-  name: string
-  title: string
-  description: string | null
-  country: string | null
-  status: string
-  department: string | null
-  values: {
-    total_investment: {
-      value: number
-    },
-    impact: {
-      value: number
-    },
-    bankable_investment: {
-      value: number
-    },
-    income: {
-      value: number
-    },
-    tree_quantity: {
-      value: number
-    },
-    lands: {
-      value: number
-    },
-    abstract: {
-      value: string
-    },
-    polygone: {
-      value: string
-    },
-    geolocation_point: {
-      value: string
-    },
-    investment_teaser: {
-      value: string
-    },
-    token_granularity: {
-      value: number
-    },
-  }
-  createdAt: Date
-  updatedAt: Date
-}
+import { Growth } from "@/app/lib/definitions";
 
 export const columns: ColumnDef<Growth>[] = [
   {

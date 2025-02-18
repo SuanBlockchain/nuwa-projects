@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export type State = { species?: string; errors?: { species?: string[] } };
+import { State } from '@/app/lib/definitions';
 
 export async function querySpecies(prevState: State, formData: FormData) {
   const species = formData.get('species') as string;

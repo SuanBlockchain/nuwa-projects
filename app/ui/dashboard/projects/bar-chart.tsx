@@ -26,7 +26,7 @@ const MyResponsiveBar = ({ data }: MyResponsiveBarProps) => (
                 'agb',
                 'soc_total'
             ]}
-            indexBy="species"
+            indexBy="ecosystem"
             margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
             padding={0.3}
             groupMode="grouped"
@@ -44,11 +44,20 @@ const MyResponsiveBar = ({ data }: MyResponsiveBarProps) => (
             }}
             axisTop={null}
             axisRight={null}
+            axisLeft={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: 'Tonnes',
+                legendPosition: 'middle',
+                legendOffset: -50,
+                format: (value) => formatNumber(value as number)
+            }}
             axisBottom={{
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'species',
+                legend: 'Ecosystem',
                 legendPosition: 'middle',
                 legendOffset: 32,
                 truncateTickAt: 0

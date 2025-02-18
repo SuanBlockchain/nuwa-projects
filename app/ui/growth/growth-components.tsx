@@ -4,21 +4,14 @@ import GrowthChart from './growth-chart';
 import GrowthParamsForm from './growth-params-form';
 import GrowthTable from './growth-table';
 import Pagination from './pagination';
+import { GrowthData } from '@/app/lib/definitions';
 
-// Helper function to safely convert values to plain JavaScript numbers
 const convertToPlainObject = (value: { toNumber?: () => number } | number): number => {
   if (value && typeof value === 'object' && 'toNumber' in value) {
     return value.toNumber ? value.toNumber() : Number(value); // Convert Prisma Decimal to number
   }
   return typeof value === 'number' ? value : Number(value);
 };
-
-// Helper function to format the data
-interface GrowthData {
-  species: string;
-  year: number;
-  co2eq: { toNumber: () => number } | number;
-}
 
 const formatGrowthData = (growthData: GrowthData[]) => {
   // Group data by species

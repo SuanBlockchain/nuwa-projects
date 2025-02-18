@@ -152,6 +152,7 @@ export async function parcelsParser(worksheet: ExcelJS.Worksheet): Promise<Prism
         ? { value: getCellValue(row.getCell(9)) }
         : Prisma.JsonNull, // Column I
       polygon: getCellValue(row.getCell(10)) ? { value: getCellValue(row.getCell(10)) } : Prisma.JsonNull, // Column J
+      area_factor: (getCellValue(row.getCell(11)) as number) || 0, // Column K
     };
 
     parcels.push({

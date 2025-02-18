@@ -1,12 +1,7 @@
 'use client';
 import { ResponsiveLine } from '@nivo/line';
 
-interface LineChartProps {
-  data: {
-    id: string;
-    data: { x: string | number; y: number }[];
-  }[];
-}
+import { LineChartProps } from '@/app/lib/definitions';
 
 const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
 

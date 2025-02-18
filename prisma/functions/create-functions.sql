@@ -99,7 +99,7 @@ RETURNS TABLE (
     co2eq_ton NUMERIC
 ) AS $$
 DECLARE
-    retrieved_species_name TEXT;
+    retrieved_species_name TEXT[];
 BEGIN
     -- Ensure max_year does not exceed 50 for generate_species_data
     IF max_year > 50 THEN
@@ -116,7 +116,7 @@ BEGIN
     FROM 
         parcels_agbs_calculations p
     CROSS JOIN 
-        LATERAL generate_species_data(p.species_name, max_year) g
+        LATERAL generate_species_data(STRING_TO_ARRAY(p.species, ', '), max_year) g
     WHERE 
         g.year BETWEEN 0 AND max_year;
 END;

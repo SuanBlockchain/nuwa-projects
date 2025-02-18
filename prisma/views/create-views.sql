@@ -72,12 +72,14 @@ CREATE OR REPLACE VIEW species_calculation AS
    FROM co2_calc;
 
 CREATE OR REPLACE VIEW parcels_agbs_calculations AS
-  WITH base_values AS (
+ WITH base_values AS (
          SELECT p.id AS parcel_id,
             p.name AS parcel_name,
-			e.type AS species,
+		 	pr.name AS project,
+            e.type AS ecosystem,
+            sc.common_name AS species,
             p.area,
-            300 * p.area AS individuals,
+            p.area_factor * p.area AS individuals,
             ((s."values" -> 'r_coeff'::text) ->> 'value'::text)::numeric AS r_coeff,
             sc.agb_species,
             p.area::numeric * (((e."values" -> 'SOC'::text) ->> 'value'::text)::numeric) AS parcel_soc_total
@@ -85,10 +87,13 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
              LEFT JOIN "Species" s ON p."speciesId" = s.id
              LEFT JOIN species_calculation sc ON s.id = sc.species_id
              LEFT JOIN "Ecosystem" e ON p."ecosystemId" = e.id
+			 LEFT JOIN "Project" pr ON pr.id = p."projectId"
         ), parcel_agb_calc AS (
          SELECT base_values.parcel_id,
             base_values.parcel_name,
-			base_values.species,
+		 	base_values.project,
+            base_values.ecosystem,
+            base_values.species,
             base_values.area,
             base_values.individuals,
             base_values.r_coeff,
@@ -99,7 +104,9 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
         ), parcel_bgb_calc AS (
          SELECT parcel_agb_calc.parcel_id,
             parcel_agb_calc.parcel_name,
-			parcel_agb_calc.species,
+			parcel_agb_calc.project,
+            parcel_agb_calc.ecosystem,
+            parcel_agb_calc.species,
             parcel_agb_calc.area,
             parcel_agb_calc.individuals,
             parcel_agb_calc.r_coeff,
@@ -111,7 +118,9 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
         ), parcel_co2_calcs AS (
          SELECT parcel_bgb_calc.parcel_id,
             parcel_bgb_calc.parcel_name,
-			parcel_bgb_calc.species,
+			parcel_bgb_calc.project,
+            parcel_bgb_calc.ecosystem,
+            parcel_bgb_calc.species,
             parcel_bgb_calc.area,
             parcel_bgb_calc.individuals,
             parcel_bgb_calc.r_coeff,
@@ -125,7 +134,9 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
         ), parcel_co2_total AS (
          SELECT parcel_co2_calcs.parcel_id,
             parcel_co2_calcs.parcel_name,
-			parcel_co2_calcs.species,
+			parcel_co2_calcs.project,
+            parcel_co2_calcs.ecosystem,
+            parcel_co2_calcs.species,
             parcel_co2_calcs.area,
             parcel_co2_calcs.individuals,
             parcel_co2_calcs.r_coeff,
@@ -141,7 +152,9 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
         ), parcel_carbon_total AS (
          SELECT parcel_co2_total.parcel_id,
             parcel_co2_total.parcel_name,
-			parcel_co2_total.species,
+			parcel_co2_total.project,
+            parcel_co2_total.ecosystem,
+            parcel_co2_total.species,
             parcel_co2_total.area,
             parcel_co2_total.individuals,
             parcel_co2_total.r_coeff,
@@ -158,7 +171,9 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
         )
  SELECT parcel_carbon_total.parcel_id,
     parcel_carbon_total.parcel_name,
-	parcel_carbon_total.species,
+	parcel_carbon_total.project,
+    parcel_carbon_total.ecosystem,
+    parcel_carbon_total.species,
     parcel_carbon_total.area,
     parcel_carbon_total.individuals,
     parcel_carbon_total.parcel_agb,

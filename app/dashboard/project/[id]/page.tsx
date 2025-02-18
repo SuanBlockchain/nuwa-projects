@@ -8,7 +8,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <main>
       <CardWrapper projectId={id} />
-      <div className="p-4 border border-gray-300 rounded-b-lg">
+      <div className="mt-6 p-4 border border-gray-300 rounded-b-lg">
       <ProjectComponent projectId={id} />
       </div>
     </main>

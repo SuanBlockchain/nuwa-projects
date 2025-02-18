@@ -2,6 +2,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// generator erd {
+//   provider = "prisma-erd-generator"
+//   output   = "erd.svg"
+// }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -84,15 +89,10 @@ model Parcels {
   cadastral_id String?
   geolocation  Json?
   polygon      Json?
+  area_factor  Int
   ecosystem    Ecosystem? @relation(fields: [ecosystemId], references: [id])
   project      Project?   @relation(fields: [projectId], references: [id])
   species      Species?   @relation(fields: [speciesId], references: [id])
-}
-model TotalImpact {
-  id           Int @unique
-  total_impact Int
-
-  @@map("total_impact")
 }
 
 enum Role {

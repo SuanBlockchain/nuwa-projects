@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import MyResponsiveBar from "./bar-chart";
-import MyResponsiveTreeMap from "./project-tree-map";
+import BarChartAggregated from "./bar-chart-aggregated";
+import BarChartCO2 from "./bar-chart-co2";
+// import MyResponsiveTreeMap from "./project-tree-map";
 
-import { EcosystemData, TreeNode } from "@/app/lib/definitions";
+import { EcosystemData } from "@/app/lib/definitions";
 
 export default function ProjectComponent({ projectId }: { projectId?: string }) {
   const [parcelsData, setParcelsData] = useState<EcosystemData[]>([]);
-  const [treeMapData, setTreeMapData] = useState<TreeNode | null>(null);
+  const [co2Data, setCo2Data] = useState([]);
+  // const [treeMapData, setTreeMapData] = useState<TreeNode | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,25 +33,40 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
           aggregatedData.map((item: EcosystemData) => ({
             ecosystem: item.ecosystem,
             bgb: item.bgb,
-            co2_captured: item.co2_captured,
+            co2: item.co2,
             agb: item.agb,
-            soc_total: item.soc_total,
+            soc: item.soc,
           }))
         );
 
-        // Fetch Detailed Data (Tree Map)
-        const detailsResponse = await fetch("/api/getParcels", {
+        // Fetch CO2 Data
+        const co2Response = await fetch("/api/getParcels", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ projectIds, queryType: "details" }),
+          body: JSON.stringify({ projectIds, queryType: "co2" }),
         });
 
-        if (!detailsResponse.ok) {
-          throw new Error("Failed to fetch detailed parcel data");
+        if (!co2Response.ok) {
+          throw new Error("Failed to fetch CO2 data");
         }
 
-        const detailsData: TreeNode = await detailsResponse.json();
-        setTreeMapData(detailsData);
+        const co2Data = await co2Response.json();
+        setCo2Data(co2Data);
+
+        // Fetch Detailed Data (Tree Map)
+
+        // const detailsResponse = await fetch("/api/getParcels", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ projectIds, queryType: "details" }),
+        // });
+
+        // if (!detailsResponse.ok) {
+        //   throw new Error("Failed to fetch detailed parcel data");
+        // }
+
+        // const detailsData: TreeNode = await detailsResponse.json();
+        // setTreeMapData(detailsData);
 
         setLoading(false);
       } catch (error) {
@@ -65,25 +82,42 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">AGB, BGB, SOC and CO2 by Specie</h2>
       <div className="p-4 border border-gray-300 rounded-b-lg">
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <div>
-            {parcelsData.length > 0 ? (
-              <MyResponsiveBar data={parcelsData} />
-            ) : (
-              <p>No aggregated data available</p>
-            )}
-            <div style={{ height: "500px", marginTop: "20px" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-gray-300 rounded-lg p-4">
+              {parcelsData.length > 0 ? (
+                <div>
+                  <h2 className="text-xl font-bold mb-4">AGB, BGB, SOC and CO2 by Specie</h2>
+                  <BarChartAggregated data={parcelsData} />
+                </div>
+              ) : (
+                <p>No aggregated data available</p>
+              )}
+            </div>
+            <div className="border border-gray-300 rounded-lg p-4">
+              {co2Data.length > 0 ? (
+                <div>
+                  <h2 className="text-xl font-bold mb-4">CO2eq per year</h2>
+                  <BarChartCO2 data={co2Data} />
+                </div>
+              ) : (
+                <p>No CO2 data available</p>
+              )}
+            </div>
+            <div>
+            {/* <div style={{ height: "500px", marginTop: "20px" }}>
               {treeMapData ? (
                 <MyResponsiveTreeMap data={treeMapData} />
               ) : (
                 <p>No detailed parcel data available</p>
               )}
-            </div>
+            </div> */}
           </div>
+          </div>
+
         )}
       </div>
     </div>

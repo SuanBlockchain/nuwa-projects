@@ -25,7 +25,7 @@ const userSchema = z.object({
   role: z.enum(["GESTOR", "ADMIN"]),
 });
 
-async function seedUsers() {
+async function initDatabase() {
   try {
     console.log("Seeding database...");
 
@@ -42,6 +42,9 @@ async function seedUsers() {
     });
     console.log("✅ Users seeded");
 
+    await prisma.$executeRawUnsafe(`CALL parcels_agbs_calculations_materialized()`);
+    await prisma.$executeRawUnsafe(`CALL parcels_co2eq_materialized()`);
+
     // Add more seeding logic for other tables if needed
   } catch (error) {
     console.error("Seeding failed:", error);
@@ -53,9 +56,9 @@ async function seedUsers() {
 export async function GET() {
 
   try {
-    await seedUsers();
+    await initDatabase();
 
-    return Response.json({ message: 'Database seeded successfully' });
+    return Response.json({ message: 'Database successfully initialized' });
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }

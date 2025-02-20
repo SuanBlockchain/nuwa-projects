@@ -1,6 +1,7 @@
 'use client';
 import { ResponsiveBar } from '@nivo/bar';
 import { BarDatum } from '@nivo/bar';
+import { useMediaQuery } from 'react-responsive';
 
 interface MyResponsiveBarProps {
     data: BarDatum[];
@@ -16,18 +17,21 @@ function formatNumber(value: number): string {
   }
 }
 
-const MyResponsiveBar = ({ data }: MyResponsiveBarProps) => (
+const BarChartAggregated = ({ data }: MyResponsiveBarProps) => {
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+
+  return (
     <div style={{ height: '500px' }}> {/* Ensure the parent container has a defined height */}
         <ResponsiveBar
             data={data}
             keys={[
                 'bgb',
-                'co2_captured',
+                'co2',
                 'agb',
-                'soc_total'
+                'soc'
             ]}
             indexBy="ecosystem"
-            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+            margin={{ top: 50, right: 30, bottom: isMobile ? 80 : 50, left: 60 }}
             padding={0.3}
             groupMode="grouped"
             valueScale={{ type: 'linear' }}
@@ -56,7 +60,7 @@ const MyResponsiveBar = ({ data }: MyResponsiveBarProps) => (
             axisBottom={{
                 tickSize: 5,
                 tickPadding: 5,
-                tickRotation: 0,
+                tickRotation: isMobile ? 45 : 0,
                 legend: 'Ecosystem',
                 legendPosition: 'middle',
                 legendOffset: 32,
@@ -77,17 +81,17 @@ const MyResponsiveBar = ({ data }: MyResponsiveBarProps) => (
             legends={[
                 {
                     dataFrom: 'keys',
-                    anchor: 'right',
-                    direction: 'column',
+                    anchor: 'top',
+                    direction: 'row',
                     justify: false,
-                    translateX: 120,
-                    translateY: 0,
+                    translateX: 0,
+                    translateY: isMobile ? -50 : -30,
                     itemsSpacing: 2,
-                    itemWidth: 100,
+                    itemWidth: isMobile ? 60 : 100,
                     itemHeight: 20,
-                    itemDirection: 'left-to-right',
+                    itemDirection: isMobile ? 'top-to-bottom' : 'left-to-right',
                     itemOpacity: 0.85,
-                    symbolSize: 20,
+                    symbolSize: isMobile ? 10 : 20,
                     effects: [
                         {
                             on: 'hover',
@@ -98,11 +102,23 @@ const MyResponsiveBar = ({ data }: MyResponsiveBarProps) => (
                     ]
                 }
             ]}
-            // role="application"
-            // ariaLabel="Nivo bar chart demo"
-            // barAriaLabel={e => e.id + ": " + e.formattedValue + " in species: " + e.indexValue}
+            theme={{
+                labels: {
+                    text: {
+                        fontSize: isMobile ? 8 : 14,
+                    },
+                },
+                axis: {
+                    ticks: {
+                        text: {
+                            fontSize: isMobile ? 8 : 12,
+                        },
+                    },
+                },
+            }}
         />
     </div>
-);
+  );
+};
 
-export default MyResponsiveBar;
+export default BarChartAggregated;

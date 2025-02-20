@@ -75,7 +75,8 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
  WITH base_values AS (
          SELECT p.id AS parcel_id,
             p.name AS parcel_name,
-		 	pr.name AS project,
+            p."projectId" AS projectid,
+		 	   pr.name AS project,
             e.type AS ecosystem,
             sc.common_name AS species,
             p.area,
@@ -89,99 +90,37 @@ CREATE OR REPLACE VIEW parcels_agbs_calculations AS
              LEFT JOIN "Ecosystem" e ON p."ecosystemId" = e.id
 			 LEFT JOIN "Project" pr ON pr.id = p."projectId"
         ), parcel_agb_calc AS (
-         SELECT base_values.parcel_id,
-            base_values.parcel_name,
-		 	base_values.project,
-            base_values.ecosystem,
-            base_values.species,
-            base_values.area,
-            base_values.individuals,
-            base_values.r_coeff,
-            base_values.agb_species,
-            base_values.parcel_soc_total,
-            (300 * base_values.area)::numeric * base_values.agb_species / 1000::numeric AS parcel_agb
+         SELECT *, (base_values.individuals)::numeric * base_values.agb_species / 1000::numeric AS parcel_agb
            FROM base_values
         ), parcel_bgb_calc AS (
-         SELECT parcel_agb_calc.parcel_id,
-            parcel_agb_calc.parcel_name,
-			parcel_agb_calc.project,
-            parcel_agb_calc.ecosystem,
-            parcel_agb_calc.species,
-            parcel_agb_calc.area,
-            parcel_agb_calc.individuals,
-            parcel_agb_calc.r_coeff,
-            parcel_agb_calc.agb_species,
-            parcel_agb_calc.parcel_soc_total,
-            parcel_agb_calc.parcel_agb,
-            parcel_agb_calc.parcel_agb * parcel_agb_calc.r_coeff AS parcel_bgb
+         SELECT *, parcel_agb * r_coeff AS parcel_bgb
            FROM parcel_agb_calc
         ), parcel_co2_calcs AS (
-         SELECT parcel_bgb_calc.parcel_id,
-            parcel_bgb_calc.parcel_name,
-			parcel_bgb_calc.project,
-            parcel_bgb_calc.ecosystem,
-            parcel_bgb_calc.species,
-            parcel_bgb_calc.area,
-            parcel_bgb_calc.individuals,
-            parcel_bgb_calc.r_coeff,
-            parcel_bgb_calc.agb_species,
-            parcel_bgb_calc.parcel_soc_total,
-            parcel_bgb_calc.parcel_agb,
-            parcel_bgb_calc.parcel_bgb,
-            parcel_bgb_calc.parcel_agb * 0.47 * 44::numeric / 12::numeric AS parcel_co2eq_captured,
-            parcel_bgb_calc.parcel_bgb * 0.47 * 44::numeric / 12::numeric AS parcel_co2eq_subt
+         SELECT *, parcel_agb * 0.47 * 44::numeric / 12::numeric AS parcel_co2eq_captured,
+                  parcel_bgb * 0.47 * 44::numeric / 12::numeric AS parcel_co2eq_subt
            FROM parcel_bgb_calc
         ), parcel_co2_total AS (
-         SELECT parcel_co2_calcs.parcel_id,
-            parcel_co2_calcs.parcel_name,
-			parcel_co2_calcs.project,
-            parcel_co2_calcs.ecosystem,
-            parcel_co2_calcs.species,
-            parcel_co2_calcs.area,
-            parcel_co2_calcs.individuals,
-            parcel_co2_calcs.r_coeff,
-            parcel_co2_calcs.agb_species,
-            parcel_co2_calcs.parcel_soc_total,
-            parcel_co2_calcs.parcel_agb,
-            parcel_co2_calcs.parcel_bgb,
-            parcel_co2_calcs.parcel_co2eq_captured,
-            parcel_co2_calcs.parcel_co2eq_subt,
-            (parcel_co2_calcs.parcel_co2eq_captured + parcel_co2_calcs.parcel_co2eq_subt) * 1000::numeric AS parcel_co2eq_total,
-            parcel_co2_calcs.parcel_co2eq_captured + parcel_co2_calcs.parcel_co2eq_subt + parcel_co2_calcs.parcel_soc_total AS parcel_total_carbon
+         SELECT *, (parcel_co2eq_captured + parcel_co2eq_subt) * 1000::numeric AS parcel_co2eq_total,
+                  parcel_co2eq_captured + parcel_co2eq_subt + parcel_soc_total AS parcel_total_carbon
            FROM parcel_co2_calcs
         ), parcel_carbon_total AS (
-         SELECT parcel_co2_total.parcel_id,
-            parcel_co2_total.parcel_name,
-			parcel_co2_total.project,
-            parcel_co2_total.ecosystem,
-            parcel_co2_total.species,
-            parcel_co2_total.area,
-            parcel_co2_total.individuals,
-            parcel_co2_total.r_coeff,
-            parcel_co2_total.agb_species,
-            parcel_co2_total.parcel_soc_total,
-            parcel_co2_total.parcel_agb,
-            parcel_co2_total.parcel_bgb,
-            parcel_co2_total.parcel_co2eq_captured,
-            parcel_co2_total.parcel_co2eq_subt,
-            parcel_co2_total.parcel_co2eq_total,
-            parcel_co2_total.parcel_total_carbon,
-            parcel_co2_total.parcel_total_carbon - parcel_co2_total.parcel_soc_total AS parcel_co2_additional
+         SELECT *, parcel_total_carbon - parcel_soc_total AS parcel_co2_additional
            FROM parcel_co2_total
         )
- SELECT parcel_carbon_total.parcel_id,
-    parcel_carbon_total.parcel_name,
-	parcel_carbon_total.project,
-    parcel_carbon_total.ecosystem,
-    parcel_carbon_total.species,
-    parcel_carbon_total.area,
-    parcel_carbon_total.individuals,
-    parcel_carbon_total.parcel_agb,
-    parcel_carbon_total.parcel_bgb,
-    parcel_carbon_total.parcel_co2eq_captured,
-    parcel_carbon_total.parcel_co2eq_subt,
-    parcel_carbon_total.parcel_co2eq_total,
-    parcel_carbon_total.parcel_soc_total,
-    parcel_carbon_total.parcel_total_carbon,
-    parcel_carbon_total.parcel_co2_additional
-   FROM parcel_carbon_total;
+ SELECT parcel_id,
+    parcel_name,
+    projectid,
+    project,
+    ecosystem,
+    species,
+    area,
+    individuals,
+    parcel_agb,
+    parcel_bgb,
+    parcel_co2eq_captured,
+    parcel_co2eq_subt,
+    parcel_co2eq_total,
+    parcel_soc_total,
+    parcel_total_carbon,
+    parcel_co2_additional 
+    FROM parcel_carbon_total;

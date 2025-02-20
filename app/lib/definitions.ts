@@ -54,14 +54,6 @@ export interface ParcelData {
     area: number;
   }
   
-export interface AggregatedData {
-    ecosystem: string;
-    bgb: number;
-    co2_captured: number;
-    agb: number;
-    soc_total: number;
-  }
-  
 export interface TreeNode {
     name: string;
     loc?: number;
@@ -78,9 +70,9 @@ export interface NavigationItem {
 export interface EcosystemData extends BarDatum {
   ecosystem: string;
   bgb: number;
-  co2_captured: number;
+  co2: number;
   agb: number;
-  soc_total: number;
+  soc: number;
 }
 
 export interface Breadcrumb {

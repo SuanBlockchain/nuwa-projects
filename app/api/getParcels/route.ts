@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { ParcelData, AggregatedData, TreeNode } from "@/app/lib/definitions";
+import { ParcelData, EcosystemData, TreeNode } from "@/app/lib/definitions";
 
 const prisma = new PrismaClient();
-
-
 
 export async function POST(req: Request) {
   try {
@@ -18,9 +16,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!queryType || !["aggregated", "details"].includes(queryType)) {
+    if (!queryType || !["aggregated", "details", "co2"].includes(queryType)) {
       return NextResponse.json(
-        { error: "Invalid query type. Use 'aggregated' or 'details'." },
+        { error: "Invalid query type. Use 'aggregated', 'details', or 'co2'." },
         { status: 400 }
       );
     }
@@ -28,27 +26,26 @@ export async function POST(req: Request) {
     let responseData;
 
     if (queryType === "aggregated") {
+      const projectId = projectIds[0]; // Assuming a single project ID for aggregated query
+      const tableName = `parcels_agbs_project_${projectId.replace(/-/g, '').substring(0, 20)}`;
+
       // Query for aggregated CO2 and biomass calculations
-      const aggregatedData: AggregatedData[] = await prisma.$queryRaw`
+      const aggregatedData: EcosystemData[] = await prisma.$queryRawUnsafe(`
         SELECT ecosystem,
                SUM(parcel_bgb) AS bgb,
-               SUM(parcel_co2eq_captured) AS co2_captured,
+               SUM(parcel_co2eq_captured) AS co2,
                SUM(parcel_agb) AS agb,
-               SUM(parcel_soc_total) AS soc_total
-          FROM parcels_agbs_calculations
-         WHERE parcel_id IN (
-                SELECT id
-                  FROM "Parcels"
-                 WHERE "projectId" = ANY(${projectIds}::uuid[]))
+               SUM(parcel_soc_total) AS soc
+          FROM ${tableName}
          GROUP BY ecosystem;
-      `;
+      `);
 
-      responseData = aggregatedData.map((parcel: AggregatedData) => ({
+      responseData = aggregatedData.map((parcel: EcosystemData) => ({
         ecosystem: parcel.ecosystem,
         bgb: parcel.bgb,
-        co2_captured: parcel.co2_captured,
+        co2: parcel.co2,
         agb: parcel.agb,
-        soc_total: parcel.soc_total
+        soc: parcel.soc
       }));
 
     } else if (queryType === "details") {
@@ -70,6 +67,22 @@ export async function POST(req: Request) {
 
       responseData = formatTreeMapData(parcelsData);
 
+    } else if (queryType === "co2") {
+      const projectId = projectIds[0]; // Assuming a single project ID for CO2 query
+      const tableName = `parcels_co2eq_project_${projectId.replace(/-/g, '').substring(0, 20)}`;
+
+      // Query for CO2 data grouped by year, ecosystem, and species
+      const co2Data = await prisma.$queryRawUnsafe(`
+        SELECT ecosystem,
+               species,
+               year,
+               SUM(co2eq_ton) AS co2total
+          FROM ${tableName}
+         GROUP BY year, ecosystem, species
+         ORDER BY year, ecosystem, species;
+      `);
+
+      responseData = co2Data;
     }
 
     // Ensure responseData is JSON serializable

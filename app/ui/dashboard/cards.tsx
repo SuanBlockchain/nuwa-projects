@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchCardData, fetchProjectById } from '@/app/lib/queries/queries';
+import PerformanceCard from './projects/performance-card';
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -23,19 +24,29 @@ export default async function CardWrapper({ projectId }: { projectId?: string })
   }
 
   const { totalImpact, totalInvestment, totalBankableInvestment, totalIncome, projectName } = data;
+  const performanceData = {
+    totalImpact,
+    totalInvestment,
+    totalBankableInvestment,
+    totalIncome
+  }
+
 
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
             {projectName}
       </h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 p-4">
+        <PerformanceCard data={performanceData} />
+      </div>  
+      {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
       <Card title="Impact" value={totalImpact} units="TonCO2eq" type="collected" />
       <Card title="Investment" value={totalInvestment} units="USD" type="pending" />
       <Card title="Bankable" value={totalBankableInvestment} units="USD" type="bankable" />
       <Card title="Income" value={totalIncome} units="USD" type="customers"/>
-      </div>
+      </div> */}
 
     </main>
   );

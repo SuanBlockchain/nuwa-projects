@@ -8,6 +8,18 @@ import clsx from 'clsx';
 
 import { NavigationItem } from '@/app/lib/definitions';
 
+import * as React from "react"
+import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
+
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '/', current: true },
     { name: 'Dashboard', href: '/dashboard', current: false },
@@ -20,6 +32,9 @@ function classNames(...classes: (string | boolean | undefined)[]): string {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { setTheme, theme } = useTheme()
+  console.log(theme)
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -34,34 +49,54 @@ export default function Navbar() {
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-          <div className="flex shrink-0 items-center">
-                <Image
-                  alt="Nuwa Projects"
-                  src="/nuwa-logo1.png"
-                  width={32}
-                  height={32}
-                  className="h-8 w-auto"
-                />
+            <div className="flex shrink-0 items-center">
+              <Image
+                alt="Nuwa Projects"
+                src="/nuwa-logo1.png"
+                width={32}
+                height={32}
+                className="h-8 w-auto"
+              />
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((link) => (
                   <Link
-                  key={link.name}
-                  href={link.href}
-                  className={clsx(
-                    "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
-                    {
-                      'bg-gray-900 text-white': pathname === link.href,
-                    })}
-                >
-                  <p className="hidden md:block">{link.name}</p>
-                </Link>
+                    key={link.name}
+                    href={link.href}
+                    className={clsx(
+                      "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
+                      {
+                        'bg-gray-900 text-white': pathname === link.href,
+                      })}
+                  >
+                    {link.name}
+                  </Link>
                 ))}
               </div>
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="mr-2">
+                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <button
               type="button"
               className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
@@ -119,7 +154,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-
       <DisclosurePanel className="sm:hidden">
         <div className="space-y-1 px-2 pt-2 pb-3">
           {navigation.map((item) => (

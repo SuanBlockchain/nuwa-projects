@@ -3,6 +3,8 @@ import "./globals.css";
 import { roboto } from '@/app/ui/fonts';
 import Navbar from "./ui/navbar";
 import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
+import { ThemeProvider } from "@/components/theme-provider";
 
 
 
@@ -17,12 +19,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${roboto.className} antialiased`}
       >
-          <Navbar />
-        {children}
+        <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        >
+            <Navbar />
+            <Theme 	>
+              {children}
+
+            </Theme>
+
+        </ThemeProvider>
       </body>
     </html>
   );

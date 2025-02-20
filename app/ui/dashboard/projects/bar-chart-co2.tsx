@@ -19,6 +19,7 @@ function formatNumber(value: number): string {
 
 const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
 
   // Transform data to sum CO2 by year and species across all ecosystems
   const transformedData = data.reduce((acc: { year: string | number, [key: string]: string | number }[], curr) => {
@@ -78,7 +79,15 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
             }}
             labelSkipWidth={12}
             labelSkipHeight={12}
-            labelTextColor="#000" // Set label text color to black
+            labelTextColor={{
+                from: 'color',
+                modifiers: [
+                    [
+                        'darker',
+                        1.6
+                    ]
+                ]
+            }} // Set label text color to gray
             label={(d) => formatNumber(d.value as number)}
             enableLabel={true} // Ensure labels are always enabled
             legends={[
@@ -108,13 +117,15 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
             theme={{
                 labels: {
                     text: {
-                        fontSize: isMobile ? 8 : 10,
+                        fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                        fill: '#555' // Set label text color to gray
                     },
                 },
                 axis: {
                     ticks: {
                         text: {
-                            fontSize: isMobile ? 8 : 10,
+                            fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                            fill: '#555' // Set axis tick text color to gray
                         },
                     },
                 },

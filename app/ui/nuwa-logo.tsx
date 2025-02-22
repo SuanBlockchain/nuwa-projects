@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function NuwaLogo() {
   return (
     <div
-      className={`${inter.className} flex flex-col justify-center items-center leading-none text-black`}
+      className={`${inter.className} flex flex-col justify-center items-center leading-none text-black dark:text-white`}
     >
       {/* <CubeTransparentIcon className="h-12 w-12 rotate-[15deg]" />  */}
       <Image

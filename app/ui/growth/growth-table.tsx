@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from 'next-themes';
 
 interface GrowthTableProps {
   data: {
@@ -9,6 +10,9 @@ interface GrowthTableProps {
 }
 
 const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
+  const { theme } = useTheme();
+  const textColor = theme === 'dark' ? '#fff' : '#000';
+
   if (!data || data.length === 0) {
     return <p className="text-center text-gray-500">No data available</p>;
   }
@@ -37,19 +41,19 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
               >
                 <div className="flex items-center justify-between border-b pb-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Species</p>
+                    <p className="text-sm font-medium" style={{ color: textColor }}>Species</p>
                     <p className="text-sm text-gray-500">{record.species}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between border-b pb-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Year</p>
+                    <p className="text-sm font-medium" style={{ color: textColor }}>Year</p>
                     <p className="text-sm text-gray-500">{record.year}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pt-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-700">CO2eq (kg)</p>
+                    <p className="text-sm font-medium" style={{ color: textColor }}>CO2eq (kg)</p>
                     <p className="text-sm text-gray-500">{record.co2eq.toFixed(2)}</p>
                   </div>
                 </div>
@@ -60,13 +64,13 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6" style={{ color: textColor }}>
                   Species
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6" style={{ color: textColor }}>
                   Year
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="px-3 py-5 font-medium" style={{ color: textColor }}>
                   CO2eq (kg)
                 </th>
               </tr>
@@ -79,13 +83,13 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
                 >
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
-                      <p>{record.species}</p>
+                      <p style={{ color: textColor }}>{record.species}</p>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-3 py-3" style={{ color: textColor }}>
                     {record.year}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-3 py-3" style={{ color: textColor }}>
                     {record.co2eq.toFixed(2)} {/* Round CO2eq value to 2 decimal places */}
                   </td>
                 </tr>

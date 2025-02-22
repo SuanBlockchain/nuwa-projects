@@ -65,6 +65,7 @@ export interface NavigationItem {
     name: string;
     href: string;
     current: boolean;
+    subLinks?: { name: string; href: string }[];
 }
 
 export interface EcosystemData extends BarDatum {

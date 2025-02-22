@@ -82,44 +82,48 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
 
   return (
     <div>
-      <div className="p-4 border border-gray-300 rounded-b-lg">
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-gray-300 rounded-lg p-4">
-              {parcelsData.length > 0 ? (
-                <div>
-                  <h2 className="text-xl font-bold mb-4">AGB, BGB, SOC and CO2 by Specie</h2>
-                  <BarChartAggregated data={parcelsData} />
-                </div>
-              ) : (
-                <p>No aggregated data available</p>
-              )}
+          <div className="container-mx py-10 col">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+              <div className="grid gap-4 p-4 rounded-md border">
+                {parcelsData.length > 0 ? (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">AGB, BGB, SOC and CO2 by Specie</h2>
+                    <div className="w-full overflow-x-auto">
+                      <BarChartAggregated data={parcelsData} />
+                    </div>
+                  </div>
+                ) : (
+                  <p>No aggregated data available</p>
+                )}
+              </div>
+              <div className="grid gap-4 p-4 rounded-md border">
+                {co2Data.length > 0 ? (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">CO2eq per year</h2>
+                    <div className="w-full overflow-x-auto">
+                      <BarChartCO2 data={co2Data} />
+                    </div>
+                  </div>
+                ) : (
+                  <p>No CO2 data available</p>
+                )}
+              </div>
+              <div>
+              {/* <div style={{ height: "500px", marginTop: "20px" }}>
+                {treeMapData ? (
+                  <MyResponsiveTreeMap data={treeMapData} />
+                ) : (
+                  <p>No detailed parcel data available</p>
+                )}
+              </div> */}
+              </div>
             </div>
-            <div className="border border-gray-300 rounded-lg p-4">
-              {co2Data.length > 0 ? (
-                <div>
-                  <h2 className="text-xl font-bold mb-4">CO2eq per year</h2>
-                  <BarChartCO2 data={co2Data} />
-                </div>
-              ) : (
-                <p>No CO2 data available</p>
-              )}
-            </div>
-            <div>
-            {/* <div style={{ height: "500px", marginTop: "20px" }}>
-              {treeMapData ? (
-                <MyResponsiveTreeMap data={treeMapData} />
-              ) : (
-                <p>No detailed parcel data available</p>
-              )}
-            </div> */}
-          </div>
           </div>
 
         )}
-      </div>
     </div>
   );
 }

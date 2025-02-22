@@ -22,7 +22,10 @@ import {
 
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '/', current: true },
-    { name: 'Dashboard', href: '/dashboard', current: false },
+    { name: 'Dashboard', href: '/dashboard', current: false, subLinks: [
+        { name: 'Projects', href: '/dashboard' },
+        { name: 'Growth Curves', href: '/dashboard/growth' },
+    ]},
     { name: 'Upload', href: '/upload', current: false },
 ];
 
@@ -32,8 +35,7 @@ function classNames(...classes: (string | boolean | undefined)[]): string {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { setTheme, theme } = useTheme()
-  console.log(theme)
+  const { setTheme } = useTheme();
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -61,17 +63,41 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={clsx(
-                      "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
-                      {
-                        'bg-gray-900 text-white': pathname === link.href,
-                      })}
-                  >
-                    {link.name}
-                  </Link>
+                  link.subLinks ? (
+                    <DropdownMenu key={link.name}>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className={clsx(
+                          "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
+                          {
+                            'bg-gray-900 text-white': pathname === link.href,
+                          })}
+                        >
+                          {link.name}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {link.subLinks.map((subLink) => (
+                          <DropdownMenuItem key={subLink.name} asChild>
+                            <Link href={subLink.href}>
+                              {subLink.name}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={clsx(
+                        "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium",
+                        {
+                          'bg-gray-900 text-white': pathname === link.href,
+                        })}
+                    >
+                      {link.name}
+                    </Link>
+                  )
                 ))}
               </div>
             </div>
@@ -157,18 +183,41 @@ export default function Navbar() {
       <DisclosurePanel className="sm:hidden">
         <div className="space-y-1 px-2 pt-2 pb-3">
           {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? 'page' : undefined}
-              className={classNames(
-                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                'block rounded-md px-3 py-2 text-base font-medium',
-              )}
-            >
-              {item.name}
-            </DisclosureButton>
+            item.subLinks ? (
+              <div key={item.name}>
+                <DisclosureButton
+                  as="div"
+                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                >
+                  {item.name}
+                </DisclosureButton>
+                <div className="pl-4">
+                  {item.subLinks.map((subLink) => (
+                    <DisclosureButton
+                      key={subLink.name}
+                      as="a"
+                      href={subLink.href}
+                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      {subLink.name}
+                    </DisclosureButton>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <DisclosureButton
+                key={item.name}
+                as="a"
+                href={item.href}
+                aria-current={item.current ? 'page' : undefined}
+                className={classNames(
+                  item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                  'block rounded-md px-3 py-2 text-base font-medium',
+                )}
+              >
+                {item.name}
+              </DisclosureButton>
+            )
           ))}
         </div>
       </DisclosurePanel>

@@ -12,7 +12,9 @@ export default async function ProjectTable() {
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={projectData} />
+      <div className="rounded-xl p-2">
+        <DataTable columns={columns} data={projectData} />
+      </div>
     </div>
   )
 }

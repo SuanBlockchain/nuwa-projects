@@ -2,6 +2,7 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { BarDatum } from '@nivo/bar';
 import { useMediaQuery } from 'react-responsive';
+import { useTheme } from 'next-themes';
 
 interface MyResponsiveBarProps {
     data: BarDatum[];
@@ -20,6 +21,9 @@ function formatNumber(value: number): string {
 const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
+  const { theme } = useTheme();
+
+  const textColor = theme === 'dark' ? '#fff' : '#000';
 
   // Transform data to sum CO2 by year and species across all ecosystems
   const transformedData = data.reduce((acc: { year: string | number, [key: string]: string | number }[], curr) => {
@@ -36,14 +40,14 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
   }, []);
 
   return (
-    <div style={{ height: '500px' }}> {/* Ensure the parent container has a defined height */}
+    <div style={{ height: isMobile ? '300px' : '500px', width: '100%' }}> {/* Adjust height and width for mobile view */}
         <ResponsiveBar
             data={transformedData}
             keys={Array.from(new Set(data.map(d => d.species as string)))}
             indexBy="year"
-            margin={{ top: 50, right: 30, bottom: isMobile ? 80 : 50, left: 60 }} // Adjusted right margin
+            margin={{ top: 50, right: 30, bottom: isMobile ? 100 : 50, left: 60 }} // Adjusted bottom margin for mobile view
             padding={0.3}
-            groupMode="grouped"
+            groupMode="grouped" 
             valueScale={{ type: 'linear' }}
             indexScale={{ type: 'band', round: true }}
             colors={{ scheme: 'nivo' }}
@@ -118,17 +122,27 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
                 labels: {
                     text: {
                         fontSize: isMobile ? 8 : isTablet ? 10 : 10,
-                        fill: '#555' // Set label text color to gray
+                        fill: textColor // Set label text color based on mode
                     },
                 },
                 axis: {
                     ticks: {
                         text: {
                             fontSize: isMobile ? 8 : isTablet ? 10 : 10,
-                            fill: '#555' // Set axis tick text color to gray
+                            fill: textColor // Set axis tick text color based on mode
                         },
                     },
+                    legend: {
+                        text: {
+                            fill: textColor // Set axis legend text color based on mode
+                        }
+                    }
                 },
+                legends: {
+                    text: {
+                        fill: textColor // Set legend text color based on mode
+                    }
+                }
             }}
         />
     </div>

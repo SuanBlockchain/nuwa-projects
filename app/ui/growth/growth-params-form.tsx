@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button"
 
 export default function GrowthParamsForm({
   onSubmit,
@@ -44,56 +45,61 @@ export default function GrowthParamsForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8">
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        <div className="mb-4">
-          <label htmlFor="species" className="mb-2 block text-sm font-medium">
-            Select Species (Multiple)
-          </label>
-          <select
-            id="species"
-            name="species"
-            multiple // Enable multiple selection
-            className="block w-full rounded-md border border-gray-200 py-2 pl-3 pr-10 text-sm focus:ring-2"
-            value={selectedSpecies} // Bind to array state
-            onChange={handleSpeciesChange} // Update state on selection
-          >
-            {speciesOptions.map((species) => (
-              <option key={species} value={species}>
-                {species}
-              </option>
-            ))}
-          </select>
-          <p className="mt-2 text-sm text-gray-500">Hold CTRL (or CMD) to select multiple options.</p>
-        </div>
+    <div className="grid gap-6 p-4">
+      <div className="grid gap-6 p-4 rounded-md border bg-gray-50 dark:bg-zinc-900">
+        <form onSubmit={handleSubmit} className="mb-8">
+          <div className="rounded-md bg-gray-50 p-4 md:p-6 dark:bg-zinc-900">
+            <div className="mb-4">
+              <label htmlFor="species" className="mb-2 block text-sm font-medium">
+                Select Species (Multiple)
+              </label>
+              <select
+                id="species"
+                name="species"
+                multiple // Enable multiple selection
+                className="block w-full rounded-md border py-2 pl-3 pr-10 text-sm focus:ring-2"
+                value={selectedSpecies} // Bind to array state
+                onChange={handleSpeciesChange} // Update state on selection
+              >
+                {speciesOptions.map((species) => (
+                  <option key={species} value={species}>
+                    {species}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-sm text-gray-500">Hold CTRL (or CMD) to select multiple options.</p>
+            </div>
 
-        <div className="mb-4">
-          <label htmlFor="year" className="mb-2 block text-sm font-medium">
-            Select Year
-          </label>
-          <select
-            id="year"
-            name="year"
-            className="block w-full rounded-md border border-gray-200 py-2 pl-3 pr-10 text-sm focus:ring-2"
-            value={selectedYear} // Bind to state
-            onChange={handleYearChange} // Update state on selection
-          >
-            {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((year) => (
-              <option key={year} value={year}>
-                {year} years
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mt-6 flex justify-end gap-4">
-          <button
-            type="submit"
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Generate trend
-          </button>
-        </div>
+            <div className="mb-4">
+              <label htmlFor="year" className="mb-2 block text-sm font-medium">
+                Select Year
+              </label>
+              <select
+                id="year"
+                name="year"
+                className="block w-full rounded-md border py-2 pl-3 pr-10 text-sm focus:ring-2"
+                value={selectedYear} // Bind to state
+                onChange={handleYearChange} // Update state on selection
+              >
+                {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((year) => (
+                  <option key={year} value={year}>
+                    {year} years
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mt-6 flex justify-end gap-4">
+              <Button variant="destructive" type="submit"
+                className="bg-gray-300 text-gray-700 hover:bg-gray-700 hover:text-white rounded-md border px-3 py-2 text-sm font-medium"
+              >
+                Generate trend
+              </Button>
+            </div>
+          </div>
+        </form>
+
       </div>
-    </form>
+
+    </div>
   );
 }

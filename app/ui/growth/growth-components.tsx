@@ -5,6 +5,7 @@ import GrowthParamsForm from './growth-params-form';
 import GrowthTable from './growth-table';
 import Pagination from './pagination';
 import { GrowthData } from '@/app/lib/definitions';
+import { lusitana } from '@/app/ui/fonts';
 
 const convertToPlainObject = (value: { toNumber?: () => number } | number): number => {
   if (value && typeof value === 'object' && 'toNumber' in value) {
@@ -63,15 +64,13 @@ export default function GrowthComponent() {
   const formattedData = formatGrowthData(growthData);
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Growth Models</h2>
+    <div className="grid gap-6 p-4 w-full md:w-auto overflow-x-hidden">
+      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>GROWTH MODELS</h1>
       <GrowthParamsForm
         onSubmit={handleSubmit}
       />
       {formattedData.length > 0 && (
-
-        <div className="mt-6">
-          {/* Tabs */}
+        <div className="grid gap-6 p-4 w-full md:w-auto overflow-x-hidden">
           <div className="flex border-b border-gray-300">
             <button
               onClick={() => setActiveTab('chart')}
@@ -92,21 +91,29 @@ export default function GrowthComponent() {
           </div>
 
           {/* Tab Content */}
-          <div className="p-4 border border-gray-300 rounded-b-lg">
-            {activeTab === 'chart' && <GrowthChart data={formattedData} />}
+          <div className="p-4 border border-gray-300 rounded-b-lg overflow-x-auto w-full md:w-auto">
+            {activeTab === 'chart' && (
+              <div className="w-full md:w-auto overflow-x-hidden">
+                <div className="w-full h-64 md:h-full">
+                  <GrowthChart data={formattedData} />
+                </div>
+              </div>
+            )}
             {activeTab === 'table' && (
               <>
-                <GrowthTable data={formattedData} currentPage={currentPage}  />
-                <div className="mt-5 flex w-full justify-center">
+                <div className="w-full md:w-auto overflow-x-hidden">
+                  <div className="w-full h-64 md:h-full">
+                    <GrowthTable data={formattedData} currentPage={currentPage} />
+                  </div>
+                </div>
+                <div className="mt-5 flex w-full justify-center md:w-auto overflow-x-hidden">
                   <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
                 </div>
               </>
-
             )}
           </div>
         </div>
-        )
-    }
+      )}
     </div>
   );
 }

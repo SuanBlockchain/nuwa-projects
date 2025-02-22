@@ -1,6 +1,7 @@
 'use client';
 import { ResponsiveBar } from '@nivo/bar';
 import { BarDatum } from '@nivo/bar';
+import { useTheme } from 'next-themes';
 import { useMediaQuery } from 'react-responsive';
 
 interface MyResponsiveBarProps {
@@ -19,9 +20,13 @@ function formatNumber(value: number): string {
 
 const BarChartAggregated = ({ data }: MyResponsiveBarProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
+  const { theme } = useTheme();
+
+  const textColor = theme === 'dark' ? '#fff' : '#000';
 
   return (
-    <div style={{ height: '500px' }}> {/* Ensure the parent container has a defined height */}
+    <div style={{ height: isMobile ? '300px' : '500px', width: '100%' }}> {/* Adjust height and width for mobile view */}
         <ResponsiveBar
             data={data}
             keys={[
@@ -31,7 +36,7 @@ const BarChartAggregated = ({ data }: MyResponsiveBarProps) => {
                 'soc'
             ]}
             indexBy="ecosystem"
-            margin={{ top: 50, right: 30, bottom: isMobile ? 80 : 50, left: 60 }}
+            margin={{ top: 50, right: 30, bottom: isMobile ? 100 : 50, left: 60 }} // Adjusted bottom margin for mobile view
             padding={0.3}
             groupMode="grouped"
             valueScale={{ type: 'linear' }}
@@ -105,16 +110,28 @@ const BarChartAggregated = ({ data }: MyResponsiveBarProps) => {
             theme={{
                 labels: {
                     text: {
-                        fontSize: isMobile ? 8 : 14,
+                        fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                        fill: textColor // Set label text color based on mode
                     },
                 },
                 axis: {
                     ticks: {
                         text: {
-                            fontSize: isMobile ? 8 : 12,
+                            fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                            fill: textColor // Set axis tick text color based on mode
                         },
                     },
+                    legend: {
+                        text: {
+                            fill: textColor // Set axis legend text color based on mode
+                        }
+                    }
                 },
+                legends: {
+                    text: {
+                        fill: textColor // Set legend text color based on mode
+                    }
+                }
             }}
         />
     </div>

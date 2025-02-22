@@ -6,10 +6,14 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   return (
     <main>
-          <CardWrapper />
-        <div className="mt-6 p-4 border border-gray-300 rounded-b-lg">
-          <ProjectTable />
+      <div className="flex-grow md:overflow-y-auto md:p-12">
+        <CardWrapper />
+        <div className="mt-6 p-2">
+          <div className="mt-6 rounded-md border bg-gray-50 dark:bg-zinc-900">
+              <ProjectTable />
+          </div>
         </div>
+      </div>
     </main>
   );
 }

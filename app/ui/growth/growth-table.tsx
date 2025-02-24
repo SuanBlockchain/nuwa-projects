@@ -17,7 +17,7 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
     return <p className="text-center text-gray-500">No data available</p>;
   }
 
-  const recordsPerPage = 20;
+  const recordsPerPage = 15;
   const startIndex = (currentPage - 1) * recordsPerPage;
   const endIndex = startIndex + recordsPerPage;
   const paginatedData = data.flatMap((item) =>
@@ -31,7 +31,7 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+        <div className="rounded-lg p-2 md:pt-0" style={{ backgroundColor: theme === 'dark' ? '#18181b' : '#f9fafb' }}>
           {/* Mobile-friendly version */}
           <div className="md:hidden">
             {paginatedData.map((record, index) => (
@@ -75,7 +75,7 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white">
+            <tbody className="bg-white dark:bg-zinc-900">
               {paginatedData.map((record, index) => (
                 <tr
                   key={`${record.species}-${index}`}

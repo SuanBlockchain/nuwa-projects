@@ -87,10 +87,10 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
         ) : (
           <div className="container-mx py-10 col">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-              <div className="grid gap-4 p-4 rounded-md border">
+              <div>
                 {parcelsData.length > 0 ? (
-                  <div>
-                    <h2 className="text-xl font-bold mb-4">AGB, BGB, SOC and CO2 by Specie</h2>
+                  <div className="grid gap-4 p-4 rounded-md border">
+                    <h2 className="text-xl font-bold mb-4 text-center">AGB, BGB, SOC and CO2 by Specie</h2>
                     <div className="w-full overflow-x-auto">
                       <BarChartAggregated data={parcelsData} />
                     </div>
@@ -99,10 +99,10 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
                   <p>No aggregated data available</p>
                 )}
               </div>
-              <div className="grid gap-4 p-4 rounded-md border">
+              <div>
                 {co2Data.length > 0 ? (
-                  <div>
-                    <h2 className="text-xl font-bold mb-4">CO2eq per year</h2>
+                  <div className="grid gap-4 p-4 rounded-md border">
+                    <h2 className="text-xl font-bold mb-4 text-center">CO2eq per year</h2>
                     <div className="w-full overflow-x-auto">
                       <BarChartCO2 data={co2Data} />
                     </div>

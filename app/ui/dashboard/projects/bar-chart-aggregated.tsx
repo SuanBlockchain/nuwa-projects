@@ -18,6 +18,18 @@ function formatNumber(value: number): string {
   }
 }
 
+const CustomTooltip = ({ value }: { value: number }) => {
+  const { theme } = useTheme();
+  const labelBackgroundColor = theme === 'dark' ? '#333' : '#fff';
+  const textColor = theme === 'dark' ? '#fff' : '#000';
+
+  return (
+    <div style={{ backgroundColor: labelBackgroundColor, color: textColor, padding: '5px', borderRadius: '3px' }}>
+      {formatNumber(value)}
+    </div>
+  );
+};
+
 const BarChartAggregated = ({ data }: MyResponsiveBarProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
@@ -82,6 +94,7 @@ const BarChartAggregated = ({ data }: MyResponsiveBarProps) => {
                     ]
                 ]
             }}
+            tooltip={({ value }) => <CustomTooltip value={value as number} />}
             label={(d) => formatNumber(d.value as number)}
             legends={[
                 {

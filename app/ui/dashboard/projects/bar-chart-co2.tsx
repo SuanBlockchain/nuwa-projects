@@ -17,6 +17,17 @@ function formatNumber(value: number): string {
     return value.toString();
   }
 }
+const CustomTooltip = ({ value }: { value: number }) => {
+  const { theme } = useTheme();
+  const labelBackgroundColor = theme === 'dark' ? '#333' : '#fff';
+  const textColor = theme === 'dark' ? '#fff' : '#000';
+
+  return (
+    <div style={{ backgroundColor: labelBackgroundColor, color: textColor, padding: '5px', borderRadius: '3px' }}>
+      {formatNumber(value)}
+    </div>
+  );
+};
 
 const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -92,6 +103,7 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
                     ]
                 ]
             }} // Set label text color to gray
+            tooltip={({ value }) => <CustomTooltip value={value as number} />}
             label={(d) => formatNumber(d.value as number)}
             enableLabel={true} // Ensure labels are always enabled
             legends={[

@@ -39,7 +39,7 @@ import {
 // import { Marker } from "@/app/tests/Marker";
 // import { allPeople, email } from "@/lib/people";
 import * as React from "react";
-import HoverCardDemo from "./helpers/performance-card-helpers";
+import CardHover from "./helpers/performance-card-helpers";
 
 
 type LayoutProps = React.ComponentPropsWithoutRef<typeof Flex> & {
@@ -150,7 +150,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                 <Text size={{ xs: '2', md: '1' }} color="gray">
                                     Impact
                                 </Text>
-                                <HoverCardDemo icon={hoverMessages.impact.icon} message={hoverMessages.impact}>
+                                <CardHover icon={hoverMessages.impact.icon} message={hoverMessages.impact}>
                                     <Badge color="amber" radius="full">
                                         <MoveIcon
                                             width="12"
@@ -158,7 +158,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                             style={{ marginLeft: -2 }}
                                         />
                                     </Badge>
-                                </HoverCardDemo>
+                                </CardHover>
                             </Flex>
                             <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
                                 {formatImpact(totalImpact)}
@@ -170,7 +170,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                 <Text size={{ xs: '2', md: '1' }} color="gray">
                                     Investment
                                 </Text>
-                                <HoverCardDemo icon={hoverMessages.investment.icon} message={hoverMessages.investment}>
+                                <CardHover icon={hoverMessages.investment.icon} message={hoverMessages.investment}>
                                     <Badge color="gold" radius="full">
                                         <DoubleArrowDownIcon
                                             width="12"
@@ -178,7 +178,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                             style={{ marginLeft: -2 }}
                                         />
                                     </Badge>
-                                </HoverCardDemo>
+                                </CardHover>
                             </Flex>
                             <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
                             {formatImpact(totalInvestment)}
@@ -190,7 +190,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                 <Text size={{ xs: '2', md: '1' }} color="gray">
                                     Bankable
                                 </Text>
-                                <HoverCardDemo icon={hoverMessages.bankable.icon} message={hoverMessages.bankable}>
+                                <CardHover icon={hoverMessages.bankable.icon} message={hoverMessages.bankable}>
                                     <Badge color="tomato" radius="full">
                                         <ColorWheelIcon
                                             width="12"
@@ -198,7 +198,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                             style={{ marginLeft: -2 }}
                                         />
                                     </Badge>
-                                </HoverCardDemo>
+                                </CardHover>
                             </Flex>
                             <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
                             {formatImpact(totalBankableInvestment)}
@@ -210,7 +210,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                 <Text size={{ xs: '2', md: '1' }} color="gray">
                                     Income
                                 </Text>
-                                <HoverCardDemo icon={hoverMessages.income.icon} message={hoverMessages.income}>
+                                <CardHover icon={hoverMessages.income.icon} message={hoverMessages.income}>
                                     <Badge color="plum" variant="surface" radius="full">
                                         <EnterIcon
                                             width="12"
@@ -218,7 +218,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                                             style={{ marginLeft: -2 }}
                                         />
                                     </Badge>
-                                </HoverCardDemo>
+                                </CardHover>
                             </Flex>
                             <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
                             {formatImpact(totalIncome)}

@@ -10,6 +10,7 @@ export default function GrowthParamsForm({
   const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]); // Array to hold multiple selections
   const [speciesOptions, setSpeciesOptions] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<number>(5); // Default to 5 years
+  const [error, setError] = useState<string | null>(null); // State to hold error message
 
   // Fetch species options from the database
   useEffect(() => {
@@ -41,6 +42,15 @@ export default function GrowthParamsForm({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (selectedSpecies.length === 0) {
+      setError('Please select at least one species.');
+      return;
+    }
+    if (!selectedYear) {
+      setError('Please select a year.');
+      return;
+    }
+    setError(null); // Clear any previous error
     onSubmit(selectedSpecies, selectedYear); // Pass the array of selected species and the selected year to the parent component
   };
 
@@ -88,6 +98,7 @@ export default function GrowthParamsForm({
                 ))}
               </select>
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error message if any */}
             <div className="mt-6 flex justify-end gap-4">
               <Button variant="destructive" type="submit"
                 className="bg-gray-300 text-gray-700 hover:bg-gray-700 hover:text-white rounded-md border px-3 py-2 text-sm font-medium"

@@ -64,13 +64,13 @@ export default function GrowthComponent() {
   const formattedData = formatGrowthData(growthData);
 
   return (
-    <div className="grid gap-6 p-4 w-full md:w-auto overflow-x-hidden">
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>GROWTH MODELS</h1>
+    <div className="container-mx py-10 col">
+      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl p-4`}>GROWTH MODELS</h1>
       <GrowthParamsForm
         onSubmit={handleSubmit}
       />
       {formattedData.length > 0 && (
-        <div className="grid gap-6 p-4 w-full md:w-auto overflow-x-hidden">
+        <div className="grid gap-6 p-4 w-full md:w-auto overflow-x-hidden bg-gray-50 dark:bg-zinc-900">
           <div className="flex border-b border-gray-300">
             <button
               onClick={() => setActiveTab('chart')}
@@ -90,13 +90,12 @@ export default function GrowthComponent() {
             </button>
           </div>
 
-          {/* Tab Content */}
-          <div className="p-4 border border-gray-300 rounded-b-lg overflow-x-auto w-full md:w-auto">
             {activeTab === 'chart' && (
-              <div className="w-full md:w-auto overflow-x-hidden">
-                <div className="w-full h-64 md:h-full">
-                  <GrowthChart data={formattedData} />
-                </div>
+              <div className="grid gap-4 p-4 rounded-md border">
+                <h2 className="text-xl font-bold mb-4 text-center">Growth Curves (CO2eq vs years)</h2>
+              <div className="w-full overflow-x-auto">
+              <GrowthChart data={formattedData} />
+              </div>
               </div>
             )}
             {activeTab === 'table' && (
@@ -111,7 +110,6 @@ export default function GrowthComponent() {
                 </div>
               </>
             )}
-          </div>
         </div>
       )}
     </div>

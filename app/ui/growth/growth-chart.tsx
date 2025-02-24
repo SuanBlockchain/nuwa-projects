@@ -5,24 +5,33 @@ import { useTheme } from 'next-themes';
 import { LineChartProps } from '@/app/lib/definitions';
 import { useMediaQuery } from 'react-responsive';
 
+const CustomTooltip = ({ value }: { value: number }) => {
+  const { theme } = useTheme();
+  const labelBackgroundColor = theme === 'dark' ? '#333' : '#fff';
+  const textColor = theme === 'dark' ? '#fff' : '#000';
+
+  return (
+    <div style={{ backgroundColor: labelBackgroundColor, color: textColor, padding: '5px', borderRadius: '3px' }}>
+      {value}
+    </div>
+  );
+};
+
 const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
   const { theme } = useTheme();
   const textColor = theme === 'dark' ? '#fff' : '#000';
-  const backgroundColor = theme === 'dark' ? '#333' : '#fff';
 
   if (!data || data.length === 0) {
     return <p className="text-center text-gray-500">Please choose your options and press submit</p>;
   }
 
   return (
-    <div className="rounded-md p-4 md:p-6" style={{ backgroundColor }}>
-      <div style={{ height: '500px', width: '100%' }}>
-        <h2 className="text-xl font-bold mb-4 text-center" style={{ color: textColor }}>Growth Curves (CO2eq vs years)</h2>
+      <div style={{ height: isMobile ? '300px' : '500px', width: '100%' }}>
         <ResponsiveLine
           data={data}
-          margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+          margin={{ top: isMobile ? 100 : 50, right: isMobile ? 10 : 150, bottom: isMobile ? 100 : 50, left: 60 }}
           xScale={{ type: 'point' }}
           yScale={{
             type: 'linear',
@@ -52,8 +61,8 @@ const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
             legendPosition: 'middle',
             tickValues: 5,
           }}
-          colors={{ scheme: 'category10' }}
-          pointSize={10}
+          colors={{ scheme: 'nivo' }}
+          pointSize= {isMobile ? 2 : 10}
           pointColor={{ theme: 'background' }}
           pointBorderWidth={2}
           pointBorderColor={{ from: 'serieColor' }}
@@ -61,19 +70,19 @@ const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
           useMesh={true}
           legends={[
             {
-              anchor: 'right',
-              direction: 'column',
+              anchor: isMobile ? 'top' : 'right',
+              direction: isMobile ? 'row' : 'column',
               justify: false,
-              translateX: 100,
-              translateY: 0,
-              itemsSpacing: 0,
+              translateX: isMobile ? 0 : 100,
+              translateY: isMobile ? -50 : 0,
+              itemsSpacing: isMobile ? 2 : 0,
               itemDirection: 'left-to-right',
               itemWidth: 80,
               itemHeight: 20,
-              itemOpacity: 0.75,
+              itemOpacity: 0.85,
               symbolSize: 12,
               symbolShape: 'circle',
-              symbolBorderColor: 'rgba(0, 0, 0, .5)',
+              symbolBorderColor: textColor,
               effects: [
                 {
                   on: 'hover',
@@ -86,41 +95,35 @@ const GrowthChart: React.FC<LineChartProps> = ({ data }) => {
             },
           ]}
           theme={{
-            background: backgroundColor,
             labels: {
-              text: {
-                fontSize: isMobile ? 8 : isTablet ? 10 : 10,
-                fill: textColor // Set label text color based on mode
-              },
+                text: {
+                    fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                    fill: textColor // Set label text color based on mode
+                },
             },
             axis: {
-              ticks: {
-                text: {
-                  fontSize: isMobile ? 8 : isTablet ? 10 : 10,
-                  fill: textColor // Set axis tick text color based on mode
+                ticks: {
+                    text: {
+                        fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                        fill: textColor // Set axis tick text color based on mode
+                    },
                 },
-              },
-              legend: {
-                text: {
-                  fill: textColor // Set axis legend text color based on mode
+                legend: {
+                    text: {
+                        fill: textColor // Set axis legend text color based on mode
+                    }
                 }
-              }
             },
             legends: {
-              text: {
-                fill: textColor // Set legend text color based on mode
-              }
-            },
-            tooltip: {
-              container: {
-                background: backgroundColor,
-                color: textColor,
-              },
-            },
-          }}
+                text: {
+                    fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+                    fill: textColor // Set legend text color based on mode
+                }
+            }
+        }}
+        tooltip={({ point }) => <CustomTooltip value={point.data.y as number} />}
         />
       </div>
-    </div>
   );
 };
 

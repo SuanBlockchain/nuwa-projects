@@ -42,9 +42,6 @@ async function initDatabase() {
     });
     console.log("✅ Users seeded");
 
-    await prisma.$executeRawUnsafe(`CALL parcels_agbs_calculations_materialized()`);
-    await prisma.$executeRawUnsafe(`CALL parcels_co2eq_materialized()`);
-
     // Add more seeding logic for other tables if needed
   } catch (error) {
     console.error("Seeding failed:", error);

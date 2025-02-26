@@ -1,5 +1,14 @@
 import { BarDatum } from "@nivo/bar";
 
+import { 
+  MoveIcon,
+  DoubleArrowDownIcon,
+  ColorWheelIcon,
+  EnterIcon, 
+  } 
+from "@radix-ui/react-icons";
+import { Flex } from "@radix-ui/themes";
+
 export interface SpeciesValues {
   max_height: number | null; 
   wood_density: number | null; 
@@ -74,6 +83,13 @@ export interface EcosystemData extends BarDatum {
   co2: number;
   agb: number;
   soc: number;
+}
+
+export interface ParcelCo2Data {
+  ecosystem: string;
+  speceis: string;
+  year: number;
+  co2total: number;
 }
 
 export interface Breadcrumb {
@@ -192,3 +208,39 @@ export type Growth = {
   updatedAt: Date
 }
 
+export type LayoutProps = React.ComponentPropsWithoutRef<typeof Flex> & {
+  focusable?: boolean;
+  data: {totalImpact: number;
+      totalInvestment: number;
+      totalBankableInvestment: number;
+      totalIncome: number;
+      landNumber: number;
+      totalco2: number;
+      area: number;
+      averageCo2Total: number;
+      sumCo2Total: number
+  };
+};
+
+export const hoverMessages = {
+    impact: {
+        icon: MoveIcon,
+        title: "Impact",
+        content: "Impact in the context of carbon credit projects refers to the measurable positive effects that these projects have on reducing greenhouse gas emissions, enhancing biodiversity, and supporting sustainable development in local communities. These impacts are quantified and verified to ensure that the projects contribute to mitigating climate change and promoting environmental and social benefits."
+    },
+    investment: {
+        icon: DoubleArrowDownIcon,
+        title: "Investment",
+        content: "Investment refers to the total amount of financial resources allocated to the carbon credit projects. This includes funds used for project development, implementation, and maintenance to ensure the successful generation of carbon credits."
+    },
+    bankable: {
+        icon: ColorWheelIcon,
+        title: "Bankable",
+        content: "Bankable investment refers to the portion of the total investment that is expected to generate a return. This is the amount that can be financed through loans or other financial instruments, based on the projected income from the sale of carbon credits."
+    },
+    income: {
+        icon: EnterIcon,
+        title: "Income",
+        content: "Income refers to the revenue generated from the sale of carbon credits. This income is used to cover project costs and provide returns to investors, ensuring the financial sustainability of the carbon credit projects."
+    }
+};

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { HoverCard } from "radix-ui";
+import { useMediaQuery } from "react-responsive";
 
 interface HoverCardDemoProps {
 	children: React.ReactNode;
@@ -7,16 +8,8 @@ interface HoverCardDemoProps {
 	message: { title: string; content: string };
 }
 
-{/* <HoverCard open={isMobile ? open : undefined} onOpenChange={setOpen}>
-<HoverCardTrigger asChild>
-	<div onClick={() => isMobile && setOpen(!open)}>
-		{children}
-	</div>
-</HoverCardTrigger>
-<HoverCardContent */}
-
 const HoverCardDemo: React.FC<HoverCardDemoProps> = ({ children, icon: Icon, message }) => {
-	const isMobile = window.innerWidth <= 768;
+	const isMobile = useMediaQuery({ maxWidth: 767 });
 	const [open, setOpen] = React.useState(false);
 	return (
 	<HoverCard.Root open={open} onOpenChange={setOpen}>

@@ -1,22 +1,33 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+// import { MoreHorizontal } from "lucide-react"
 import ProjectStatus from "@/app/ui/dashboard/project-status"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+// import { Button } from "@/components/ui/button"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
 
 import { Growth } from "@/app/lib/definitions";
 
 export const columns: ColumnDef<Growth>[] = [
+  {
+    accessorKey: "details",
+    header: "Project Details",
+    cell: ({ row }) => {    
+      return (
+        <Link href={`./dashboard/project/${row.original.id}`} className="text-blue-600 hover:underline">
+          View details
+        </Link>
+      )
+    }
+  },
   {
     accessorKey: "status",
     header: "Status",
@@ -130,28 +141,28 @@ export const columns: ColumnDef<Growth>[] = [
       accessorKey: "description",
       header: "Description",
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        return (
-          <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href={`./dashboard/project/${row.original.id}`}>View project details</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
+  //   {
+  //     id: "actions",
+  //     cell: ({ row }) => {
+  //       return (
+  //         <DropdownMenu>
+  //         <DropdownMenuTrigger asChild>
+  //           <Button variant="ghost" className="h-8 w-8 p-0">
+  //             <span className="sr-only">Open menu</span>
+  //             <MoreHorizontal className="h-4 w-4" />
+  //           </Button>
+  //         </DropdownMenuTrigger>
+  //         <DropdownMenuContent align="end">
+  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  //           <DropdownMenuSeparator />
+  //           <DropdownMenuItem asChild>
+  //             <Link href={`./dashboard/project/${row.original.id}`}>View project details</Link>
+  //           </DropdownMenuItem>
+  //         </DropdownMenuContent>
+  //       </DropdownMenu>
+  //     )
+  //   },
+  // },
   // {
   //   id: "select",
   //   header: ({ table }) => (

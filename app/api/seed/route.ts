@@ -102,6 +102,8 @@ export async function POST(req: Request) {
 
           console.log("✅ Parcels inserted successfully:", parcels);
         }
+        await prisma.$executeRawUnsafe(`CALL parcels_agbs_calculations_materialized()`);
+        await prisma.$executeRawUnsafe(`CALL parcels_co2eq_materialized()`);
       } catch (error) {
         return handleError(error);
       }

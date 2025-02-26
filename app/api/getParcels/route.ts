@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { ParcelData, EcosystemData, TreeNode } from "@/app/lib/definitions";
+import { ParcelData, EcosystemData, TreeNode, ParcelCo2Data } from "@/app/lib/definitions";
 
 const prisma = new PrismaClient();
 
@@ -29,16 +29,19 @@ export async function POST(req: Request) {
       const projectId = projectIds[0]; // Assuming a single project ID for aggregated query
       const tableName = `parcels_agbs_project_${projectId.replace(/-/g, '').substring(0, 20)}`;
 
-      // Query for aggregated CO2 and biomass calculations
-      const aggregatedData: EcosystemData[] = await prisma.$queryRawUnsafe(`
-        SELECT ecosystem,
-               SUM(parcel_bgb) AS bgb,
-               SUM(parcel_co2eq_captured) AS co2,
-               SUM(parcel_agb) AS agb,
-               SUM(parcel_soc_total) AS soc
-          FROM ${tableName}
-         GROUP BY ecosystem;
-      `);
+      const aggregatedData: EcosystemData[] = await prisma.$queryRaw(
+        Prisma.sql`
+          SELECT ecosystem,
+                 SUM(parcel_bgb) AS bgb,
+                 SUM(parcel_co2eq_captured) AS co2,
+                 SUM(parcel_agb) AS agb,
+                 SUM(parcel_soc_total) AS soc
+            FROM ${Prisma.raw(tableName)}
+           GROUP BY ecosystem
+        `
+      );
+
+
 
       responseData = aggregatedData.map((parcel: EcosystemData) => ({
         ecosystem: parcel.ecosystem,
@@ -72,15 +75,15 @@ export async function POST(req: Request) {
       const tableName = `parcels_co2eq_project_${projectId.replace(/-/g, '').substring(0, 20)}`;
 
       // Query for CO2 data grouped by year, ecosystem, and species
-      const co2Data = await prisma.$queryRawUnsafe(`
+      const co2Data: ParcelCo2Data[] = await prisma.$queryRaw`
         SELECT ecosystem,
                species,
                year,
                SUM(co2eq_ton) AS co2total
-          FROM ${tableName}
+          FROM ${Prisma.raw(tableName)}
          GROUP BY year, ecosystem, species
          ORDER BY year, ecosystem, species;
-      `);
+      `;
 
       responseData = co2Data;
     }

@@ -1,20 +1,16 @@
 'use client';
 import {
-	// ArrowDownIcon,
-	// ArrowUpIcon,
-	// CheckIcon,
-	// CopyIcon,
-	// Cross2Icon,
-	// DotsHorizontalIcon,
+    CircleIcon,
 	DrawingPinFilledIcon,
 	DrawingPinIcon,
 	OpenInNewWindowIcon,
-	// PlusIcon,
-	// Share2Icon,
     MoveIcon,
     DoubleArrowDownIcon,
     ColorWheelIcon,
-    EnterIcon
+    EnterIcon,
+    DoubleArrowRightIcon,
+    AlignBaselineIcon,
+    OpacityIcon
 } from "@radix-ui/react-icons";
 import {
 	// Avatar,
@@ -35,25 +31,29 @@ import {
 	Heading,
 	IconButton,
 	Text,
+    BadgeProps,
 } from "@radix-ui/themes";
-// import { Marker } from "@/app/tests/Marker";
-// import { allPeople, email } from "@/lib/people";
 import * as React from "react";
 import CardHover from "./helpers/performance-card-helpers";
+import { hoverMessages, LayoutProps } from "@/app/lib/definitions";
 
-
-type LayoutProps = React.ComponentPropsWithoutRef<typeof Flex> & {
-    focusable?: boolean;
-    data: {totalImpact: number;
-        totalInvestment: number;
-        totalBankableInvestment: number;
-        totalIncome: number;};
+const formatValues = (value: number) => {
+    // Format value with appropriate suffix for large numbers
+    if (value >= 1_000_000) {
+        return `${(value / 1_000_000).toFixed(2)}M`;
+    } else if (value >= 1_000) {
+        return `${(value / 1_000).toFixed(2)}K`;
+    } else {
+        return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
+    }
 };
 
 export default function PerformanceCard({ data, focusable, ...props }: LayoutProps) {
-    const { totalImpact, totalInvestment, totalBankableInvestment, totalIncome } = data;
-    // const [portalContainer, setPortalContainer] =
-    //         React.useState<HTMLDivElement | null>(null);
+    const { totalImpact, totalInvestment, totalBankableInvestment, totalIncome, landNumber, totalco2, area, averageCo2Total, sumCo2Total } = data;
+
+    const safeDivide = (numerator: number, denominator: number) => {
+        return denominator === 0 ? 0 : numerator / denominator;
+    };
 
         const tabIndex = focusable ? undefined : -1;
 
@@ -71,34 +71,6 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
             financePinned: false,
         });
 
-    const formatImpact = (value: number) => {
-        return value >= 1_000_000
-            ? `${(value / 1_000_000).toFixed(2)}M`
-            : new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
-    };
-
-    const hoverMessages = {
-        impact: {
-            icon: MoveIcon,
-            title: "Impact",
-            content: "Impact in the context of carbon credit projects refers to the measurable positive effects that these projects have on reducing greenhouse gas emissions, enhancing biodiversity, and supporting sustainable development in local communities. These impacts are quantified and verified to ensure that the projects contribute to mitigating climate change and promoting environmental and social benefits."
-        },
-        investment: {
-            icon: DoubleArrowDownIcon,
-            title: "Investment",
-            content: "Investment refers to the total amount of financial resources allocated to the carbon credit projects. This includes funds used for project development, implementation, and maintenance to ensure the successful generation of carbon credits."
-        },
-        bankable: {
-            icon: ColorWheelIcon,
-            title: "Bankable",
-            content: "Bankable investment refers to the portion of the total investment that is expected to generate a return. This is the amount that can be financed through loans or other financial instruments, based on the projected income from the sale of carbon credits."
-        },
-        income: {
-            icon: EnterIcon,
-            title: "Income",
-            content: "Income refers to the revenue generated from the sale of carbon credits. This income is used to cover project costs and provide returns to investors, ensuring the financial sustainability of the carbon credit projects."
-        }
-    };
 
     return (
         <Flex align="center" gap="6" {...props} width="100%">
@@ -145,88 +117,70 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                     </Text>
 
                     <Grid columns={{ xs: "2", md: "4" }} gap="3">
-                        <Box>
-                            <Flex gap="1" mb="1" align="center">
-                                <Text size={{ xs: '2', md: '1' }} color="gray">
-                                    Impact
-                                </Text>
-                                <CardHover icon={hoverMessages.impact.icon} message={hoverMessages.impact}>
-                                    <Badge color="amber" radius="full">
-                                        <MoveIcon
-                                            width="12"
-                                            height="12"
-                                            style={{ marginLeft: -2 }}
-                                        />
-                                    </Badge>
-                                </CardHover>
-                            </Flex>
-                            <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
-                                {formatImpact(totalImpact)}
-                            </Text>
-                        </Box>
-
-                        <Box>
-                            <Flex gap="1" mb="1" align="center">
-                                <Text size={{ xs: '2', md: '1' }} color="gray">
-                                    Investment
-                                </Text>
-                                <CardHover icon={hoverMessages.investment.icon} message={hoverMessages.investment}>
-                                    <Badge color="gold" radius="full">
-                                        <DoubleArrowDownIcon
-                                            width="12"
-                                            height="12"
-                                            style={{ marginLeft: -2 }}
-                                        />
-                                    </Badge>
-                                </CardHover>
-                            </Flex>
-                            <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
-                            {formatImpact(totalInvestment)}
-                            </Text>
-                        </Box>
-
-                        <Box>
-                            <Flex gap="1" mb="1" align="center">
-                                <Text size={{ xs: '2', md: '1' }} color="gray">
-                                    Bankable
-                                </Text>
-                                <CardHover icon={hoverMessages.bankable.icon} message={hoverMessages.bankable}>
-                                    <Badge color="tomato" radius="full">
-                                        <ColorWheelIcon
-                                            width="12"
-                                            height="12"
-                                            style={{ marginLeft: -2 }}
-                                        />
-                                    </Badge>
-                                </CardHover>
-                            </Flex>
-                            <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
-                            {formatImpact(totalBankableInvestment)}
-                            </Text>
-                        </Box>
-
-                        <Box>
-                            <Flex gap="1" mb="1" align="center">
-                                <Text size={{ xs: '2', md: '1' }} color="gray">
-                                    Income
-                                </Text>
-                                <CardHover icon={hoverMessages.income.icon} message={hoverMessages.income}>
-                                    <Badge color="plum" variant="surface" radius="full">
-                                        <EnterIcon
-                                            width="12"
-                                            height="12"
-                                            style={{ marginLeft: -2 }}
-                                        />
-                                    </Badge>
-                                </CardHover>
-                            </Flex>
-                            <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
-                            {formatImpact(totalIncome)}
-                            </Text>
-                        </Box>
+                        <Indicator title="Impact" color="amber" icon="move" value={totalImpact} units="TonnesCO2eq" />
+                        <Indicator title="Investment" color="gold" icon="doubleArrow" value={totalInvestment} units="USD" />
+                        <Indicator title="Bankable" color="tomato" icon="wheel" value={totalBankableInvestment} units="USD" />
+                        <Indicator title="Income" color="plum" icon="enter" value={totalIncome} units="USD" />
+                        <Indicator title="Lands" color="brown" icon="circle" value={landNumber} />
+                        <Indicator title="TotalCO2eq" color="iris" icon="doubleArrowRight" value={totalco2} units="TonnesCO2eq" />
+                        <Indicator title="Area" color="teal" icon="alignBaseline" value={area} units="Ha" />
+                        <Indicator title="CO2eq" color="amber" icon="move" value={safeDivide(totalco2, area)} units="TonnesCO2eq/Ha" />
+                        <Indicator title="CO2eq" color="violet" icon="opacity" value={safeDivide(totalco2, area) / 20} units="TonnesCO2eq/Ha/year" />
+                        <Indicator title="Area Tokens" color="teal" icon="alignBaseline" value={area} />
+                        <Indicator title="Token Value" color="tomato" icon="wheel" value={averageCo2Total} units="TonnesCO2eq/Ha" />
+                        <Indicator title="Token Value Total" color="mint" icon="wheel" value={sumCo2Total} units="TonnesCO2eq" />
                     </Grid>
                 </Card>
             </Flex>
         </Flex>
+    );
+}
+
+const iconMap = {
+    move: MoveIcon,
+    doubleArrow: DoubleArrowDownIcon,
+    wheel: ColorWheelIcon,
+    enter: EnterIcon,
+    circle: CircleIcon,
+    doubleArrowRight: DoubleArrowRightIcon,
+    alignBaseline: AlignBaselineIcon,
+    opacity: OpacityIcon,
+
+  };
+
+function Indicator({ title, color, icon, value, units }: { 
+    title: string, 
+    color: BadgeProps['color'],
+    icon: keyof typeof iconMap,
+    value: number,
+    units?: string,
+    }
+) {
+    const Icon = iconMap[icon];
+    return (
+        <Box>
+            <Flex gap="1" mb="1" align="center">
+                <Text size={{ xs: '2', md: '1' }} color="gray">
+                    {title}
+                </Text>
+                {units && (
+                    <Text size={{ xs: '2', md: '1' }} color="gray">
+                        ({units})
+                    </Text>
+                )}
+                <CardHover icon={hoverMessages.impact.icon} message={hoverMessages.impact}>
+                    <Badge color={color} radius="full">
+                        <Icon
+                            width="12"
+                            height="12"
+                            style={{ marginLeft: -2 }}
+                        />
+                    </Badge>
+                </CardHover>
+            </Flex>
+            <Text as="div" mb="1" size={{ xs: '7', md: '8' }} weight="bold">
+                {formatValues(value)}
+            </Text>
+        </Box>
     );
 }

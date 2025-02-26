@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nuwa
 
-## Getting Started
+Token Impact System for Ecosystem Conservation
 
-First, run the development server:
+
+
+### Instructions to initialize
+
+#### Reseting the database or running the app for the first time
+
+1. Use prisma to migrate the schema and apply all the scripts that are run in the database
+
+These commands reset the database (delete all the records) and create the migrations again including the functions and store procedures. Make sure you have the excel file as a backup for the projects that you want to recreate.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx prisma migrate reset
+npx prisma generate
+npx prisma migrate dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the init database page to create dummy user
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+[Seed Database](http://localhost:3000/seed)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Populate the database with the upload option in the menu bar
 
-## Learn More
+Upload data at least for one project to create records and to create first materialized views associated to the project.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+

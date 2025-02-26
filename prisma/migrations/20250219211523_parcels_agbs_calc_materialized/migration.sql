@@ -344,3 +344,77 @@ BEGIN
     END LOOP;
 END $$;
 
+CREATE OR REPLACE FUNCTION sum_all_parcels_agbs_totals()
+RETURNS TABLE (grand_total_co2 NUMERIC, grand_total_area NUMERIC) 
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+    project_row RECORD;
+    project_id_sanitized TEXT;
+    union_query TEXT := '';
+    first_table BOOLEAN := true;
+BEGIN
+    FOR project_row IN (SELECT DISTINCT "id" FROM "Project") LOOP
+        project_id_sanitized := left(replace(project_row."id"::TEXT, '-', ''), 20);
+        
+        IF NOT first_table THEN
+            union_query := union_query || ' UNION ALL ';
+        END IF;
+        
+        union_query := union_query || 
+            format('SELECT SUM(parcel_co2eq_total) as totalco2, SUM(area) as area FROM parcels_agbs_project_%s', 
+                   project_id_sanitized);
+        
+        first_table := false;
+    END LOOP;
+
+    IF union_query <> '' THEN
+        RETURN QUERY EXECUTE 
+            'SELECT SUM(totalco2) as grand_total_co2, SUM(area) as grand_total_area FROM (' || 
+            union_query || ') as combined_results';
+    ELSE
+        RETURN QUERY SELECT 0::NUMERIC, 0::NUMERIC;
+    END IF;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION avg_all_parcels_co2eq_totals()
+RETURNS TABLE (sum_co2_total NUMERIC, average_co2_total NUMERIC)
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+    project_row RECORD;
+    project_id_sanitized TEXT;
+    union_query TEXT := '';
+    first_table BOOLEAN := true;
+BEGIN
+    -- Loop through all project IDs
+    FOR project_row IN (SELECT DISTINCT "id" FROM "Project") LOOP
+        -- Sanitize UUID: Remove hyphens and truncate to 20 characters
+        project_id_sanitized := left(replace(project_row."id"::TEXT, '-', ''), 20);
+
+        -- Build UNION ALL query dynamically
+        IF NOT first_table THEN
+            union_query := union_query || ' UNION ALL ';
+        END IF;
+
+        union_query := union_query || 
+            format('SELECT parcel_name, SUM(co2eq_ton) as co2Total, (SUM(co2eq_ton) / p.area) as co2TotalArea
+                    FROM parcels_co2eq_project_%s as co2parcel
+                    LEFT JOIN public."Parcels" as p ON co2parcel.parcel_id = p.id
+                    GROUP BY parcel_name, area', 
+                   project_id_sanitized);
+
+        first_table := false;
+    END LOOP;
+
+    -- Wrap the UNION ALL in a query to compute the sum and average
+    IF union_query <> '' THEN
+        RETURN QUERY EXECUTE 
+            'SELECT SUM(co2Total) as sum_co2_total, AVG(co2TotalArea) as average_co2_total 
+             FROM (' || union_query || ') as combined_results';
+    ELSE
+        RETURN QUERY SELECT 0::NUMERIC AS sum_co2_total, 0::NUMERIC AS average_co2_total;
+    END IF;
+END;
+$$;

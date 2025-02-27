@@ -36,6 +36,7 @@ async function initDatabase() {
         return userSchema.parse({ ...user, password: hashedPassword });
       })
     );
+    
     await prisma.user.createMany({
       data: hashedUsers,
       skipDuplicates: true,

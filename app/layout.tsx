@@ -4,7 +4,7 @@ import { roboto } from '@/app/ui/fonts';
 import Navbar from "./ui/navbar";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/app/components/theme-provider";
 
 
 

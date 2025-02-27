@@ -4,10 +4,27 @@ import {
   MoveIcon,
   DoubleArrowDownIcon,
   ColorWheelIcon,
-  EnterIcon, 
-  } 
-from "@radix-ui/react-icons";
+  EnterIcon,
+  CircleIcon,
+  DoubleArrowRightIcon,
+  AlignBaselineIcon,
+  OpacityIcon
+} from "@radix-ui/react-icons";
 import { Flex } from "@radix-ui/themes";
+
+// Define IconProps type manually
+export type IconProps = {
+  width?: number;
+  height?: number;
+  style?: React.CSSProperties;
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+};
 
 export interface SpeciesValues {
   max_height: number | null; 
@@ -222,7 +239,13 @@ export type LayoutProps = React.ComponentPropsWithoutRef<typeof Flex> & {
   };
 };
 
-export const hoverMessages = {
+export interface HoverMessage {
+    icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
+    title: string;
+    content: string;
+}
+
+export const hoverMessages: Record<string, HoverMessage> = {
     impact: {
         icon: MoveIcon,
         title: "Impact",
@@ -242,5 +265,50 @@ export const hoverMessages = {
         icon: EnterIcon,
         title: "Income",
         content: "Income refers to the revenue generated from the sale of carbon credits. This income is used to cover project costs and provide returns to investors, ensuring the financial sustainability of the carbon credit projects."
+    },
+    lands: {
+        icon: CircleIcon,
+        title: "Lands",
+        content: "Lands refer to the total area of land involved in the carbon credit projects. This includes the areas where trees are planted, conserved, or managed to generate carbon credits."
+    },
+    totalco2eq: {
+        icon: DoubleArrowRightIcon,
+        title: "TotalCO2eq",
+        content: "Total CO2 equivalent (CO2eq) represents the total amount of greenhouse gases reduced or sequestered by the carbon credit projects, expressed in terms of the equivalent amount of CO2."
+    },
+    area: {
+        icon: AlignBaselineIcon,
+        title: "Area",
+        content: "Area refers to the total land area measured in hectares (Ha) that is involved in the carbon credit projects."
+    },
+    co2eq: {
+        icon: MoveIcon,
+        title: "CO2eq",
+        content: "CO2 equivalent (CO2eq) per hectare represents the amount of greenhouse gases reduced or sequestered per hectare of land involved in the carbon credit projects."
+    },
+    area_tokens: {
+        icon: AlignBaselineIcon,
+        title: "Area Tokens",
+        content: "Area Tokens represent the tokenized units of land area involved in the carbon credit projects, used for tracking and trading purposes."
+    },
+    token_value: {
+        icon: DoubleArrowDownIcon,
+        title: "Token Value",
+        content: "Token Value represents the value of each tokenized unit of land area in terms of the amount of CO2 equivalent (CO2eq) it represents."
+    },
+    token_value_total: {
+        icon: DoubleArrowRightIcon,
+        title: "Token Value Total",
+        content: "Token Value Total represents the total value of all tokenized units of land area in terms of the total amount of CO2 equivalent (CO2eq) they represent."
+    },
+    co2eq_year: {
+        icon: OpacityIcon,
+        title: "CO2eq Year",
+        content: "CO2 equivalent (CO2eq) per hectare per year represents the amount of greenhouse gases reduced or sequestered per hectare of land per year involved in the carbon credit projects."
+    },
+    default: {
+        icon: MoveIcon,
+        title: "Default",
+        content: "No specific information available for this indicator."
     }
 };

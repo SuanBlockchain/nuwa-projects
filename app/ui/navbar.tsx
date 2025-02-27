@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import { PowerIcon } from '@heroicons/react/24/outline';
+import { signOut } from '@/app/actions/signOut';
 
 import { NavigationItem } from '@/app/lib/definitions';
 
@@ -12,13 +14,14 @@ import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/app/components/ui/dropdown-menu"
+// import { signOut } from '@/auth';
 
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '/', current: true },
@@ -168,12 +171,12 @@ export default function Navbar() {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                  >
-                    Sign out
-                  </a>
+                  <form action={signOut}>
+                    <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+                      <PowerIcon className="w-6" />
+                      <div className="hidden md:block">Sign Out</div>
+                    </button>
+                  </form>
                 </MenuItem>
               </MenuItems>
             </Menu>

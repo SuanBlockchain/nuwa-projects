@@ -125,10 +125,10 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                         <Indicator title="TotalCO2eq" color="iris" icon="doubleArrowRight" value={totalco2} units="TonnesCO2eq" />
                         <Indicator title="Area" color="teal" icon="alignBaseline" value={area} units="Ha" />
                         <Indicator title="CO2eq" color="amber" icon="move" value={safeDivide(totalco2, area)} units="TonnesCO2eq/Ha" />
-                        <Indicator title="CO2eq" color="violet" icon="opacity" value={safeDivide(totalco2, area) / 20} units="TonnesCO2eq/Ha/year" />
+                        <Indicator title="CO2eq Year" color="violet" icon="opacity" value={safeDivide(totalco2, area) / 20} units="TonnesCO2eq/Ha/year" />
                         <Indicator title="Area Tokens" color="teal" icon="alignBaseline" value={area} />
-                        <Indicator title="Token Value" color="tomato" icon="wheel" value={averageCo2Total} units="TonnesCO2eq/Ha" />
-                        <Indicator title="Token Value Total" color="mint" icon="wheel" value={sumCo2Total} units="TonnesCO2eq" />
+                        <Indicator title="Token Value" color="tomato" icon="doubleArrowDownIcon" value={averageCo2Total} units="TonnesCO2eq/Ha" />
+                        <Indicator title="Token Value Total" color="mint" icon="doubleArrowRightIcon" value={sumCo2Total} units="TonnesCO2eq" />
                     </Grid>
                 </Card>
             </Flex>
@@ -145,6 +145,8 @@ const iconMap = {
     doubleArrowRight: DoubleArrowRightIcon,
     alignBaseline: AlignBaselineIcon,
     opacity: OpacityIcon,
+    doubleArrowDownIcon: DoubleArrowDownIcon,
+    doubleArrowRightIcon: DoubleArrowRightIcon,
 
   };
 
@@ -157,6 +159,8 @@ function Indicator({ title, color, icon, value, units }: {
     }
 ) {
     const Icon = iconMap[icon];
+    const hoverMessageKey = title.toLowerCase().replace(/\s+/g, '_');
+    const hoverMessage = hoverMessages[hoverMessageKey] || hoverMessages.default; // Default to default if not found
     return (
         <Box>
             <Flex gap="1" mb="1" align="center">
@@ -168,7 +172,7 @@ function Indicator({ title, color, icon, value, units }: {
                         ({units})
                     </Text>
                 )}
-                <CardHover icon={hoverMessages.impact.icon} message={hoverMessages.impact}>
+                <CardHover icon={hoverMessage.icon} message={hoverMessage}>
                     <Badge color={color} radius="full">
                         <Icon
                             width="12"

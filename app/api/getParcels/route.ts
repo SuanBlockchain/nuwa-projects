@@ -1,6 +1,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { ParcelData, EcosystemData, TreeNode, ParcelCo2Data } from "@/app/lib/definitions";
+import { revalidatePath } from 'next/cache';
 
 const prisma = new PrismaClient();
 

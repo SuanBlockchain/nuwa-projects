@@ -1,3 +1,16 @@
+import bcrypt from "bcryptjs";
+import type { User } from '@/app/lib/definitions';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -65,4 +78,23 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+export const saltAndHashPassword = async (password: string): Promise<string> => {
+  return await bcrypt.hash(password, 10);
+};
+
+export async function getUser(email: string): Promise<User | undefined> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (user) {
+      return { ...user, name: user.name ?? '' };
+    }
+    return undefined;
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
+  }
+}
 

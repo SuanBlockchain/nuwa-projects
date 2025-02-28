@@ -28,8 +28,8 @@ export default function RootLayout({
         defaultTheme="system"
         enableSystem
         >
-            <Navbar />
             <Theme 	>
+            <Navbar />
               {children}
 
             </Theme>

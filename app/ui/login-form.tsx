@@ -11,6 +11,7 @@ import { Button } from "@/app/components/ui/button"
 import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { useSearchParams } from 'next/navigation';
+import NuwaLogo from './nuwa-logo';
  
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -21,15 +22,18 @@ export default function LoginForm() {
   );
  
   return (
-    <form action={formAction} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please log in to continue.
+    <form action={formAction} className="space-y-3 mt-6 rounded-md border bg-gray-50 dark:bg-zinc-900">
+            <div className="flex h-20 shrink-0 items-center justify-center rounded-lg bg-grey-900 p-4 md:h-52">
+              <NuwaLogo />
+            </div>
+      <div className="flex-1 rounded-lg border bg-gray-50  dark:bg-zinc-900 px-6 pb-4 pt-8">
+        <h1 className={`${lusitana.className} text-2xl font-bold dark:text-white`}>
+          Please log in to continue
         </h1>
         <div className="w-full">
           <div>
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900 dark:text-white"
               htmlFor="email"
             >
               Email
@@ -48,7 +52,7 @@ export default function LoginForm() {
           </div>
           <div className="mt-4">
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900 dark:text-white"
               htmlFor="password"
             >
               Password
@@ -70,6 +74,9 @@ export default function LoginForm() {
         <input type="hidden" name="redirectTo" value={callbackUrl} />
         <Button className="mt-4 w-full" aria-disabled={isPending}>
           Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </Button>
+        <Button variant={'destructive'} className="mt-4 w-full" aria-disabled={isPending}>
+          Create an Account<ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
         <div
           className="flex h-8 items-end space-x-1"

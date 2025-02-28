@@ -11,8 +11,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import {
+    IconButton,
+    DropdownMenu as DropdownMenuRoot,
+  } from '@radix-ui/themes';
+  import {
+    HamburgerMenuIcon,
+  } from '@radix-ui/react-icons';
 import ThemeToggle from "@/app/components/ui/theme-toggle";
 
 const navigation: NavigationItem[] = [
@@ -156,9 +164,35 @@ const Navbar = async () => {
                                 </Menu>
                             </>
                         ) : (
-                            <Link href="/login">
-                                <button type={"button"}>Login</button>
-                            </Link>
+                            <div className="flex items-center space-x-4 p-2">
+                            <DropdownMenuRoot.Root>
+                                <DropdownMenuRoot.Trigger>
+                                <IconButton
+                                    variant="ghost"
+                                    color="gray"
+                                    style={{ marginRight: `calc(var(--space-2) * -1)` }}
+                                >
+                                    <HamburgerMenuIcon className="text-gray-100" />
+                                </IconButton>
+                                </DropdownMenuRoot.Trigger>
+                                <DropdownMenuRoot.Content align="end">
+                                <DropdownMenuRoot.Item>
+                                <Link href="/login">
+                                    <button type={"button"}>Login</button>
+                                </Link>
+                                </DropdownMenuRoot.Item>
+                                <DropdownMenuRoot.Item>
+                                <Link href="/login">
+                                    <button type={"button"}>Sign up</button>
+                                </Link>
+                                </DropdownMenuRoot.Item>
+
+                                <DropdownMenuSeparator />
+        
+                                <DropdownMenuRoot.Item>Docs</DropdownMenuRoot.Item>
+                                </DropdownMenuRoot.Content>
+                            </DropdownMenuRoot.Root>
+                            </div>
                         )}
                     </div>
                 </div>

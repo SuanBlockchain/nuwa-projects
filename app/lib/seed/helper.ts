@@ -2,12 +2,10 @@ import path from "path";
 import fs from "fs";
 import { CellValue, EcosystemUnitsMapping, EcosystemValues, ProjectUnitsMapping, ProjectValues, SpeciesUnitsMapping, SpeciesValues } from "../definitions";
 import ExcelJS from "exceljs";
-import { PrismaClient, Prisma, Status } from "@prisma/client";
+import { Prisma, Status } from "@prisma/client";
 import { z } from "zod";
 
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+import { prisma } from '@/prisma';
 
 // ✅ Define validation schema for keywords
 const keywordSchema = z.object({

@@ -1,8 +1,8 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { ParcelData, EcosystemData, TreeNode, ParcelCo2Data } from "@/app/lib/definitions";
 
-const prisma = new PrismaClient();
+import { prisma } from '@/prisma';
 
 export async function POST(req: Request) {
   try {

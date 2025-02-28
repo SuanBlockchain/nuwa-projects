@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { prisma } from '@/prisma';
 
 import { State } from '@/app/lib/definitions';
 

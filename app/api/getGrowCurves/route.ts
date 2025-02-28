@@ -1,8 +1,5 @@
-// app/api/querySpecies/route.ts
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/prisma';
 import { NextResponse } from 'next/server';
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {

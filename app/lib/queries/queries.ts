@@ -1,8 +1,8 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import { TotalImpactResult, TotalInvestmentResult, TotalBankableInvestmentResult, TotalIncomeResult } from '../definitions';
 
-const prisma = new PrismaClient();
+import { prisma } from '@/prisma';
 
 export async function fetchCardData() {
 

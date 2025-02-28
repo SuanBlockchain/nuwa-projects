@@ -1,8 +1,8 @@
 // app/api/getSpecies/route.ts
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
-const prisma = new PrismaClient();
+import { prisma } from '@/prisma';
 
 export async function GET() {
   try {

@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 
-const prisma = new PrismaClient();
+import { prisma } from '@/prisma';
 
 
 const users = [
@@ -36,7 +35,7 @@ async function initDatabase() {
         return userSchema.parse({ ...user, password: hashedPassword });
       })
     );
-    
+
     await prisma.user.createMany({
       data: hashedUsers,
       skipDuplicates: true,

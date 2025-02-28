@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs";
 import type { User } from '@/app/lib/definitions';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { prisma } from '@/prisma';
 
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"

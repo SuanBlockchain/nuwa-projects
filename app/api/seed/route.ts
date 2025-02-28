@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import ExcelJS from "exceljs";
 import fs from "fs";
 import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser, parcelsParser } from "@/app/lib/seed/helper";
@@ -7,10 +6,7 @@ import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, sav
 export const config = {
   api: { bodyParser: false },
 };
-
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+import { prisma } from '@/prisma';
 
 function handleError(error: unknown): NextResponse {
   console.error("❌ Error processing:", error);

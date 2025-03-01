@@ -131,20 +131,20 @@ const Navbar = async () => {
                                     </div>
                                     <MenuItems
                                         transition
-                                        className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                        className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-700 py-1 ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in text-gray-300"
                                     >
                                         <MenuItem>
                                             <a
                                                 href="#"
-                                                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                                                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden text-white"
                                             >
-                                                Your Profile
+                                                Hi {session.user.name} | Go to Profile
                                             </a>
                                         </MenuItem>
                                         <MenuItem>
                                             <a
                                                 href="#"
-                                                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                                                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden text-white"
                                             >
                                                 Settings
                                             </a>
@@ -154,7 +154,7 @@ const Navbar = async () => {
                                                 "use server";
                                                 await signOut({ "redirectTo": "/" });
                                             }}>
-                                                <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+                                                <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-800 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3 text-white">
                                                     <PowerIcon className="w-6" />
                                                     <div className="hidden md:block">Sign Out</div>
                                                 </button>

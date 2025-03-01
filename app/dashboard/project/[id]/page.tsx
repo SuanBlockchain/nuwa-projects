@@ -1,5 +1,6 @@
 import CardWrapper from '@/app/ui/dashboard/cards';
 import ProjectComponent from '@/app/ui/dashboard/projects/project-component';
+import SimulateComponent from '@/app/ui/dashboard/projects/simulate/simulate-component';
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,6 +12,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <div className="mt-6 p-2">
           <div className="mt-6 rounded-md border bg-gray-50 dark:bg-zinc-900">
             <ProjectComponent projectId={id} />
+          </div>
+        </div>
+        <div className="mt-6 p-2">
+          <div className="mt-6 rounded-md border bg-gray-50 dark:bg-zinc-900">
+            <SimulateComponent projectId={id} />
           </div>
         </div>
       </div>

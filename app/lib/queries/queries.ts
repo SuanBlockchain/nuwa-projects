@@ -70,6 +70,24 @@ export async function fetchCardData() {
     }
   }
 
+  // export async function fetchSpeciesByProjectId(projectId: string) {
+  //   try {
+  //     const speciesData = await prisma.species.findMany({
+  //       where: {
+  //         projectId,
+  //       },
+  //       select: {
+  //         name: true,
+  //       },
+  //     });
+
+  //     return speciesData;
+  //   } catch (error) {
+  //     console.error('Database Error:', error);
+  //     throw new Error('Failed to fetch species data.');
+  //   }
+  // }
+
   export async function fetchProjectById(id: string) {
     try {
       const projectData = await prisma.project.findUnique({

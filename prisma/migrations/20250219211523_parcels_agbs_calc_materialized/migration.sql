@@ -287,7 +287,7 @@ BEGIN
             EXECUTE index_stmt;
         END IF;
     END LOOP;
-END $$;
+END $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE parcels_co2eq_materialized()
 LANGUAGE plpgsql
@@ -342,7 +342,7 @@ BEGIN
             EXECUTE index_stmt;
         END IF;
     END LOOP;
-END $$;
+END $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION sum_all_parcels_agbs_totals()
 RETURNS TABLE (grand_total_co2 NUMERIC, grand_total_area NUMERIC) 
@@ -376,7 +376,7 @@ BEGIN
         RETURN QUERY SELECT 0::NUMERIC, 0::NUMERIC;
     END IF;
 END;
-$$;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION avg_all_parcels_co2eq_totals()
 RETURNS TABLE (sum_co2_total NUMERIC, average_co2_total NUMERIC)
@@ -417,4 +417,69 @@ BEGIN
         RETURN QUERY SELECT 0::NUMERIC AS sum_co2_total, 0::NUMERIC AS average_co2_total;
     END IF;
 END;
-$$;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION generate_growth_project(
+    project_id_param UUID,
+    species_param VARCHAR,
+    start_date_param DATE,
+    end_date_param DATE,
+    events_param JSON
+)
+RETURNS TABLE (
+    year INT,
+    population NUMERIC
+) AS $$
+DECLARE
+    initial_population NUMERIC;
+    current_population NUMERIC;
+    current_year INT;
+    event_record JSON;
+    harvest_percent NUMERIC;
+    table_name TEXT;
+BEGIN
+    -- Sanitize UUID: Remove hyphens and truncate to 20 characters
+    table_name := 'parcels_agbs_project_' || left(replace(project_id_param::TEXT, '-', ''), 20);
+
+    -- Get initial population dynamically based on the constructed table name
+    EXECUTE format('
+        SELECT SUM(individuals)
+        FROM %I
+        WHERE species = $1', table_name)
+    INTO initial_population
+    USING species_param;
+
+    -- If no initial population found, set to 0
+    IF initial_population IS NULL THEN
+        initial_population := 0;
+    END IF;
+
+    current_population := initial_population;
+    current_year := EXTRACT(YEAR FROM start_date_param);
+
+    -- Loop through years from start to end
+    WHILE current_year <= EXTRACT(YEAR FROM end_date_param) LOOP
+        year := current_year;
+        
+        -- Check if there's a harvest event for this year
+        harvest_percent := 0;
+        FOR event_record IN SELECT * FROM json_array_elements(events_param)
+        LOOP
+            IF (event_record->>'year')::INT = current_year THEN
+                harvest_percent := (event_record->>'percentage')::NUMERIC / 100;
+                EXIT;
+            END IF;
+        END LOOP;
+
+        -- Apply harvest if any
+        IF harvest_percent > 0 THEN
+            current_population := current_population * (1 - harvest_percent);
+        END IF;
+
+        population := current_population;
+        
+        RETURN NEXT;
+        current_year := current_year + 1;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;

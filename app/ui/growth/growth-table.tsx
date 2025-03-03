@@ -90,7 +90,7 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
                     {record.year}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3" style={{ color: textColor }}>
-                    {record.co2eq.toFixed(2)} {/* Round CO2eq value to 2 decimal places */}
+                    {record.co2eq.toFixed(2)}
                   </td>
                 </tr>
               ))}

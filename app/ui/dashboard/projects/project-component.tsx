@@ -111,16 +111,16 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
                   <p>No CO2 data available</p>
                 )}
               </div>
-              <div>
-              {/* <div style={{ height: "500px", marginTop: "20px" }}>
-                {treeMapData ? (
-                  <MyResponsiveTreeMap data={treeMapData} />
-                ) : (
-                  <p>No detailed parcel data available</p>
-                )}
+                </div>
+              {/* <div>
+                <div style={{ height: "500px", marginTop: "20px" }}>
+                  {treeMapData ? (
+                    <MyResponsiveTreeMap data={treeMapData} />
+                  ) : (
+                    <p>No detailed parcel data available</p>
+                  )}
+                </div>
               </div> */}
-              </div>
-            </div>
           </div>
 
         )}

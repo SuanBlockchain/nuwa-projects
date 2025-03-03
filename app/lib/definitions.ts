@@ -102,6 +102,18 @@ export interface EcosystemData extends BarDatum {
   soc: number;
 }
 
+export interface PopulationResult extends BarDatum {
+  period: number;
+  population: number;
+  co2eq_tonnes: number;
+  co2eq_accumulated: number;
+}
+
+export interface Event {
+  year: string;
+  percentage: string;
+}
+
 export interface ParcelCo2Data {
   ecosystem: string;
   speceis: string;

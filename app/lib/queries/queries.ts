@@ -70,23 +70,28 @@ export async function fetchCardData() {
     }
   }
 
-  // export async function fetchSpeciesByProjectId(projectId: string) {
-  //   try {
-  //     const speciesData = await prisma.species.findMany({
-  //       where: {
-  //         projectId,
-  //       },
-  //       select: {
-  //         name: true,
-  //       },
-  //     });
+  export async function fetchSpeciesByProjectId(projectId: string) {
+    try {
+      const uniqueSpecies = await prisma.species.findMany({
+        distinct: ['common_name'], // Ensures unique species based on common_name
+        select: {
+          common_name: true
+        },
+        where: {
+          parcels: {
+            some: {
+              projectId: projectId
+            }
+          }
+        }
+      }).then(results => results.map(result => result.common_name));
 
-  //     return speciesData;
-  //   } catch (error) {
-  //     console.error('Database Error:', error);
-  //     throw new Error('Failed to fetch species data.');
-  //   }
-  // }
+      return uniqueSpecies;
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw new Error('Failed to fetch species data.');
+    }
+  }
 
   export async function fetchProjectById(id: string) {
     try {

@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs";
-import { CellValue, EcosystemUnitsMapping, EcosystemValues, ProjectUnitsMapping, ProjectValues, SpeciesUnitsMapping, SpeciesValues } from "../definitions";
+import { CellValue, CoverageUnitsMapping, CoverageValues, EcosystemUnitsMapping, EcosystemValues, ProjectUnitsMapping, ProjectValues, SpeciesUnitsMapping, SpeciesValues } from "../definitions";
 import ExcelJS from "exceljs";
-import { Prisma, Status } from "@prisma/client";
+import { Index, Prisma, Status } from "@prisma/client";
 import { z } from "zod";
 
 import { prisma } from '@/prisma';
@@ -156,7 +156,7 @@ export async function parcelsParser(worksheet: ExcelJS.Worksheet): Promise<Prism
     parcels.push({
       ...parcelData,
       projectId,
-      ecosystemId,
+      ecosystemId: ecosystemId ?? "",
       speciesId,
     });
   }
@@ -164,6 +164,54 @@ export async function parcelsParser(worksheet: ExcelJS.Worksheet): Promise<Prism
   return parcels;
 }
 
+// ✅ Helper function to parse Coverage data
+export async function coverageParser(worksheet: ExcelJS.Worksheet): Promise<Prisma.CoverageCreateManyInput[]> {
+  const coverage: Prisma.CoverageCreateManyInput[] = [];
+
+  const ecosystem = new Set<string>();
+
+  for (const row of worksheet.getRows(2, worksheet.rowCount - 1) || []) {
+    ecosystem.add(getCellValue(row.getCell(1)) as string);
+  }
+
+  const ecosystems = await prisma.ecosystem.findMany({
+    where: { type: { in: Array.from(ecosystem) } },
+    select: { id: true },
+  });
+
+  const ecosystemMap = new Map(ecosystems.map((e) => [e.id, e.id]));
+
+  // ✅ Extract Coverage data
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // Skip header row
+
+    const ecosystem = getCellValue(row.getCell(1)) as string | null; // Column A
+    const description = getCellValue(row.getCell(2)) as string | null; // Column B
+    const type = getCellValue(row.getCell(3)) as string | null; // Column C
+    const index = getCellValue(row.getCell(4)) as Index | undefined; // Column D
+
+    const ecosystemId = ecosystem ? ecosystemMap.get(ecosystem) : undefined;
+
+    const values = {
+      range: getCellValue(row.getCell(5)) as string | null, // Column E
+      biomass_type: getCellValue(row.getCell(6)) as number | null, // Column F
+      agb_equation: getCellValue(row.getCell(7)) as string | null, // Column G
+    }
+
+
+    const jsonValues: Prisma.InputJsonValue = formatValuesCoverage(values);
+
+    coverage.push({
+      ecosystemId,
+      description: description ?? null,
+      type,
+      index,
+      values: jsonValues,
+    });
+  });
+
+  return coverage;
+}
 
 // ✅ Helper function to structure values with units for Ecosystem
 export function formatValuesSpecies(values: SpeciesValues): Prisma.InputJsonValue {
@@ -187,15 +235,25 @@ export function formatValuesSpecies(values: SpeciesValues): Prisma.InputJsonValu
   }
   }
 
-// ✅ Helper function to structure values with units for Ecosystem
-export function formatValuesEcosystem(values: EcosystemValues): Prisma.InputJsonValue {
+  // ✅ Helper function to structure values with units for Ecosystem
+  export function formatValuesEcosystem(values: EcosystemValues): Prisma.InputJsonValue {
+    return {
+      BD: values.BD !== null ? { value: values.BD, unit: EcosystemUnitsMapping.BD } : null,
+      C: values.C !== null ? { value: values.C, unit: EcosystemUnitsMapping.C } : null,
+      Profundidad: values.Profundidad !== null ? { value: values.Profundidad, unit: EcosystemUnitsMapping.Profundidad } : null,
+      SOC: values.SOC !== null ? { value: values.SOC, unit: EcosystemUnitsMapping.SOC } : null,
+    }
+    }
+
+// ✅ Helper function to structure values with units for Coverage
+export function formatValuesCoverage(values: CoverageValues): Prisma.InputJsonValue {
   return {
-    BD: values.BD !== null ? { value: values.BD, unit: EcosystemUnitsMapping.BD } : null,
-    C: values.C !== null ? { value: values.C, unit: EcosystemUnitsMapping.C } : null,
-    Profundidad: values.Profundidad !== null ? { value: values.Profundidad, unit: EcosystemUnitsMapping.Profundidad } : null,
-    SOC: values.SOC !== null ? { value: values.SOC, unit: EcosystemUnitsMapping.SOC } : null,
+    range: values.range !== null ? { value: values.range, unit: CoverageUnitsMapping.range } : null,
+    biomass_type: values.biomass_type !== null ? { value: values.biomass_type, unit: CoverageUnitsMapping.biomass_type } : null,
+    agb_equation: values.agb_equation !== null ? { value: values.agb_equation, unit: CoverageUnitsMapping.agb_equation } : null,
   }
   }
+
 
 export function formatValuesProject(values: ProjectValues): Prisma.InputJsonValue {
   const geolocation = values.geolocation_point ? values.geolocation_point.split(",").map((k) => k.trim()) : []

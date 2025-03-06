@@ -287,7 +287,7 @@ BEGIN
             EXECUTE index_stmt;
         END IF;
     END LOOP;
-END $$ LANGUAGE plpgsql;
+END $$;
 
 CREATE OR REPLACE PROCEDURE parcels_co2eq_materialized()
 LANGUAGE plpgsql
@@ -342,7 +342,7 @@ BEGIN
             EXECUTE index_stmt;
         END IF;
     END LOOP;
-END $$ LANGUAGE plpgsql;
+END $$;
 
 CREATE OR REPLACE FUNCTION sum_all_parcels_agbs_totals()
 RETURNS TABLE (grand_total_co2 NUMERIC, grand_total_area NUMERIC) 
@@ -376,7 +376,7 @@ BEGIN
         RETURN QUERY SELECT 0::NUMERIC, 0::NUMERIC;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE OR REPLACE FUNCTION avg_all_parcels_co2eq_totals()
 RETURNS TABLE (sum_co2_total NUMERIC, average_co2_total NUMERIC)
@@ -417,7 +417,7 @@ BEGIN
         RETURN QUERY SELECT 0::NUMERIC AS sum_co2_total, 0::NUMERIC AS average_co2_total;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE OR REPLACE FUNCTION generate_growth_project(
     project_id_param UUID,
@@ -427,8 +427,10 @@ CREATE OR REPLACE FUNCTION generate_growth_project(
     events_param JSON
 )
 RETURNS TABLE (
-    year INT,
-    population NUMERIC
+    period INT,
+    population INTEGER,
+    co2eq_tonnes NUMERIC,
+    co2eq_accumulated NUMERIC  -- New column for accumulated CO2eq
 ) AS $$
 DECLARE
     initial_population NUMERIC;
@@ -437,11 +439,15 @@ DECLARE
     event_record JSON;
     harvest_percent NUMERIC;
     table_name TEXT;
+    year_offset INT;
+    total_years INT;
+    co2eq_per_individual NUMERIC;
+    cumulative_co2eq NUMERIC := 0;  -- Variable to track accumulated CO2eq
 BEGIN
     -- Sanitize UUID: Remove hyphens and truncate to 20 characters
     table_name := 'parcels_agbs_project_' || left(replace(project_id_param::TEXT, '-', ''), 20);
 
-    -- Get initial population dynamically based on the constructed table name
+    -- Get initial population
     EXECUTE format('
         SELECT SUM(individuals)
         FROM %I
@@ -454,12 +460,20 @@ BEGIN
         initial_population := 0;
     END IF;
 
+    -- Calculate total years between start and end date
+    total_years := EXTRACT(YEAR FROM end_date_param) - EXTRACT(YEAR FROM start_date_param);
+
+    -- Call generate_species_data once to get CO2eq for all years
+    CREATE TEMP TABLE temp_species_data AS
+    SELECT year, co2eq
+    FROM generate_species_data(ARRAY[species_param], total_years);
+
     current_population := initial_population;
     current_year := EXTRACT(YEAR FROM start_date_param);
 
     -- Loop through years from start to end
     WHILE current_year <= EXTRACT(YEAR FROM end_date_param) LOOP
-        year := current_year;
+        period := current_year;
         
         -- Check if there's a harvest event for this year
         harvest_percent := 0;
@@ -476,10 +490,33 @@ BEGIN
             current_population := current_population * (1 - harvest_percent);
         END IF;
 
-        population := current_population;
-        
+        -- Cast population to INTEGER to remove decimals
+        population := current_population::INTEGER;
+
+        -- Calculate year offset and get CO2eq from temp table
+        year_offset := current_year - EXTRACT(YEAR FROM start_date_param);
+        SELECT co2eq
+        INTO co2eq_per_individual
+        FROM temp_species_data
+        WHERE temp_species_data.year = year_offset;
+
+        -- If no CO2eq found (shouldn't happen), default to 0
+        IF co2eq_per_individual IS NULL THEN
+            co2eq_per_individual := 0;
+        END IF;
+
+        -- Calculate CO2eq in tonnes and round to 2 decimal places
+        co2eq_tonnes := ROUND((co2eq_per_individual * current_population) / 1000, 2);
+
+        -- Update accumulated CO2eq
+        cumulative_co2eq := cumulative_co2eq + co2eq_tonnes;
+        co2eq_accumulated := ROUND(cumulative_co2eq, 2);  -- Round to 2 decimal places
+
         RETURN NEXT;
         current_year := current_year + 1;
     END LOOP;
+
+    -- Clean up temp table
+    DROP TABLE temp_species_data;
 END;
 $$ LANGUAGE plpgsql;

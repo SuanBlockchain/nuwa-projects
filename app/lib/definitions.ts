@@ -51,6 +51,12 @@ export interface EcosystemValues {
   SOC: number | null;
   }
 
+export interface CoverageValues {
+  range: string | null;
+  biomass_type: number | null;
+  agb_equation: string | null;
+  }
+
 // ✅ Helper function to structure values with units for Projects
 export interface ProjectValues {
   impact: number | null;
@@ -165,6 +171,12 @@ export const EcosystemUnitsMapping = {
   C: "%",
   Profundidad: "m",
   SOC: "tC/ha",
+};
+
+export const CoverageUnitsMapping = {
+  range: "-",
+  biomass_type: "%",
+  agb_equation: "-",
 };
 
 // Projects units mapping

@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from 'next-auth';
- 
+import { NextResponse } from 'next/server';
+
 export const authConfig = {
   pages: {
     signIn: '/login',
@@ -8,17 +9,18 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isRootHomePage = nextUrl.pathname === '/';
-      const publicRoutes = ['/', '/login']; // Add any other public routes here
+      const publicRoutes = ['/', '/login', '/seed'];
       const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-      
-      if (!isPublicRoute) {
-        if (isLoggedIn) return true;
-        return Response.redirect(new URL('/login', nextUrl)); // Redirect unauthenticated users to login page
-      } else if (isLoggedIn && isRootHomePage) {
-        return Response.redirect(new URL('/dashboard', nextUrl));
+
+      if (isLoggedIn && isRootHomePage) {
+        // Let middleware handle the redirect to /dashboard
+        return false; // Deny access to root, middleware will redirect
       }
-      return true;
+      if (!isPublicRoute && !isLoggedIn) {
+        return false; // Deny access to protected routes if not logged in
+      }
+      return true; // Allow access to public routes or authenticated users
     },
   },
-  providers: [], // Add providers with an empty array for now
+  providers: [],
 } satisfies NextAuthConfig;

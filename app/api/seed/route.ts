@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import fs from "fs";
-import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser, parcelsParser } from "@/app/lib/seed/helper";
+import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser, parcelsParser, coverageParser } from "@/app/lib/seed/helper";
 
 export const config = {
   api: { bodyParser: false },
@@ -97,7 +97,20 @@ export async function POST(req: Request) {
               });
 
           console.log("✅ Parcels inserted successfully:", parcels);
-        }
+        } else if (sheetName === "Coverage") {
+          const coverage = await coverageParser(worksheet);
+
+          // ✅ Insert coverage into Prisma
+          await prisma.coverage.createMany({
+            data: coverage,
+            skipDuplicates: true,
+          });
+
+          console.log("✅ Coverage inserted successfully:", coverage);
+        } 
+
+
+
         await prisma.$executeRawUnsafe(`CALL parcels_agbs_calculations_materialized()`);
         await prisma.$executeRawUnsafe(`CALL parcels_co2eq_materialized()`);
       } catch (error) {

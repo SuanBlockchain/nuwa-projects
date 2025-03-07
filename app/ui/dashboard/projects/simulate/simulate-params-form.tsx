@@ -50,7 +50,6 @@ export default function SimulateParamsFormClient({
       endDate: e.currentTarget.endDate.value,
       events: events
     };
-    console.log('formData:', formData);
 
     try {
       // Call API route to generate population table

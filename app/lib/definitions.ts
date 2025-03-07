@@ -57,6 +57,22 @@ export interface CoverageValues {
   agb_equation: string | null;
   }
 
+export interface ParcelAnalysisValues {
+  ndvi_before: number | null, 
+  ndvi_after: number | null, 
+  biomassha_before: number | null, 
+  biomassha_after: number | null, 
+  url_geojson: string | null, 
+  band11: string | null, 
+  band4: string | null, 
+  band3: string | null, 
+  band8: string | null, 
+  method: string | null, 
+  time_horizon: number | null, 
+  biomass_prediction: number | null, 
+  ndvi_prediction: number | null, 
+  }
+
 // ✅ Helper function to structure values with units for Projects
 export interface ProjectValues {
   impact: number | null;
@@ -177,6 +193,22 @@ export const CoverageUnitsMapping = {
   range: "-",
   biomass_type: "%",
   agb_equation: "-",
+};
+
+export const ParcelAnalysisUnitsMapping = {
+  ndvi_before: "-", 
+  ndvi_after: "-", 
+  biomassha_before: "-", 
+  biomassha_after: "-", 
+  url_geojson: "-", 
+  band11: "-", 
+  band4: "-", 
+  band3: "-", 
+  band8: "-", 
+  method: "-", 
+  time_horizon: "-", 
+  biomass_prediction: "-", 
+  ndvi_prediction: "-",
 };
 
 // Projects units mapping

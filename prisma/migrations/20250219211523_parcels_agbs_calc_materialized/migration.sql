@@ -1,21 +1,21 @@
 CREATE OR REPLACE VIEW total_impact AS
  SELECT sum((("Project"."values" -> 'impact'::text) ->> 'value'::text)::integer) AS total_impact
-   FROM "Project"
+   FROM public."Project"
   WHERE (("Project"."values" -> 'impact'::text) ->> 'value'::text) IS NOT NULL;
   
 CREATE OR REPLACE VIEW total_investment AS
  SELECT sum((("Project"."values" -> 'total_investment'::text) ->> 'value'::text)::integer) AS total_investment
-   FROM "Project"
+   FROM public."Project"
   WHERE (("Project"."values" -> 'total_investment'::text) ->> 'value'::text) IS NOT NULL;
 
 CREATE OR REPLACE VIEW total_bankable_investment AS
  SELECT sum((("Project"."values" -> 'bankable_investment'::text) ->> 'value'::text)::integer) AS total_bankable_investment
-   FROM "Project"
+   FROM public."Project"
   WHERE (("Project"."values" -> 'bankable_investment'::text) ->> 'value'::text) IS NOT NULL;
   
 CREATE OR REPLACE VIEW total_income AS
  SELECT sum((("Project"."values" -> 'income'::text) ->> 'value'::text)::integer) AS total_income
-   FROM "Project"
+   FROM public."Project"
   WHERE (("Project"."values" -> 'income'::text) ->> 'value'::text) IS NOT NULL;
 
 CREATE OR REPLACE VIEW species_calculation AS
@@ -26,7 +26,7 @@ CREATE OR REPLACE VIEW species_calculation AS
             ((s."values" -> 'avg_dbh'::text) ->> 'value'::text)::numeric AS avg_dbh,
             ((s."values" -> 'allometric_coeff_b'::text) ->> 'value'::text)::numeric AS allometric_coeff_b,
             ((s."values" -> 'r_coeff'::text) ->> 'value'::text)::numeric AS r_coeff
-           FROM "Species" s
+           FROM public."Species" s
         ), agb_calc AS (
          SELECT base_values.species_id,
             base_values.common_name,
@@ -117,7 +117,7 @@ BEGIN
             (values -> 'allometric_coeff_b' ->> 'value')::NUMERIC,
             (values -> 'r_coeff' ->> 'value')::NUMERIC
         INTO max_h, g_b, g_c, avg_dbh, g_b_dbh, g_c_dbh, allometric_a, allometric_b, r_coefficient
-        FROM "Species"
+        FROM public."Species"
         WHERE common_name = species_name;
 
         -- If species not found, skip to the next species
@@ -228,7 +228,7 @@ BEGIN
                            ((s."values" -> ''r_coeff'') ->> ''value'')::numeric AS r_coeff,
                            sc.agb_species,
                            p.area::numeric * (((e."values" -> ''SOC'') ->> ''value'')::numeric) AS parcel_soc_total
-                    FROM "Parcels" p
+                    FROM public."Parcels" p
                     LEFT JOIN "Species" s ON p."speciesId" = s.id
                     LEFT JOIN species_calculation sc ON s.id = sc.species_id
                     LEFT JOIN "Ecosystem" e ON p."ecosystemId" = e.id
@@ -300,7 +300,7 @@ DECLARE
     view_exists BOOLEAN;
     index_exists BOOLEAN;
 BEGIN
-    FOR project_row IN (SELECT DISTINCT "id" FROM "Project") LOOP
+    FOR project_row IN (SELECT DISTINCT "id" FROM public."Project") LOOP
         -- Sanitize UUID: Remove hyphens and truncate to 20 characters
         project_id_sanitized := left(replace(project_row."id"::TEXT, '-', ''), 20);
 
@@ -354,7 +354,7 @@ DECLARE
     union_query TEXT := '';
     first_table BOOLEAN := true;
 BEGIN
-    FOR project_row IN (SELECT DISTINCT "id" FROM "Project") LOOP
+    FOR project_row IN (SELECT DISTINCT "id" FROM public."Project") LOOP
         project_id_sanitized := left(replace(project_row."id"::TEXT, '-', ''), 20);
         
         IF NOT first_table THEN
@@ -389,7 +389,7 @@ DECLARE
     first_table BOOLEAN := true;
 BEGIN
     -- Loop through all project IDs
-    FOR project_row IN (SELECT DISTINCT "id" FROM "Project") LOOP
+    FOR project_row IN (SELECT DISTINCT "id" FROM public."Project") LOOP
         -- Sanitize UUID: Remove hyphens and truncate to 20 characters
         project_id_sanitized := left(replace(project_row."id"::TEXT, '-', ''), 20);
 

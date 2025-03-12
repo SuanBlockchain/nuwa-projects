@@ -6,7 +6,6 @@ export default function NuwaLogo() {
     <div
       className={`${inter.className} flex flex-col justify-center items-center leading-none text-black dark:text-white`}
     >
-      {/* <CubeTransparentIcon className="h-12 w-12 rotate-[15deg]" />  */}
       <Image
         alt=""
         src="/nuwa-logo1.png"

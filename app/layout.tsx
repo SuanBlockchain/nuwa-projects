@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { roboto } from '@/app/ui/fonts';
-import Navbar from "./ui/navbar";
+import ServerNavbar from "./ui/ServerNavbar"; // Updated import
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
-import { ThemeProvider } from "@/app/components/theme-provider";
-
-
+import { ThemeProvider } from "@/app/ui/theme-provider";
 
 export const metadata: Metadata = {
   title: "Nuwa Projects",
@@ -28,12 +26,10 @@ export default function RootLayout({
         defaultTheme="system"
         enableSystem
         >
-            <Theme 	>
-            <Navbar />
+            <Theme>
+            <ServerNavbar /> {/* Use ServerNavbar here */}
               {children}
-
             </Theme>
-
         </ThemeProvider>
       </body>
     </html>

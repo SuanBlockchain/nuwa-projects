@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Progress } from "@/app/components/ui/progress";
+import { Button } from "@/app/ui/button";
+import { Input } from "@/app/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card";
+import { Progress } from "@/app/ui/progress";
 import { UploadCloud } from "lucide-react";
 
 const FileUploadForm = () => {

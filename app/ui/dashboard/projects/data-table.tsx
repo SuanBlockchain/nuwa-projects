@@ -21,17 +21,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table"
+} from "@/app/ui/table"
 
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
-  } from "@/app/components/ui/dropdown-menu"
+  } from "@/app/ui/dropdown-menu"
 
-import { Button } from "@/app/components/ui/button"
-import { Input } from "@/app/components/ui/input"
+import { Button } from "@/app/ui/button"
+import { Input } from "@/app/ui/input"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

@@ -1,7 +1,7 @@
 import { z } from "zod";
-import bcrypt from "bcrypt";
 
 import { prisma } from '@/prisma';
+import { saltAndHashPassword } from "../lib/utils";
 
 
 const users = [
@@ -31,7 +31,8 @@ async function initDatabase() {
     // ✅ Use Promise.all() to wait for all password hashes
     const hashedUsers = await Promise.all(
       users.map(async (user) => {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
+        const hashedPassword = await saltAndHashPassword(user.password);
+        // const hashedPassword = await bcrypt.hash(user.password, 10);
         return userSchema.parse({ ...user, password: hashedPassword });
       })
     );

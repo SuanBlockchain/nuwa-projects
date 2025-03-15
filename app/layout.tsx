@@ -5,6 +5,7 @@ import ServerNavbar from "./ui/ServerNavbar"; // Updated import
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/app/ui/theme-provider";
+import Footer from "./ui/footer";
 
 export const metadata: Metadata = {
   title: "Nuwa Projects",
@@ -29,6 +30,7 @@ export default function RootLayout({
             <Theme>
             <ServerNavbar /> {/* Use ServerNavbar here */}
               {children}
+            <Footer />
             </Theme>
         </ThemeProvider>
       </body>

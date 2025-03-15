@@ -9,7 +9,7 @@ export const ProjectInfo = () => {
         <AlertDescription>
           This application uses AI to query our database with Natural Language.
           It may take a few seconds to generate the SQL query and run it.
-          And sometimes make mistakes!!!{" "}
+          And sometimes, just sometimes, makes mistakes!!!{" "}
         </AlertDescription>
       </Alert>
     </div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
+import Image from 'next/image';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx';
 import { NavigationItem } from '@/app/lib/definitions';
@@ -21,6 +22,7 @@ import {
     HamburgerMenuIcon,
   } from '@radix-ui/react-icons';
 import ThemeToggle from "@/app/ui/theme-toggle";
+import { theme, appConfig } from "@/app/app.config";
 
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '/', current: true },
@@ -42,13 +44,30 @@ const Navbar = () => {
                 <div className="relative flex h-16 items-center justify-between">
                     <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                         <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
-                            <span className="absolute -inset-0.5" />
-                            <span className="sr-only">Open main menu</span>
                             <Bars3Icon aria-hidden="true" className="block size-6 group-data-open:hidden" />
                             <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-open:block" />
                         </DisclosureButton>
                     </div>
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                        <Image
+                            src={appConfig.logo.path}
+                            alt={appConfig.logo.alt}
+                            width={32}
+                            height={32}
+                            style={{
+                                height: "2rem",
+                                width: "auto",
+                                marginRight: "0.5rem",
+                            }}
+                        />
+                        <div className="flex items-center">
+                            <span
+                                className="hidden sm:inline"
+                                style={{ color: theme.colors.text.primary }}
+                            >
+                                {appConfig.title}
+                            </span>
+                        </div>
                         <div className="hidden sm:ml-6 sm:block">
                             <div className="flex space-x-4">
                                 {navigation.map((link) => (
@@ -113,6 +132,11 @@ const Navbar = () => {
                                 <DropdownMenuRoot.Item>
                                 <Link href="">
                                     <button type={"button"}>Sign up</button>
+                                </Link>
+                                </DropdownMenuRoot.Item>
+                                <DropdownMenuRoot.Item>
+                                <Link href="/connect">
+                                    <button type={"button"}>Blockchain</button>
                                 </Link>
                                 </DropdownMenuRoot.Item>
 

@@ -368,3 +368,14 @@ export const hoverMessages: Record<string, HoverMessage> = {
         content: "No specific information available for this indicator."
     }
 };
+
+export interface UseCardanoReturn {
+  isConnected: boolean;
+  connect: () => void;
+  disconnect: () => void;
+  stakeAddress: string | null;
+  accountBalance: string | null;
+  installedExtensions: string[];
+  enabledWallet: string | null;
+  usedAddresses: string[];
+}

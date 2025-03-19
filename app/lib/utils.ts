@@ -6,6 +6,19 @@ import { prisma } from '@/prisma';
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+import blueprint from "@/contracts/plutus.json" assert { type: "json" };
+import {
+  applyDoubleCborEncoding,
+  applyParamsToScript,
+  Constr,
+  fromText,
+  validatorToAddress,
+  validatorToScriptHash,
+  type MintingPolicy,
+  type OutRef,
+  type SpendingValidator,
+} from "@lucid-evolution/lucid";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -30,20 +43,6 @@ export const formatDateToLocal = (
   const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
 };
-
-// export const generateYAxis = (revenue: Revenue[]) => {
-//   // Calculate what labels we need to display on the y-axis
-//   // based on highest record and in 1000s
-//   const yAxisLabels = [];
-//   const highestRecord = Math.max(...revenue.map((month) => month.revenue));
-//   const topLabel = Math.ceil(highestRecord / 1000) * 1000;
-
-//   for (let i = topLabel; i >= 0; i -= 1000) {
-//     yAxisLabels.push(`$${i / 1000}K`);
-//   }
-
-//   return { yAxisLabels, topLabel };
-// };
 
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
@@ -95,5 +94,65 @@ export async function getUser(email: string): Promise<User | undefined> {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
   }
+}
+
+ 
+export type Validators = {
+  giftCard: string;
+};
+ 
+export function readValidators(): Validators {
+
+  const giftCard = blueprint.validators.find(
+    (v) => v.title === "oneshot.gift_card.spend"
+  );
+
+  if (!giftCard) {
+    throw new Error("Gift Card validator not found. Please check the structure of the plutus.json file.");
+  }
+
+  return {
+    giftCard: giftCard.compiledCode,
+  };
+}
+
+export type AppliedValidators = {
+  redeem: SpendingValidator;
+  giftCard: MintingPolicy;
+  policyId: string;
+  lockAddress: string;
+};
+ 
+export function applyParams(
+  tokenName: string,
+  outputReference: OutRef,
+  validator: string
+): AppliedValidators {
+  const outRef = new Constr(0, [
+    outputReference.txHash,
+    BigInt(outputReference.outputIndex),
+  ]);
+ 
+  const giftCard = applyParamsToScript(validator, [
+    fromText(tokenName),
+    outRef,
+  ]);
+ 
+  const policyId = validatorToScriptHash({
+    type: "PlutusV3",
+    script: giftCard,
+  });
+ 
+  const lockAddress = validatorToAddress("Preview", {
+    type: "PlutusV3",
+    script: giftCard,
+  });
+ 
+  return {
+    redeem: { type: "PlutusV3", script: applyDoubleCborEncoding(giftCard) },
+    giftCard: { type: "PlutusV3", script: applyDoubleCborEncoding(giftCard) },
+    policyId,
+    lockAddress,
+  };
 }
 

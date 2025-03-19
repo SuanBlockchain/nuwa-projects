@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useWallet } from "./useWallet";
 import { theme } from "./theme";
-// import { buildTransaction } from "../api/buildTransaction";
 import { Lucid } from "@lucid-evolution/lucid";
 
 interface SendAdaButtonProps {

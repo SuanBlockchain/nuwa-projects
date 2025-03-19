@@ -14,6 +14,7 @@ export const theme = {
         primary: "#e5e7eb",
         secondary: "#9ca3af",
       },
+      disabled: "#6b7280",
     },
     gradients: {
       background: "linear-gradient(145deg, #111827, #1f2937)",

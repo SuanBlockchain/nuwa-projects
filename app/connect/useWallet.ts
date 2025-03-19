@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { LucidEvolution } from "@lucid-evolution/lucid";
 
 export enum NetworkType {
@@ -54,7 +54,8 @@ export const useWallet = () => {
     limitNetwork: network,
   });
 
-  const initLucid = async () => {
+  const initLucid = useCallback(async () => {
+    console.log("🚀 Initializing Lucid...");
     if (!isClient) return null;
 
     if (!isConnected || !enabledWallet || !usedAddresses?.length) {
@@ -101,7 +102,7 @@ export const useWallet = () => {
       console.error("❌ Lucid initialization error:", error);
       throw error;
     }
-  };
+  }, [isClient, isConnected, enabledWallet, usedAddresses]);
 
   // ✅ Instead of returning early, return default values for SSR
   if (!isClient) {

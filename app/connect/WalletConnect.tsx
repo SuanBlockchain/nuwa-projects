@@ -2,14 +2,21 @@ import { useWallet } from "./useWallet";
 import { theme } from "./theme";
 import { useState } from "react";
 import ConnectButton from "./ConnectButton";
+import CopyButton from "./copyButton";
 
 const WalletConnect = () => {
-  const { isConnected, stakeAddress, accountBalance } = useWallet();
-  const [showCopied, setShowCopied] = useState(false);
+  const { isConnected, stakeAddress, accountBalance, usedAddresses } = useWallet();
+  const [showCopiedStake, setShowCopiedStake] = useState(false);
+  const [showCopiedWallet, setShowCopiedWallet] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  const handleCopy = async () => {
-    if (typeof window !== "undefined" && stakeAddress) {
-      await navigator.clipboard.writeText(stakeAddress);
+  if (usedAddresses?.[0] && usedAddresses[0] !== walletAddress) {
+    setWalletAddress(usedAddresses[0]);
+  }
+
+  const handleCopy = async (address: string, setShowCopied: React.Dispatch<React.SetStateAction<boolean>>) => {
+    if (typeof window !== "undefined" && address) {
+      await navigator.clipboard.writeText(address);
       setShowCopied(true);
       setTimeout(() => setShowCopied(false), 2000);
     }
@@ -110,32 +117,96 @@ const WalletConnect = () => {
                   : "Not available"}
               </span>
               {stakeAddress && (
-                <button
-                  onClick={handleCopy}
-                  style={{
-                    background: theme.colors.background.secondary,
-                    border: `1px solid ${theme.colors.border.secondary}`,
-                    borderRadius: "6px",
-                    width: "32px",
-                    height: "32px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    color: showCopied
-                      ? theme.colors.primary
-                      : theme.colors.text.secondary,
-                    fontSize: "0.75rem",
-                    transition: "all 0.2s ease",
-                    position: "relative",
-                  }}
-                  title="Copy address"
-                >
-                  {showCopied ? "✓" : "⎘"}
-                </button>
+                // <button
+                //   onClick={() => handleCopy(stakeAddress, setShowCopiedStake)}
+                //   style={{
+                //     background: theme.colors.background.secondary,
+                //     border: `1px solid ${theme.colors.border.secondary}`,
+                //     borderRadius: "6px",
+                //     width: "32px",
+                //     height: "32px",
+                //     display: "flex",
+                //     alignItems: "center",
+                //     justifyContent: "center",
+                //     cursor: "pointer",
+                //     color: showCopiedStake
+                //       ? theme.colors.primary
+                //       : theme.colors.text.secondary,
+                //     fontSize: "0.75rem",
+                //     transition: "all 0.2s ease",
+                //     position: "relative",
+                //   }}
+                //   title="Copy address"
+                // >
+                //   {showCopiedStake ? "✓" : "⎘"}
+                // </button>
+                <CopyButton text={stakeAddress} />
               )}
             </div>
           </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span
+              style={{
+                color: theme.colors.text.secondary,
+                fontSize: "0.875rem",
+              }}
+            >
+              Account Address
+            </span>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <span
+                style={{
+                  color: theme.colors.text.primary,
+                  fontSize: "0.875rem",
+                  fontFamily: "inherit",
+                  background: theme.colors.background.secondary,
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "6px",
+                  border: `1px solid ${theme.colors.border.secondary}`,
+                }}
+              >
+                {walletAddress
+                  ? `${walletAddress.slice(0, 20)}...${walletAddress.slice(-20)}`
+                  : "Not available"}
+              </span>
+              {walletAddress && (
+                // <button
+                //   onClick={() => handleCopy(walletAddress, setShowCopiedWallet)}
+                //   style={{
+                //     background: theme.colors.background.secondary,
+                //     border: `1px solid ${theme.colors.border.secondary}`,
+                //     borderRadius: "6px",
+                //     width: "32px",
+                //     height: "32px",
+                //     display: "flex",
+                //     alignItems: "center",
+                //     justifyContent: "center",
+                //     cursor: "pointer",
+                //     color: showCopiedWallet
+                //       ? theme.colors.primary
+                //       : theme.colors.text.secondary,
+                //     fontSize: "0.75rem",
+                //     transition: "all 0.2s ease",
+                //     position: "relative",
+                //   }}
+                //   title="Copy address"
+                // >
+                //   {showCopiedWallet ? "✓" : "⎘"}
+                // </button>
+                <CopyButton text={walletAddress} />
+              )}
+            </div>
+          </div>
+
           <div
             style={{
               display: "flex",

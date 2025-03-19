@@ -6,21 +6,11 @@ import CopyButton from "./copyButton";
 
 const WalletConnect = () => {
   const { isConnected, stakeAddress, accountBalance, usedAddresses } = useWallet();
-  const [showCopiedStake, setShowCopiedStake] = useState(false);
-  const [showCopiedWallet, setShowCopiedWallet] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   if (usedAddresses?.[0] && usedAddresses[0] !== walletAddress) {
     setWalletAddress(usedAddresses[0]);
   }
-
-  const handleCopy = async (address: string, setShowCopied: React.Dispatch<React.SetStateAction<boolean>>) => {
-    if (typeof window !== "undefined" && address) {
-      await navigator.clipboard.writeText(address);
-      setShowCopied(true);
-      setTimeout(() => setShowCopied(false), 2000);
-    }
-  };
 
   if (!isConnected) {
     return (

@@ -35,7 +35,7 @@ export default function Page() {
     } catch (error) {
       console.error("Error initializing Lucid:", error);
     }
-  }, [initLucid]);
+  }, [initLucid, usedAddresses, walletAddress]);
 
   useEffect(() => {
     if (isConnected) {
@@ -45,7 +45,7 @@ export default function Page() {
       setLucidInstance(null);
       hasLoggedAddress.current = false;
     }
-  }, [initialize]);
+  }, [initialize, isConnected]);
 
   return (
     <div style={{ minHeight: "100vh", background: theme.gradients.background }}>
@@ -67,8 +67,6 @@ export default function Page() {
               {walletAddress && lucidInstance && (
                 <LockGiftCard instance={lucidInstance} usedAddresses={usedAddresses} />
               )}
-
-              {/* <LockGiftCard /> */}
 
               <div
                 style={{

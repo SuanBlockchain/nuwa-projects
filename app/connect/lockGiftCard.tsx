@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { theme } from "../app.config";
-// import { Constr, Data, fromText, Lucid } from "@lucid-evolution/lucid";
-// import { Constr, Data, fromText, Lucid } from "@/app/lib/lucid-client";
 import { getLucidWasmBindings, Lucid } from "@/app/lib/lucid-client";
 import { applyParams, AppliedValidators, readValidators } from "../lib/utils";
 import CopyButton from "./copyButton";
@@ -29,15 +27,16 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
     if (instance) {
       setLucidInstance(instance);
     }
-  }, []);
+  }, [instance]);
 
-  if (usedAddresses?.[0] && usedAddresses[0] !== walletAddress) {
-    setWalletAddress(usedAddresses[0]);
-  }
-
+  useEffect(() => {
+    if (usedAddresses?.[0] && usedAddresses[0] !== walletAddress) {
+      setWalletAddress(usedAddresses[0]);
+    }
+  }, [usedAddresses, walletAddress]);
+  
   const loadValidators = async () => {
     const validator = readValidators();
-    console.log("Validator loaded:", validator);
     setValidator(validator.giftCard);
   };
 
@@ -54,7 +53,6 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
         outputIndex: utxo.outputIndex,
       }
 
-      console.log("contract", validator)
 
       const contracts = await applyParams(tokenName, outputReferente, validator);
       setContracts(contracts);
@@ -64,21 +62,20 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
   }
 
   async function createGiftCard(lovelaceAmount: string) {
-    console.log("Gift Ada:", lovelaceAmount);
 
     const lucid = await getLucidWasmBindings();
-    // const { fromText } = await getLucidUtils();
 
     setWatingLockTx(true);
+    setLockTxHash(null);
+    setError(null);
 
     try {
         const lovelace = BigInt(lovelaceAmount);
         const assetName = `${contracts.policyId}${lucid.fromText(tokenName)}`;
         
         const mintRedeemer = lucid.Data.to(new lucid.Constr(0, []));
-        const utxos = await lucidInstance?.utxosAt(walletAddress)!;
+        const utxos = await lucidInstance!.utxosAt(walletAddress);
         const utxo = utxos[0];
-        console.log(contracts.giftCard, utxo);
         const tx = await lucidInstance!.newTx()
             .collectFrom([utxo])
             .mintAssets({ [assetName]: 1n, }, mintRedeemer)
@@ -88,17 +85,23 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
 
 
         const signedTx = await tx.sign.withWallet().complete();
+        console.log("Signed transaction:", signedTx);
+        console.log("Transaction:", tx);
         const txHash = await signedTx.submit();
+        console.log("Transaction hash:", txHash);
 
         const success = await lucidInstance!.awaitTx(txHash);
+        // const txHash = "184e10ec1a83a6362c41ceac9aa91c5d8cbf994fd5fdfb63c9cb0c40573f5110";
+        // const success = true;
 
         setTimeout(() => {
             setWatingLockTx(false);
 
             if (success) {
-                console.log("Transaction submitted successfully!", txHash);
-                localStorage.setItem('cache', JSON.stringify({ tokenName, lovelaceAmount, contracts: contracts, lockTxHash: txHash }));
-                setLockTxHash(txHash);
+              console.log("Transaction submitted successfully!", txHash);
+              localStorage.setItem('cache', JSON.stringify({ tokenName, lovelaceAmount, contracts: contracts, lockTxHash: txHash }));
+              // localStorage.setItem('cache', JSON.stringify(cache));
+              setLockTxHash(txHash);
             }
         }, 3000);
 
@@ -111,6 +114,65 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
         }
 
     }
+
+  async function redeemGiftCard() {
+
+      const lucid = await getLucidWasmBindings();
+
+      setWatingLockTx(true);
+      setLockTxHash(null);
+      setError(null);
+
+      try {
+          const cache = localStorage.getItem("cache");
+          
+          if (!cache) {
+              throw new Error("Nothing found in local storage");
+          }
+          
+          const { contracts, tokenName } = JSON.parse(cache);
+          if (!contracts || !tokenName) {
+              throw new Error("Invalid cache data");
+          }
+
+
+          const assetName = `${contracts.policyId}${lucid.fromText(tokenName)}`
+
+          const burnRedeemer = lucid.Data.to(new lucid.Constr(1, []));
+          const utxos = await lucidInstance!.utxosAt(contracts.lockAddress);
+          const utxo = utxos[0];
+          const tx = await lucidInstance!.newTx()
+              .collectFrom([utxo], lucid.Data.void())
+              .attach.MintingPolicy(contracts.giftCard)
+              .attach.SpendingValidator(contracts.redeem)
+              .mintAssets({ [assetName]: -1n }, burnRedeemer)
+              .complete()
+
+          const signedTx = await tx.sign.withWallet().complete();
+          console.log("Signed transaction:", signedTx);
+          console.log("Transaction:", tx);
+          const txHash = await signedTx.submit();
+          console.log("Transaction hash:", txHash);
+
+          const success = await lucidInstance!.awaitTx(txHash);
+
+          setTimeout(() => {
+              setWatingLockTx(false);
+  
+              if (success) {
+                  console.log("Transaction submitted successfully!", txHash);
+                  localStorage.removeItem("cache")
+                  setLockTxHash(txHash);
+              }
+          }, 3000);
+
+      } catch (err) {
+          console.error("Error redeeming gift card:", error);
+          setError(err instanceof Error ? err.message : "Transaction failed");
+      } finally {
+          setWatingLockTx(false);
+      }
+  }
     
   return (
     <div>
@@ -127,7 +189,7 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
             fontSize: "0.875rem",
           }}
         >
-          Make a one shot minting and lock contract
+          Make a one shot minting and lock funds in the contract
         </span>
         <div
           style={{
@@ -161,7 +223,7 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
           fontSize: "0.875rem",
         }}
       >
-        This contract allows you to mint a token as giftCard to lock ADA in the smart contract. The locked ADA can only be redeemed by burning the giftCard.
+        This contract allows you to mint a token as giftCard to lock ADA in the smart contract. The locked ADA can only be redeemed by the wallet in possession of the giftCard and after burning it.
       </p>
       <div
         style={{
@@ -345,12 +407,27 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
             >
                 {watingLockTx ? "Waiting for transaction..." : "Create transaction"}
             </button>
+            <button
+                type="submit"
+                onClick={() => redeemGiftCard()}
+                // disabled={!lovelaceAmount.trim()}
+                style={{
+                    background: !lovelaceAmount.trim() ? theme.colors.disabled : theme.colors.primary,
+                    color: theme.colors.text.secondary,
+                    padding: "0.5rem 1rem",
+                    borderRadius: "6px",
+                    border: "none",
+                    cursor: !lovelaceAmount.trim() ? "not-allowed" : "pointer",
+                }}
+            >
+                {watingLockTx ? "Waiting for transaction..." : "Claim Token"}
+            </button>
         </div>
         {lockTxHash && (
             <div style={{ marginTop: "1rem", textAlign: "center" }}>
                 <p style={{ color: "#22c55e" }}>Transaction submitted!</p>
                 <a
-                    href={`https://preprod.cardanoscan.io/transaction/${lockTxHash}`}
+                    href={`https://preview.cardanoscan.io/transaction/${lockTxHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: theme.colors.primary }}

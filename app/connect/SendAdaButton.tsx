@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useWallet } from "./useWallet";
 import { theme } from "./theme";
-import { Lucid } from "@lucid-evolution/lucid";
+// import { Lucid } from "@lucid-evolution/lucid";
+// import { Lucid } from "@/app/lib/lucid-client";
+import { Lucid } from "@/app/lib/lucid-client";
 
 interface SendAdaButtonProps {
   lovelaceAmount?: string;

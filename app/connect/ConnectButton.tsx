@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import { useWallet } from "./useWallet";
 import { theme } from "./theme";
-import type { Cardano } from "@lucid-evolution/core-types";
+// import type { Cardano } from "@lucid-evolution/core-types";
+import type { Cardano } from "@/app/lib/lucid-client";
+
 
 declare global {
   interface Window {

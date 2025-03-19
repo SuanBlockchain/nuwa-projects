@@ -4,9 +4,10 @@ import SendAdaButton from "./SendAdaButton";
 import { theme } from "./theme";
 import "@/app/globals.css";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Lucid } from "@lucid-evolution/lucid";
+// import { Lucid } from "@lucid-evolution/lucid";
+import { Lucid } from "@/app/lib/lucid-client";
 import { useWallet } from "./useWallet";
-import CreateContract from "./createContract";
+import LockGiftCard from "./lockGiftCard";
 
 export default function Page() {
   const { isConnected, usedAddresses, initLucid } = useWallet();
@@ -64,7 +65,7 @@ export default function Page() {
               }}
             >
               {walletAddress && lucidInstance && (
-                <CreateContract instance={lucidInstance} usedAddresses={usedAddresses} />
+                <LockGiftCard instance={lucidInstance} usedAddresses={usedAddresses} />
               )}
 
               {/* <LockGiftCard /> */}

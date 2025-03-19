@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 const nextConfig: NextConfig = {
+  productionBrowserSourceMaps: true,
 
   webpack: (config, { isServer }) => {
 

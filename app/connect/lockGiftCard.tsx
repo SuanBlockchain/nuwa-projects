@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { theme } from "../app.config";
-import { Constr, Data, fromText, Lucid, LucidEvolution } from "@lucid-evolution/lucid";
+// import { Constr, Data, fromText, Lucid } from "@lucid-evolution/lucid";
+// import { Constr, Data, fromText, Lucid } from "@/app/lib/lucid-client";
+import { getLucidWasmBindings, Lucid } from "@/app/lib/lucid-client";
 import { applyParams, AppliedValidators, readValidators } from "../lib/utils";
-import { Copy } from "lucide-react";
 import CopyButton from "./copyButton";
 
-interface CreateContractProps {
+interface LockGiftCardProps {
   instance: Awaited<ReturnType<typeof Lucid>>;
   usedAddresses: string[];
 }
 
-const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses }) => {
+const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) => {
   const [validator, setValidator] = useState<string>("");
   const [tokenName, setTokenName] = useState<string>("");
   const [walletAddress, setWalletAddress] = useState<string>("");
@@ -36,6 +37,7 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
 
   const loadValidators = async () => {
     const validator = readValidators();
+    console.log("Validator loaded:", validator);
     setValidator(validator.giftCard);
   };
 
@@ -52,7 +54,9 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
         outputIndex: utxo.outputIndex,
       }
 
-      const contracts = applyParams(tokenName, outputReferente, validator);
+      console.log("contract", validator)
+
+      const contracts = await applyParams(tokenName, outputReferente, validator);
       setContracts(contracts);
     } else {
       console.error("Wallet address is null");
@@ -62,13 +66,16 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
   async function createGiftCard(lovelaceAmount: string) {
     console.log("Gift Ada:", lovelaceAmount);
 
+    const lucid = await getLucidWasmBindings();
+    // const { fromText } = await getLucidUtils();
+
     setWatingLockTx(true);
 
     try {
         const lovelace = BigInt(lovelaceAmount);
-        const assetName = `${contracts.policyId}${fromText(tokenName)}`;
+        const assetName = `${contracts.policyId}${lucid.fromText(tokenName)}`;
         
-        const mintRedeemer = Data.to(new Constr(0, []));
+        const mintRedeemer = lucid.Data.to(new lucid.Constr(0, []));
         const utxos = await lucidInstance?.utxosAt(walletAddress)!;
         const utxo = utxos[0];
         console.log(contracts.giftCard, utxo);
@@ -76,7 +83,7 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
             .collectFrom([utxo])
             .mintAssets({ [assetName]: 1n, }, mintRedeemer)
             .attach.MintingPolicy(contracts!.giftCard)
-            .pay.ToContract(contracts.lockAddress, { kind: 'inline', value: Data.void()}, { lovelace: lovelace})
+            .pay.ToContract(contracts.lockAddress, { kind: 'inline', value: lucid.Data.void()}, { lovelace: lovelace})
             .complete();
 
 
@@ -84,9 +91,6 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
         const txHash = await signedTx.submit();
 
         const success = await lucidInstance!.awaitTx(txHash);
-
-        // const txHash = "1234567890";
-        // const success = true;
 
         setTimeout(() => {
             setWatingLockTx(false);
@@ -107,10 +111,7 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
         }
 
     }
-
-
-     
-
+    
   return (
     <div>
       <div
@@ -366,4 +367,4 @@ const CreateContract: React.FC<CreateContractProps> = ({ instance, usedAddresses
   );
 };
 
-export default CreateContract;
+export default LockGiftCard;

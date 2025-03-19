@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { LucidEvolution } from "@lucid-evolution/lucid";
+// import { getLucidUtils, getLucidWasmBindings } from "@/app/lib/lucid-client";
+import type { LucidEvolution } from "@/app/lib/lucid-client";
 
 export enum NetworkType {
   MAINNET = "mainnet",

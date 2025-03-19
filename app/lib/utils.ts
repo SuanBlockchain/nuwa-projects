@@ -7,17 +7,24 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 import blueprint from "@/contracts/plutus.json" assert { type: "json" };
-import {
-  applyDoubleCborEncoding,
-  applyParamsToScript,
-  Constr,
-  fromText,
-  validatorToAddress,
-  validatorToScriptHash,
-  type MintingPolicy,
-  type OutRef,
-  type SpendingValidator,
-} from "@lucid-evolution/lucid";
+import {  getLucidWasmBindings } from "@/app/lib/lucid-client";
+import type {
+  MintingPolicy,
+  OutRef,
+  SpendingValidator
+} from "@/app/lib/lucid-client";
+
+// import {
+//   applyDoubleCborEncoding,
+//   applyParamsToScript,
+//   Constr,
+//   fromText,
+//   validatorToAddress,
+//   validatorToScriptHash,
+//   type MintingPolicy,
+//   type OutRef,
+//   type SpendingValidator,
+// } from "@lucid-evolution/lucid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -123,34 +130,44 @@ export type AppliedValidators = {
   lockAddress: string;
 };
  
-export function applyParams(
+export async function applyParams(
   tokenName: string,
   outputReference: OutRef,
   validator: string
-): AppliedValidators {
-  const outRef = new Constr(0, [
+): Promise<AppliedValidators> {
+
+  const lucidWasm = await getLucidWasmBindings();
+  // const { 
+  //   applyDoubleCborEncoding,
+  //   applyParamsToScript,
+  //   // fromText,
+  //   validatorToAddress,
+  //   validatorToScriptHash
+  // } = getLucidUtils();
+
+  const outRef = new lucidWasm.Constr(0, [
     outputReference.txHash,
     BigInt(outputReference.outputIndex),
   ]);
  
-  const giftCard = applyParamsToScript(validator, [
-    fromText(tokenName),
+  const giftCard = lucidWasm.applyParamsToScript(validator, [
+    lucidWasm.fromText(tokenName),
     outRef,
   ]);
  
-  const policyId = validatorToScriptHash({
+  const policyId = lucidWasm.validatorToScriptHash({
     type: "PlutusV3",
     script: giftCard,
   });
  
-  const lockAddress = validatorToAddress("Preview", {
+  const lockAddress = lucidWasm.validatorToAddress("Preview", {
     type: "PlutusV3",
     script: giftCard,
   });
  
   return {
-    redeem: { type: "PlutusV3", script: applyDoubleCborEncoding(giftCard) },
-    giftCard: { type: "PlutusV3", script: applyDoubleCborEncoding(giftCard) },
+    redeem: { type: "PlutusV3", script: lucidWasm.applyDoubleCborEncoding(giftCard) },
+    giftCard: { type: "PlutusV3", script: lucidWasm.applyDoubleCborEncoding(giftCard) },
     policyId,
     lockAddress,
   };

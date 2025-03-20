@@ -7,6 +7,7 @@ import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/app/ui/theme-provider";
 import Footer from "./ui/footer";
 import { Analytics } from "@vercel/analytics/react"
+import I18nProvider from "./ui/i18n-provider";
 
 export const metadata: Metadata = {
   title: "Nuwa Projects",
@@ -29,10 +30,12 @@ export default function RootLayout({
         enableSystem
         >
             <Theme>
-            <ServerNavbar />
-              {children}
-              <Analytics />
-            <Footer />
+            <I18nProvider>
+              <ServerNavbar />
+                {children}
+                <Analytics />
+              <Footer />
+            </I18nProvider>
             </Theme>
         </ThemeProvider>
       </body>

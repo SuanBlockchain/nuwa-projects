@@ -23,6 +23,7 @@ import {
   } from '@radix-ui/react-icons';
 import ThemeToggle from "@/app/ui/theme-toggle";
 import { theme, appConfig } from "@/app/app.config";
+import LocaleSwitcher from "./LocaleSwitcher";
 
 const navigation: NavigationItem[] = [
     { name: 'Home', href: '/', current: true },
@@ -120,6 +121,7 @@ const Navbar = () => {
                     </div>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         <ThemeToggle />
+                        <LocaleSwitcher />
                             <div className="flex items-center space-x-4 p-2">
                             <DropdownMenuRoot.Root>
                                 <DropdownMenuRoot.Trigger>

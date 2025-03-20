@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import { i18n } from "./next-i18next.config";
 
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
+  i18n,
 
   webpack: (config, { isServer }) => {
 

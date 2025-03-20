@@ -29,7 +29,7 @@ export default function RootLayout({
         enableSystem
         >
             <Theme>
-            <ServerNavbar /> {/* Use ServerNavbar here */}
+            <ServerNavbar />
               {children}
               <Analytics />
             <Footer />

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
 export default function HeroSection() {
-    const { t, i18n, ready } = useTranslation('common');
+    const { t, ready } = useTranslation('common');
 
     if (!ready) return null; // Ensure translations are ready before rendering
     return (

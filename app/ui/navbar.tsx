@@ -21,24 +21,28 @@ import {
   import {
     HamburgerMenuIcon,
   } from '@radix-ui/react-icons';
-import ThemeToggle from "@/app/ui/theme-toggle";
+// import LanguageToggle from "@/app/ui/theme-toggle";
 import { theme, appConfig } from "@/app/app.config";
-import LocaleSwitcher from "./LocaleSwitcher";
-
-const navigation: NavigationItem[] = [
-    { name: 'Home', href: '/', current: true },
-    { name: 'Dashboard', href: '/dashboard', current: false, subLinks: [
-        { name: 'Projects', href: '/dashboard' },
-        { name: 'Growth Curves', href: '/dashboard/growth' },
-    ]},
-    { name: 'Upload', href: '/upload', current: false },
-];
-
-function classNames(...classes: (string | boolean | undefined)[]): string {
-    return classes.filter(Boolean).join(' ');
-}
+import { useTranslation } from 'react-i18next';
+import ThemeToggle from "@/app/ui/theme-toggle";
+import LanguageToggle from "@/app/ui/language-toggle";
 
 const Navbar = () => {
+    const { t } = useTranslation('common');
+
+    const navigation: NavigationItem[] = [
+        { name: t('navHome'), href: '/', current: true },
+        { name: t('navDashboard'), href: '/dashboard', current: false, subLinks: [
+            { name: t('navProjects'), href: '/dashboard' },
+            { name: t('navGrowthCurves'), href: '/dashboard/growth' },
+        ]},
+        { name: t('navUpload'), href: '/upload', current: false },
+    ];
+
+    function classNames(...classes: (string | boolean | undefined)[]): string {
+        return classes.filter(Boolean).join(' ');
+    }
+
     return (
         <Disclosure as="nav" className="bg-gray-800">
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -66,7 +70,7 @@ const Navbar = () => {
                                 className="hidden sm:inline"
                                 style={{ color: theme.colors.text.primary }}
                             >
-                                {appConfig.title}
+                                {t('navTitle')}
                             </span>
                         </div>
                         <div className="hidden sm:ml-6 sm:block">
@@ -116,12 +120,12 @@ const Navbar = () => {
                         className="text-white hidden md:block"
                         style={{ marginLeft: "1rem", marginRight: "1rem", overflow: "visible" }} // Ensure no text cutting
                     >
-                        The Platform to analyze projects with nature cause
+                        {t('navTagline')}
                     </p>
                     </div>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         <ThemeToggle />
-                        <LocaleSwitcher />
+                        <LanguageToggle />
                             <div className="flex items-center space-x-4 p-2">
                             <DropdownMenuRoot.Root>
                                 <DropdownMenuRoot.Trigger>
@@ -136,17 +140,17 @@ const Navbar = () => {
                                 <DropdownMenuRoot.Content align="end">
                                 <DropdownMenuRoot.Item>
                                 <Link href="">
-                                    <button type={"button"}>Login</button>
+                                    <button type={"button"}>{t('navLogin')}</button>
                                 </Link>
                                 </DropdownMenuRoot.Item>
                                 <DropdownMenuRoot.Item>
                                 <Link href="">
-                                    <button type={"button"}>Sign up</button>
+                                    <button type={"button"}>{t('navSignup')}</button>
                                 </Link>
                                 </DropdownMenuRoot.Item>
                                 <DropdownMenuRoot.Item>
                                 <Link href="/connect">
-                                    <button type={"button"}>Blockchain</button>
+                                    <button type={"button"}>{t('navBlockchain')}</button>
                                 </Link>
                                 </DropdownMenuRoot.Item>
 

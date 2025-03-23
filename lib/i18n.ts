@@ -11,7 +11,7 @@ if (!i18next.isInitialized) {
     .init({
       fallbackLng: 'en',
       supportedLngs: ['en', 'es'],
-      debug: process.env.NODE_ENV === 'development', // Enable debug mode only in development
+      // debug: process.env.NODE_ENV === 'development', // Enable debug mode only in development
       detection: {
         order: ['cookie', 'localStorage', 'navigator'],
         caches: ['cookie'],

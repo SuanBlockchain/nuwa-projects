@@ -2,7 +2,6 @@
 // import type { Metadata } from "next";
 import "./globals.css";
 import { roboto } from '@/app/ui/fonts';
-import ServerNavbar from "./ui/ServerNavbar"; // Updated import
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/app/ui/theme-provider";

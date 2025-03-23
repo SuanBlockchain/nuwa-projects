@@ -1,12 +1,11 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import i18next from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import { GlobeIcon } from '@radix-ui/react-icons';
 
 export default function LanguageToggle() {
-  const pathname = usePathname();
   const router = useRouter();
   const [lang, setLang] = useState(i18next.language || 'en');
 

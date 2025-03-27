@@ -1,0 +1,19 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "661dbf29fa166402b503fc61e929c12338a159f56a977b43162df1ff9640a7ac": {
+      "source": {
+        "path": "amplify-nuwaprojects-moxie-sandbox-6f7a46b457.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "661dbf29fa166402b503fc61e929c12338a159f56a977b43162df1ff9640a7ac.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

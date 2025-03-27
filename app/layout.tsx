@@ -8,15 +8,13 @@ import { ThemeProvider } from "@/app/ui/theme-provider";
 import Footer from "./ui/footer";
 import { Analytics } from "@vercel/analytics/react"
 import I18nProvider from "./ui/i18n-provider";
+import "@aws-amplify/ui-react/styles.css";
 
 import dynamic from 'next/dynamic';
+import Auth from "@/amplify/(auth)/auth";
 
 const Navbar= dynamic(() => import('@/app/ui/navbar'), { ssr: false });
 
-// export const metadata: Metadata = {
-//   title: "Nuwa Projects",
-//   description: "Nuwa Projects handled by Suan",
-// };
 
 export default function RootLayout({
   children,
@@ -35,10 +33,12 @@ export default function RootLayout({
         >
             <Theme>
             <I18nProvider>
-              <Navbar />
-                {children}
-                <Analytics />
-              <Footer />
+              <Auth>
+                <Navbar />
+                  {children}
+                  <Analytics />
+                <Footer />
+              </Auth>
             </I18nProvider>
             </Theme>
         </ThemeProvider>

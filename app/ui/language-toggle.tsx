@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import i18next from '@/lib/i18n';
 import { useEffect, useState } from 'react';
-import { GlobeIcon } from '@radix-ui/react-icons';
 
 export default function LanguageToggle() {
   const router = useRouter();
@@ -24,9 +23,9 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggleLang}
-      className="flex items-center space-x-2 text-sm text-gray-300 hover:text-white"
+      className="flex items-center space-x-2 p-2 text-sm text-gray-300 hover:text-white"
     >
-      <GlobeIcon className="w-4 h-4" />
+      {/* <GlobeIcon className="w-4 h-4" /> */}
       <span className="uppercase font-medium">
         {lang === 'en' ? 'EN 🇺🇸' : 'ES ᴄᴏ'}
       </span>

@@ -1,4 +1,4 @@
-import Navbar from "./navbar";
+import Navbar from "./navbar/navbar";
 
 const ServerNavbar = async () => {
     return <Navbar />;

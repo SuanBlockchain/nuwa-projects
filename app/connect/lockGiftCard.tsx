@@ -3,6 +3,7 @@ import { theme } from "../app.config";
 import { getLucidWasmBindings, Lucid } from "@/app/lib/lucid-client";
 import { applyParams, AppliedValidators, readValidators } from "../lib/utils";
 import CopyButton from "./copyButton";
+import { buttonStyles } from "../lib/utils";
 
 interface LockGiftCardProps {
   instance: Awaited<ReturnType<typeof Lucid>>;
@@ -12,6 +13,7 @@ interface LockGiftCardProps {
 const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) => {
   const [validator, setValidator] = useState<string>("");
   const [tokenName, setTokenName] = useState<string>("");
+  const [destinAddress, setDestinAddress] = useState<string>("");
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [lucidInstance, setLucidInstance] = useState<Awaited<
     ReturnType<typeof Lucid>
@@ -21,6 +23,8 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
   const [watingLockTx, setWatingLockTx] = useState<boolean>(false);
   const [lockTxHash, setLockTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadValidators();
@@ -40,7 +44,8 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
     setValidator(validator.giftCard);
   };
 
-  async function submitTokenName(tokenName: string) {
+  async function createContract() {
+    setIsLoading(true);
     if (walletAddress) {
       const utxos = await lucidInstance?.utxosAt(walletAddress);
       const utxo = utxos?.[0];
@@ -53,15 +58,17 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
         outputIndex: utxo.outputIndex,
       }
 
+      setTokenName("NuwaGiftCard");
 
       const contracts = await applyParams(tokenName, outputReferente, validator);
       setContracts(contracts);
+      setIsLoading(false);
     } else {
       console.error("Wallet address is null");
     }
   }
 
-  async function createGiftCard(lovelaceAmount: string) {
+  async function createGiftCard(destinAddress: string, lovelaceAmount: string) {
 
     const lucid = await getLucidWasmBindings();
 
@@ -76,11 +83,13 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
         const mintRedeemer = lucid.Data.to(new lucid.Constr(0, []));
         const utxos = await lucidInstance!.utxosAt(walletAddress);
         const utxo = utxos[0];
+        console.log("Asset name:", assetName, utxos, utxo, mintRedeemer, lovelaceAmount);
         const tx = await lucidInstance!.newTx()
             .collectFrom([utxo])
             .mintAssets({ [assetName]: 1n, }, mintRedeemer)
             .attach.MintingPolicy(contracts!.giftCard)
             .pay.ToContract(contracts.lockAddress, { kind: 'inline', value: lucid.Data.void()}, { lovelace: lovelace})
+            .pay.ToAddress(destinAddress, {[assetName]: 1n})
             .complete();
 
 
@@ -216,60 +225,47 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
             )}
         </div>
       </div>
-      <p
-        style={{
-          marginTop: "0.5rem",
-          color: theme.colors.text.secondary,
-          fontSize: "0.875rem",
-        }}
-      >
-        This contract allows you to mint a token as giftCard to lock ADA in the smart contract. The locked ADA can only be redeemed by the wallet in possession of the giftCard and after burning it.
-      </p>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginTop: "1rem",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-          }}
-        >
-          <span
-            style={{
-              color: theme.colors.text.secondary,
-              fontSize: "0.875rem",
-            }}
-          >
-            Token Name
-          </span>
-          <input
-            type="text"
-            name="tokenName"
-            id="tokenName"
-            required
-            className="p-2 border rounded w-48"
-            value={tokenName}
-            onChange={(e) => setTokenName(e.target.value)} 
-          />
-        </div>
+      <p
+        style={{
+          marginTop: "0.5rem",
+          color: theme.colors.text.secondary,
+          fontSize: "0.875rem",
+          padding: "0.5rem",
+          background: theme.colors.background.secondary,
+          borderRadius: "6px",
+          border: `1px solid ${theme.colors.border.secondary}`,
+        }}
+      >
+        This contract allows you to mint a token as giftCard to lock ADA in the smart contract. The locked ADA can only be redeemed by the wallet in possession of the giftCard and after burning it.
+      </p>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between", // Adjusted to space-between
+          gap: "1rem", // Added gap for better spacing
+          flexGrow: 1, // Allow inputs to take more space
+          padding: "1rem 0", // Added padding for better spacing
+        }}
+      >
         <button
           type="submit"
-          onClick={() => submitTokenName(tokenName)} // Pass the tokenName state to the function
-          disabled={!tokenName.trim()} // Disable button if tokenName is empty
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           style={{
-            background: !tokenName.trim() ? theme.colors.disabled : theme.colors.primary, // Change background color when disabled
-            color: theme.colors.text.secondary,
-            padding: "0.5rem 1rem",
-            borderRadius: "6px",
-            border: "none",
-            cursor: !tokenName.trim() ? "not-allowed" : "pointer", // Change cursor when disabled
+            ...buttonStyles.base,
+            ...(isHovered && !isLoading ? buttonStyles.hover : {}),
+            ...(isLoading ? buttonStyles.disabled : {}),
           }}
+          onClick={() => createContract()}
         >
           Make Contract
         </button>
@@ -356,15 +352,14 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
                 </div>
             </div>
 
-        </div>
-      )}
-
         <div
             style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 marginTop: "1rem",
+                gap: "1rem",
+                flexGrow: 1,
             }}
         >
             <div
@@ -372,6 +367,7 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5rem",
+                flexGrow: 1,
                 }}
             >
                 <span
@@ -380,49 +376,76 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses }) 
                         fontSize: "0.875rem",
                     }}
                 >
-                Lock Ada amount
+                Ada amount
                 </span>
                 <input
                     type="number"
                     name="lovelaceAmount"
                     id="lovelaceAmount"
                     required
-                    className="p-2 border rounded w-24"
+                    className="p-2 border rounded w-24 text-sm"
                     value={lovelaceAmount} 
                     onChange={(e) => setLovelaceAmount(e.target.value)}
                 />
+              <span
+                style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: "0.875rem",
+                }}
+              >
+                Beneficiary
+              </span>
+              <input
+                type="text"
+                name="destinAddress"
+                id="destinAddress"
+                required
+                className="p-2 border rounded w-full text-sm placeholder:text-sm" // Changed width to w-full
+                value={destinAddress}
+                onChange={(e) => setDestinAddress(e.target.value)} 
+                placeholder="Enter addr_test1..."
+              />
             </div>
             <button
-                type="submit"
-                onClick={() => createGiftCard(lovelaceAmount)}
-                disabled={!lovelaceAmount.trim()}
-                style={{
-                    background: !lovelaceAmount.trim() ? theme.colors.disabled : theme.colors.primary,
-                    color: theme.colors.text.secondary,
-                    padding: "0.5rem 1rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    cursor: !lovelaceAmount.trim() ? "not-allowed" : "pointer",
-                }}
+              type="submit"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onClick={() => createGiftCard(destinAddress, lovelaceAmount)}
+              disabled={!contracts || !lovelaceAmount.trim() || !destinAddress.trim()} // Ensure contracts are set and fields are filled
+              style={{
+                background: !contracts || !lovelaceAmount.trim() || !destinAddress.trim()
+                  ? theme.colors.disabled
+                  : theme.colors.primary, // Change background color when disabled
+                color: theme.colors.text.secondary,
+                padding: "0.5rem 1rem",
+                borderRadius: "6px",
+                border: "none",
+                cursor: !contracts || !lovelaceAmount.trim() || !destinAddress.trim()
+                  ? "not-allowed"
+                  : "pointer", // Change cursor when disabled
+              }}
             >
-                {watingLockTx ? "Waiting for transaction..." : "Create transaction"}
+              {watingLockTx ? "Waiting for transaction..." : "Create transaction"}
             </button>
             <button
-                type="submit"
-                onClick={() => redeemGiftCard()}
-                // disabled={!lovelaceAmount.trim()}
-                style={{
-                    background: !lovelaceAmount.trim() ? theme.colors.disabled : theme.colors.primary,
-                    color: theme.colors.text.secondary,
-                    padding: "0.5rem 1rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    cursor: !lovelaceAmount.trim() ? "not-allowed" : "pointer",
-                }}
+              type="submit"
+              onClick={() => redeemGiftCard()}
+              disabled={!createContract} // Disable if createContract is not set
+              style={{
+                background: !createContract ? theme.colors.disabled : theme.colors.primary, // Change background color when disabled
+                color: theme.colors.text.secondary,
+                padding: "0.5rem 1rem",
+                borderRadius: "6px",
+                border: "none",
+                cursor: !createContract ? "not-allowed" : "pointer", // Change cursor when disabled
+              }}
             >
-                {watingLockTx ? "Waiting for transaction..." : "Claim Token"}
+              {watingLockTx ? "Waiting for transaction..." : "Claim Token"}
             </button>
         </div>
+        </div>
+      )}
+
         {lockTxHash && (
             <div style={{ marginTop: "1rem", textAlign: "center" }}>
                 <p style={{ color: "#22c55e" }}>Transaction submitted!</p>

@@ -13,6 +13,7 @@ import type {
   OutRef,
   SpendingValidator
 } from "@/app/lib/lucid-client";
+import { theme } from "../app.config";
 
 // import {
 //   applyDoubleCborEncoding,
@@ -137,13 +138,6 @@ export async function applyParams(
 ): Promise<AppliedValidators> {
 
   const lucidWasm = await getLucidWasmBindings();
-  // const { 
-  //   applyDoubleCborEncoding,
-  //   applyParamsToScript,
-  //   // fromText,
-  //   validatorToAddress,
-  //   validatorToScriptHash
-  // } = getLucidUtils();
 
   const outRef = new lucidWasm.Constr(0, [
     outputReference.txHash,
@@ -173,3 +167,26 @@ export async function applyParams(
   };
 }
 
+export const buttonStyles = {
+  base: {
+    padding: "0.75rem 1.5rem",
+    borderRadius: "8px",
+    border: "none",
+    background: theme.colors.primary,
+    color: "white",
+    cursor: "pointer",
+    transition: "all 0.2s ease-in-out",
+    transform: "scale(1)",
+    boxShadow: "0 0 0 rgba(0,0,0,0)",
+  },
+  hover: {
+    background: "#1a1f2e",
+    transform: "scale(1.02)",
+    boxShadow: `0 4px 12px rgba(239, 68, 68, 0.2)`,
+    border: `1px solid ${theme.colors.primary}`,
+  },
+  disabled: {
+    opacity: 0.7,
+    cursor: "not-allowed",
+  },
+};

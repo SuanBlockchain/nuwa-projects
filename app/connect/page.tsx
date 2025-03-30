@@ -8,6 +8,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { Lucid } from "@/app/lib/lucid-client";
 import { useWallet } from "./useWallet";
 import LockGiftCard from "./lockGiftCard";
+import TxOptions from "./TxOptions";
 
 export default function Page() {
   const { isConnected, usedAddresses, initLucid } = useWallet();
@@ -54,7 +55,11 @@ export default function Page() {
         <WalletConnect />
 
         {isConnected && walletAddress && (
+          <div>
+
+          
           <div style={{ marginTop: "2rem" }}>
+            <TxOptions />
             <div
               style={{
                 background: theme.colors.background.secondary,
@@ -86,6 +91,7 @@ export default function Page() {
                 </div>
               </div>
             </div>
+          </div>
           </div>
         )}
       </main>

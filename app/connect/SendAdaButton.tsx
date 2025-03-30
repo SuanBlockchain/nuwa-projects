@@ -1,38 +1,38 @@
 import { useState } from "react";
 import { useWallet } from "./useWallet";
 import { theme } from "./theme";
-// import { Lucid } from "@lucid-evolution/lucid";
-// import { Lucid } from "@/app/lib/lucid-client";
 import { Lucid } from "@/app/lib/lucid-client";
+
+import { buttonStyles } from "../lib/utils";
 
 interface SendAdaButtonProps {
   lovelaceAmount?: string;
   lucidInstance: Awaited<ReturnType<typeof Lucid>> | null;
 }
 
-const buttonStyles = {
-  base: {
-    padding: "0.75rem 1.5rem",
-    borderRadius: "8px",
-    border: "none",
-    background: theme.colors.primary,
-    color: "white",
-    cursor: "pointer",
-    transition: "all 0.2s ease-in-out",
-    transform: "scale(1)",
-    boxShadow: "0 0 0 rgba(0,0,0,0)",
-  },
-  hover: {
-    background: "#1a1f2e",
-    transform: "scale(1.02)",
-    boxShadow: `0 4px 12px rgba(239, 68, 68, 0.2)`,
-    border: `1px solid ${theme.colors.primary}`,
-  },
-  disabled: {
-    opacity: 0.7,
-    cursor: "not-allowed",
-  },
-};
+// const buttonStyles = {
+//   base: {
+//     padding: "0.75rem 1.5rem",
+//     borderRadius: "8px",
+//     border: "none",
+//     background: theme.colors.primary,
+//     color: "white",
+//     cursor: "pointer",
+//     transition: "all 0.2s ease-in-out",
+//     transform: "scale(1)",
+//     boxShadow: "0 0 0 rgba(0,0,0,0)",
+//   },
+//   hover: {
+//     background: "#1a1f2e",
+//     transform: "scale(1.02)",
+//     boxShadow: `0 4px 12px rgba(239, 68, 68, 0.2)`,
+//     border: `1px solid ${theme.colors.primary}`,
+//   },
+//   disabled: {
+//     opacity: 0.7,
+//     cursor: "not-allowed",
+//   },
+// };
 
 const SendAdaButton = ({
   lucidInstance,

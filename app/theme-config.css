@@ -1,4 +1,6 @@
-/* Import this before the Radix Theme */
+/* globals.css (or your root CSS file) */
+
+/* First import your theme variables */
 :root {
   /* Base Radix UI accent colors matching your logo */
   --accent-1: #f8fcfb;
@@ -114,14 +116,4 @@
   /* Button styles */
   --button-background-color: var(--mint-8);
   --button-hover-background-color: var(--mint-7);
-}
-
-/* Override additional Radix component styling */
-.rt-Button {
-  background-color: var(--mint-9);
-  color: white;
-}
-
-.rt-Button:hover {
-  background-color: var(--mint-10);
 }

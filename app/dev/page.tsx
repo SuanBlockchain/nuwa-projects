@@ -1,5 +1,5 @@
-import ColorPalette from "../ui/color-pallete";
-import ThemeDemo from "../ui/theme-demo";
+import ColorPalette from "../ui/dev/color-pallete";
+import ThemeDemo from "../ui/dev/theme-demo";
 
 
 

@@ -28,7 +28,7 @@ import {
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
-  } from "@/app/ui/dropdown-menu"
+  } from "@/app/ui/navbar/dropdown-menu"
 
 import { Button } from "@/app/ui/button"
 import { Input } from "@/app/ui/input"

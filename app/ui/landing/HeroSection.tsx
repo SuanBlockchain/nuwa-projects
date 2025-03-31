@@ -1,13 +1,15 @@
 'use client';
 
-import { motion } from 'framer-motion'; // Ensure this import is correct
+import { Button } from '@radix-ui/themes';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
 export default function HeroSection() {
     const { t, ready } = useTranslation('common');
-
+    
     if (!ready) return null; // Ensure translations are ready before rendering
+    
     return (
         <div className="relative h-screen">
             <Image src="/landing-splash.jpg" alt="Landing Image" fill className="object-cover object-center" priority />
@@ -18,26 +20,34 @@ export default function HeroSection() {
                 transition={{ duration: 0.8 }}
                 className="absolute top-1/3 transform -translate-x-1/2 -translate-y-1/2 text-center w-full"
             >
-
-            <div className="max-w-4xl mx-auto px-16 sm:px-12">
+                <div className="max-w-4xl mx-auto px-16 sm:px-12">
                     <h1 className="text-5xl font-bold text-white mb-4">
                         {t('heroTitle')}
                     </h1>
                     <p className="text-xl text-white mb-8">
-                    {t('heroDescription')}
+                        {t('heroDescription')}
                     </p>
-
+                    
                     <div className="flex justify-center">
-                       
-                        <button
-                        type="button"
-                        className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        onClick={() => window.location.href = '/dashboard'}
+                        <Button 
+                            size="3" 
+                            className="px-6 py-3 text-base font-medium shadow-sm"
+                            onClick={() => window.location.href = '/dashboard'}
+                            style={{
+                                backgroundColor: 'var(--mint-9)',
+                                color: 'white',
+                                borderRadius: '0.375rem',
+                                transition: 'background-color 0.2s ease-in-out',
+                                cursor: 'pointer',
+                            }}
+                            // Apply hover effect with inline CSS since Radix UI doesn't directly support Tailwind hover
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-10)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-9)'}
                         >
-                        {t('heroButton')}
-                        </button>
+                            {t('heroButton')}
+                        </Button>
                     </div>
-                    </div>
+                </div>
             </motion.div>
         </div>
     );

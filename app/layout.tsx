@@ -14,7 +14,7 @@ import { Analytics } from "@vercel/analytics/react";
 import I18nProvider from "./ui/i18n-provider";
 import "@aws-amplify/ui-react/styles.css";
 import dynamic from 'next/dynamic';
-import Auth from "@/amplify/(auth)/auth";
+import Auth from "@/app/amplify/(auth)/auth";
 
 const Navbar = dynamic(() => import('@/app/ui/navbar/navbar'), { ssr: false });
 

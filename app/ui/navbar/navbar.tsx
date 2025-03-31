@@ -11,24 +11,32 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/app/ui/dropdown-menu";
-import {
-  IconButton,
-  DropdownMenu as DropdownMenuRoot,
-} from '@radix-ui/themes';
-import {
-  HamburgerMenuIcon,
-} from '@radix-ui/react-icons';
+} from "@/app/ui/navbar/dropdown-menu";
 import { appConfig } from "@/app/app.config";
 import { useTranslation } from 'react-i18next';
-import ThemeToggle from "@/app/ui/theme-toggle";
-import LanguageToggle from "@/app/ui/language-toggle";
+import ThemeToggle from "@/app/ui/navbar/theme-toggle";
+import LanguageToggle from "@/app/ui/navbar/language-toggle";
+import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useRouter } from 'next/navigation';
 import './navbar.css';
 
 const Navbar = () => {
     const { t } = useTranslation('common');
+    const { user, signOut } = useAuthenticator();
+    const router = useRouter();
+
+    const handleSignIn = () => {
+        router.push('/signin');
+    };
+
+    const handleSignUp = () => {
+        router.push('/signup');
+    };
+
+    const handleSignOut = () => {
+        signOut();
+    };
 
     const navigation: NavigationItem[] = [
         { name: t('navHome'), href: '/', current: true },
@@ -37,6 +45,7 @@ const Navbar = () => {
             { name: t('navGrowthCurves'), href: '/dashboard/growth' },
         ]},
         { name: t('navUpload'), href: '/upload', current: false },
+        { name: t('navConnect'), href: '/connect', current: false },
     ];
 
     function classNames(...classes: (string | boolean | undefined)[]): string {
@@ -132,37 +141,29 @@ const Navbar = () => {
                                 <ThemeToggle />
                                 <LanguageToggle />
                                 <div className="flex items-center space-x-2 pl-4">
-                                    <DropdownMenuRoot.Root>
-                                        <DropdownMenuRoot.Trigger>
-                                            <IconButton
-                                                variant="ghost"
-                                                className="navbar-text hover:bg-logo-mid focus:ring-2 focus:ring-logo-light"
+                                    {!user ? (
+                                        <>
+                                            <button
+                                                onClick={handleSignIn}
+                                                className="navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                                             >
-                                                <HamburgerMenuIcon className="navbar-text" />
-                                            </IconButton>
-                                        </DropdownMenuRoot.Trigger>
-                                        <DropdownMenuRoot.Content align="end" className="navbar-dropdown">
-                                            <DropdownMenuRoot.Item className="hover:bg-logo-light/10">
-                                                <Link href="">
-                                                    <button type={"button"}>{t('navLogin')}</button>
-                                                </Link>
-                                            </DropdownMenuRoot.Item>
-                                            <DropdownMenuRoot.Item className="hover:bg-logo-light/10">
-                                                <Link href="">
-                                                    <button type={"button"}>{t('navSignup')}</button>
-                                                </Link>
-                                            </DropdownMenuRoot.Item>
-                                            <DropdownMenuRoot.Item className="hover:bg-logo-light/10">
-                                                <Link href="/connect">
-                                                    <button type={"button"}>{t('navBlockchain')}</button>
-                                                </Link>
-                                            </DropdownMenuRoot.Item>
-                                            <DropdownMenuSeparator className="bg-logo-light/20" />
-                                            <DropdownMenuRoot.Item className="hover:bg-logo-light/10">
-                                                <Link href="/docs">Docs</Link>
-                                            </DropdownMenuRoot.Item>
-                                        </DropdownMenuRoot.Content>
-                                    </DropdownMenuRoot.Root>
+                                                {t('navLogin')}
+                                            </button>
+                                            <button
+                                                onClick={handleSignUp}
+                                                className="navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                                            >
+                                                {t('navSignup')}
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            onClick={handleSignOut}
+                                            className="navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                                        >
+                                            {t('navLogout') || 'Sign Out'}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { IconButton } from "@radix-ui/themes";
 import { UploadIcon, ReaderIcon, BarChartIcon, BlendingModeIcon } from "@radix-ui/react-icons";
 import { useTranslation } from "react-i18next";
 
@@ -78,7 +79,9 @@ const WorkFlowCard = ({
 }) => (
   <div className="px-4 py-12 shadow-lg rounded-lg md:h-72 bg-primary-50 dark:bg-primary-900">
     <div className= "p-[0.6rem] rounded-full mb-4 h-10 w-10 mx-auto flex items-center justify-center">
-      <IconComponent width={width} height={height} />
+      <IconButton>
+        <IconComponent width={width} height={height} />
+      </IconButton>
     </div>
     <h4 className="mt-4 text-xl font-medium text-gray-800 dark:text-gray-400">{title}</h4>
     <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">{description}</p>

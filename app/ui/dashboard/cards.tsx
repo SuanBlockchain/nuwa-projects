@@ -1,3 +1,4 @@
+// app/ui/dashboard/cards.tsx
 import { lusitana } from '@/app/ui/fonts';
 import { fetchCardData, fetchProjectById } from '@/app/lib/queries/queries';
 import PerformanceCard from './projects/performance-card';
@@ -12,7 +13,19 @@ export default async function CardWrapper({ projectId }: { projectId?: string })
     data = await fetchCardData();
   }
 
-  const { totalImpact, totalInvestment, totalBankableInvestment, totalIncome, landNumber, totalco2, area, averageCo2Total, sumCo2Total, projectName } = data;
+  const {
+    totalImpact,
+    totalInvestment,
+    totalBankableInvestment,
+    totalIncome,
+    landNumber,
+    totalco2,
+    area,
+    averageCo2Total,
+    sumCo2Total,
+    projectName
+  } = data;
+  
   const performanceData = {
     totalImpact,
     totalInvestment,
@@ -26,7 +39,7 @@ export default async function CardWrapper({ projectId }: { projectId?: string })
   }
 
   return (
-    <main>
+    <>
       <Breadcrumbs
         breadcrumbs={[
           { label: 'Home', href: '/' },
@@ -34,13 +47,14 @@ export default async function CardWrapper({ projectId }: { projectId?: string })
           projectId ? { label: projectName, href: `/dashboard/project/${projectId}`, active: true } : null
         ].filter((breadcrumb): breadcrumb is Breadcrumb => breadcrumb !== null)}
       />
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl p-4`}>
-            {projectName}
+      
+      <h1 className={`${lusitana.className} mb-6 text-2xl md:text-3xl font-bold text-mint-11 dark:text-mint-9`}>
+        {projectName || 'Project Dashboard'}
       </h1>
-      <div className="grid gap-6 p-4">
+      
+      <div className="grid gap-6">
         <PerformanceCard data={performanceData} />
-      </div>  
-
-    </main>
+      </div>
+    </>
   );
 }

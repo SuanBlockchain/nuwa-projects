@@ -200,21 +200,9 @@ function AuthContent({ children }: { children: React.ReactNode }) {
   if (isAuthPage) {
     return (
       <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
-        {/* Background */}
         <div className="absolute inset-0 z-0">
-          {/* Option 1: Use an image background (commented out) */}
-          {/* <Image 
-            src="/auth-background.jpg" 
-            alt="Background" 
-            fill 
-            className="object-cover object-center" 
-            priority 
-          /> */}
-          
-          {/* Option 2: Use CSS class-based gradient */}
           <div className={`absolute inset-0 ${isMounted && isDarkMode ? 'bg-gradient-mint-dark' : 'bg-gradient-mint-light'}`}></div>
-          
-          {/* Overlay for better readability */}
+
           <div className="absolute inset-0 bg-black opacity-30"></div>
         </div>
         

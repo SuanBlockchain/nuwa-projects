@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const { fontFamily } = require('tailwindcss/defaultTheme')
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -9,6 +10,12 @@ module.exports = {
   darkMode: ["class"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-lusitana)', ...fontFamily.serif],
+        serif: ['var(--font-lusitana)', ...fontFamily.serif],
+        lusitana: ['var(--font-lusitana)', ...fontFamily.serif],
+        mono: fontFamily.mono,
+      },
       colors: {
         mint: {
           1: 'var(--mint-1)',

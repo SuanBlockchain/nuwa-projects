@@ -1,12 +1,10 @@
 'use client';
 
 import "./globals.css";
-// Import our custom theme config before Radix styles
 import "./theme-config.css";
 import "@radix-ui/themes/styles.css";
-// Import our custom Radix overrides after Radix styles
 import "./radix-overrides.css";
-import { roboto } from '@/app/ui/fonts';
+import { lusitana } from '@/app/ui/fonts';
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/app/ui/theme-provider";
 import Footer from "./ui/footer";
@@ -26,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${roboto.className} antialiased bg-background text-foreground`}
+        className={`${lusitana.className} antialiased bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"

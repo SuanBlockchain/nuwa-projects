@@ -3,10 +3,11 @@ import { Authenticator, Heading, Radio, RadioGroupField, useAuthenticator } from
 import { Amplify } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import '@/app/amplify/(auth)/auth-theme.css'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 // Amplify configuration
 Amplify.configure({
@@ -34,17 +35,14 @@ const components = {
           <Image 
             src={logoPath} 
             alt="NUWA Logo" 
-            width={80} 
-            height={80} 
+            width={40} 
+            height={40} 
             className="mb-3"
           />
         </div>
-        <Heading level={3} className="text-2xl font-bold text-mint-8 dark:text-mint-8">
+        <Heading level={4} className="text-2xl font-bold nuwa-brand-heading">
           NUWA
         </Heading>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-          <span className="font-semibold">Welcome!</span> Please sign in to continue
-        </p>
       </div>
     );
   },
@@ -89,9 +87,12 @@ const components = {
             hasError={!!validationErrors?.["custom:role"]}
             isRequired
             className="custom-radio-group"
+            labelPosition="end"
           >
-            <Radio value="ADMIN">ADMIN</Radio>
-            <Radio value="GESTOR">GESTOR</Radio>
+            <div className="radio-options-container">
+              <Radio value="ADMIN" className="custom-radio-option">ADMIN</Radio>
+              <Radio value="GESTOR" className="custom-radio-option">GESTOR</Radio>
+            </div>
           </RadioGroupField>
         </>
       );
@@ -169,6 +170,16 @@ function AuthContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuthenticator((context) => [context.user, context.route]);
   const router = useRouter();
   const pathname = usePathname();
+  const { resolvedTheme } = useTheme();
+  
+  // Use client-side only rendering for theme-dependent elements
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  const isDarkMode = isMounted ? resolvedTheme === 'dark' : false;
 
   const isAuthPage = pathname === '/signin' || pathname === '/signup';
   const isDashboardPage = pathname.startsWith('/dashboard');
@@ -188,20 +199,54 @@ function AuthContent({ children }: { children: React.ReactNode }) {
   // Render the authentication UI on auth pages
   if (isAuthPage) {
     return (
-      <div className=" min-h-screen w-full flex items-center justify-center">
-        <div className="py-8 px-4 w-full">
-          <div className="auth-card-container auth-gradient-background">
-            <Authenticator 
-              initialState={pathname === '/signup' ? 'signUp' : 'signIn'} 
-              components={components} 
-              formFields={formFields}
-            >
-              {() => {
-                return <div></div>;
-              }}
-            </Authenticator>
-          </div>
+      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 z-0">
+          {/* Option 1: Use an image background (commented out) */}
+          {/* <Image 
+            src="/auth-background.jpg" 
+            alt="Background" 
+            fill 
+            className="object-cover object-center" 
+            priority 
+          /> */}
+          
+          {/* Option 2: Use CSS class-based gradient */}
+          <div className={`absolute inset-0 ${isMounted && isDarkMode ? 'bg-gradient-mint-dark' : 'bg-gradient-mint-light'}`}></div>
+          
+          {/* Overlay for better readability */}
+          <div className="absolute inset-0 bg-black opacity-30"></div>
         </div>
+        
+        {/* Auth Card Container - Only animate after mount to prevent hydration issues */}
+        {isMounted ? (
+          <motion.div 
+            className="z-10 py-4 px-4 w-full max-w-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="w-full max-w-full overflow-visible">
+              <Authenticator 
+                initialState={pathname === '/signup' ? 'signUp' : 'signIn'} 
+                components={components} 
+                formFields={formFields}
+                className="width-constrained-authenticator compact-auth"
+              >
+                {() => {
+                  return <div></div>;
+                }}
+              </Authenticator>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="z-10 py-4 px-4 w-full max-w-md opacity-0">
+            <div className="auth-card-container light-theme-card rounded-xl shadow-2xl backdrop-blur-md amplify-container-fix">
+              {/* Placeholder during SSR */}
+              <div style={{ height: '400px' }}></div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

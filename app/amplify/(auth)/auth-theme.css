@@ -1,262 +1,234 @@
-/* app/amplify/(auth)/auth-theme.css */
-
-/* Base styles for Amplify authentication components matching Radix UI theme */
-:root {
-  /* Apply the mint theme to Amplify components */
-  --amplify-components-button-primary-background-color: var(--mint-9);
-  --amplify-components-button-primary-hover-background-color: var(--mint-10);
-  --amplify-components-button-primary-focus-color: var(--mint-10);
-  --amplify-components-button-primary-active-background-color: var(--mint-10);
-
-  --amplify-components-button-link-color: var(--mint-9);
-  --amplify-components-button-link-hover-color: var(--mint-10);
-  --amplify-components-button-link-focus-color: var(--mint-10);
-  
-  --amplify-components-tabs-item-active-color: var(--mint-9);
-  --amplify-components-tabs-item-active-border-color: var(--mint-9);
-  --amplify-components-tabs-item-hover-color: var(--mint-9);
-  
-  --amplify-components-fieldcontrol-border-focus-color: var(--mint-8);
-  --amplify-components-fieldcontrol-border-color: var(--mint-5);
-  
-  --amplify-components-authenticator-router-border-color: var(--mint-5);
-  --amplify-components-authenticator-background-color: var(--color-background);
-  --amplify-components-authenticator-form-border-color: var(--mint-5);
-  
-  /* Radio buttons and checkboxes */
-  --amplify-components-radio-checked-border-color: var(--mint-9);
-  --amplify-components-radio-checked-background-color: var(--mint-9);
-  --amplify-components-checkbox-checked-background-color: var(--mint-9);
-  
-  /* Link colors */
-  --amplify-components-text-primary-color: var(--mint-9);
-  
-  /* Alert colors - keep these for error messages */
-  --amplify-colors-red-60: #ff5252;
-  --amplify-colors-red-80: #d32f2f;
-
-  /* Text colors */
-  --amplify-components-field-label-color: var(--color-foreground);
-  --amplify-components-text-color: var(--color-foreground);
+/* Auth card container styling */
+.auth-card-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
 }
 
-/* Auth container styles */
-.auth-card-container {
-  border: 1px solid var(--mint-5) !important;
-  background-color: var(--color-background) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* Light theme card styling */
+.light-theme-card {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme card styling */
+.dark-theme-card {
+  background-color: rgba(31, 41, 55, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Remove default Amplify container styling */
+.amplify-authenticator {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Fix width issues with Amplify containers */
+[data-amplify-container] {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force any Amplify inner containers to match width */
+[data-amplify-container] > div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Style the primary button */
+.amplify-button[data-variation="primary"] {
+  background-color: var(--mint-9) !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease-in-out !important;
+  font-weight: 500 !important;
+}
+
+.amplify-button[data-variation="primary"]:hover {
+  background-color: var(--mint-10) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .amplify-button[data-variation="primary"] {
+  background-color: var(--mint-8) !important;
+}
+
+[data-theme="dark"] .amplify-button[data-variation="primary"]:hover {
+  background-color: var(--mint-7) !important;
+}
+
+/* Custom input field styling */
+.amplify-input {
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--color-border) !important;
+  /* padding: 0.75rem 1rem !important; */
+  transition: all 0.2s ease !important;
+}
+
+.amplify-input:focus {
+  border-color: var(--mint-8) !important;
+  box-shadow: 0 0 0 2px var(--mint-5) !important;
+  outline: none !important;
+}
+
+/* For dark mode inputs */
+[data-theme="dark"] .amplify-input {
+  background-color: rgba(17, 24, 39, 0.8) !important;
+  border-color: rgba(55, 65, 81, 0.5) !important;
+  color: var(--color-foreground) !important;
+}
+
+[data-theme="dark"] .amplify-input:focus {
+  border-color: var(--mint-8) !important;
+  box-shadow: 0 0 0 2px rgba(33, 221, 184, 0.2) !important;
+}
+
+.custom-radio-group .amplify-radio__button {
+  border-color: var(--mint-8) !important;
+}
+
+.custom-radio-group .amplify-radio__button[data-checked="true"] {
+  background-color: var(--mint-9) !important;
+  border-color: var(--mint-9) !important;
+}
+
+/* Make the radio group text match the rest of the form */
+.custom-radio-group .amplify-radio__label {
+  color: var(--color-foreground) !important;
+  padding-left: 1rem !important;
+}
+
+/* Amplify tabs for sign in/sign up toggle (if used) */
+.amplify-tabs-item[data-state="active"] {
+  color: var(--mint-11) !important;
+  border-color: var(--mint-9) !important;
+}
+
+.amplify-tabs-item:hover {
+  color: var(--mint-10) !important;
+}
+
+/* Loading spinner color */
+.amplify-loader {
+  color: var(--mint-9) !important;
+}
+
+/* Additional container width fixes */
+.amplify-container-fix {
+  position: relative;
+  overflow: hidden;
+}
+
+.width-constrained-authenticator {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Target all elements under the Amplify authenticator to ensure proper width */
+.amplify-container-fix * {
+  max-width: 100%;
+}
+
+/* Target specific problematic elements */
+.amplify-flex {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix for forms */
+.amplify-form {
   width: 100% !important;
 }
 
-.auth-card-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12) !important;
-}
-
-/* Reset Amplify's default styles */
-.auth-card-container .amplify-authenticator {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-/* Container and form fixes */
-.auth-card-container .amplify-authenticator-container {
-  padding: 0;
-}
-
-.auth-card-container .amplify-authenticator-router {
-  border: none;
-  max-width: 100%;
-  padding: 1.5rem;
-}
-
-.auth-card-container .amplify-authenticator-form {
-  border: none;
-  max-width: 100%;
-}
-
-/* Ensures input fields fit properly */
-.auth-card-container .amplify-field {
-  width: 100%;
-  margin-bottom: 1.25rem;
-}
-
-.auth-card-container .amplify-input {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid var(--mint-5);
-  padding: 10px 14px;
-  transition: all 0.2s ease-in-out;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-.auth-card-container .amplify-input:focus {
-  border-color: var(--mint-8);
-  box-shadow: 0 0 0 2px var(--mint-4);
-}
-
-/* Button styles */
-.auth-card-container .amplify-button[data-variation="primary"] {
-  width: 100%;
-  border-radius: 6px;
-  font-weight: 500;
-  padding: 10px 16px;
-  transition: all 0.2s ease-in-out;
-  box-shadow: none;
-}
-
-.auth-card-container .amplify-button[data-variation="primary"]:hover {
-  background-color: var(--mint-10);
-  transform: translateY(-1px);
-}
-
-.auth-card-container .amplify-button[data-variation="primary"]:active {
-  transform: translateY(0);
-}
-
-/* Link buttons */
-.auth-card-container .amplify-button[data-variation="link"] {
-  font-weight: 500;
-}
-
-/* Tabs */
-.auth-card-container .amplify-tabs-item {
-  font-weight: 500;
-}
-
-.auth-card-container .amplify-tabs-item[data-state="active"] {
-  color: var(--mint-9);
-  border-color: var(--mint-9);
-}
-
-/* Dividers */
-.auth-card-container .amplify-divider-label {
-  background-color: var(--color-background);
-  color: var(--mint-11);
-}
-
-/* Radio buttons */
-.auth-card-container .amplify-radio {
-  margin-right: 8px;
-}
-
-.auth-card-container .amplify-radio:checked {
-  background-color: var(--mint-9);
-  border-color: var(--mint-9);
-}
-
-/* Custom radio group */
-.auth-card-container .custom-radio-group {
-  margin-top: 20px;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-.auth-card-container .custom-radio-group .amplify-label {
-  color: var(--color-foreground);
-}
-
-.auth-card-container .custom-radio-group .amplify-radio-button__label {
-  color: var(--color-foreground);
-}
-
-/* Text labels */
-.auth-card-container .amplify-field-label {
-  color: var(--color-foreground);
-  font-weight: 500;
-}
-
-.auth-card-container .amplify-field-error {
-  color: var(--amplify-colors-red-80);
-}
-
-/* Gradient background */
-.auth-gradient-background {
-  background: linear-gradient(135deg, #f8fcfb 0%, #edfaf6 25%, #def7ef 50%, #c7f2e6 75%, #a9ebd9 100%);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-  position: relative;
-}
-
-.auth-gradient-background::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23a9ebd9' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-  opacity: 0.8;
-  z-index: 0;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
+/* For mobile screens */
+@media (max-width: 640px) {
+  .auth-card-container {
+    padding: 1.5rem;
+    max-width: 90%;
   }
 }
 
-/* Dark mode overrides */
-[data-theme="dark"] .auth-gradient-background {
-  background: linear-gradient(135deg, #042321 0%, #053230 25%, #064641 50%, #085c56 75%, #0A5E5C 100%);
-  background-size: 400% 400%;
+.bg-gradient-mint-light {
+  background-image: linear-gradient(135deg, var(--mint-3) 0%, var(--mint-7) 50%, var(--mint-11) 100%);
 }
 
-[data-theme="dark"] .auth-gradient-background::before {
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%2321DDB8' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-  opacity: 0.4;
+.bg-gradient-mint-dark {
+  background-image: linear-gradient(135deg, var(--mint-3) 0%, var(--mint-5) 50%, var(--mint-8) 100%);
 }
 
-/* Dark mode theme overrides */
-[data-theme="dark"] {
-  --amplify-components-button-primary-background-color: var(--mint-8);
-  --amplify-components-button-primary-hover-background-color: var(--mint-7);
-  --amplify-components-button-primary-focus-color: var(--mint-7);
-  --amplify-components-button-primary-active-background-color: var(--mint-7);
-
-  --amplify-components-button-link-color: var(--mint-8);
-  --amplify-components-button-link-hover-color: var(--mint-7);
-  --amplify-components-button-link-focus-color: var(--mint-7);
-  
-  --amplify-components-fieldcontrol-border-focus-color: var(--mint-7);
-  --amplify-components-fieldcontrol-border-color: var(--mint-6);
-  
-  --amplify-components-authenticator-background-color: var(--color-background);
-  --amplify-components-authenticator-form-border-color: var(--mint-6);
-  
-  --amplify-components-text-primary-color: var(--mint-8);
+/* Alternative diagonal gradients */
+.bg-gradient-mint-diagonal-light {
+  background-image: linear-gradient(to bottom right, var(--mint-3), var(--mint-7), var(--mint-11));
 }
 
-[data-theme="dark"] .auth-card-container {
-  border-color: var(--mint-6);
-  background-color: var(--color-background);
+.bg-gradient-mint-diagonal-dark {
+  background-image: linear-gradient(to bottom right, var(--mint-3), var(--mint-5), var(--mint-8));
 }
 
-[data-theme="dark"] .auth-card-container .amplify-input {
-  background-color: var(--mint-2);
-  border-color: var(--mint-5);
-  color: var(--color-foreground);
+/* Radial gradients */
+.bg-gradient-mint-radial-light {
+  background-image: radial-gradient(circle at center, var(--mint-7) 0%, var(--mint-9) 50%, var(--mint-11) 100%);
 }
 
-[data-theme="dark"] .auth-card-container .amplify-input:focus {
-  border-color: var(--mint-7);
-  box-shadow: 0 0 0 2px var(--mint-4);
+.bg-gradient-mint-radial-dark {
+  background-image: radial-gradient(circle at center, var(--mint-5) 0%, var(--mint-7) 50%, var(--mint-9) 100%);
 }
 
-[data-theme="dark"] .auth-card-container .amplify-field-label {
-  color: var(--color-foreground);
+.nuwa-brand-heading {
+  color: var(--logo-light-color) !important;
 }
+
+[data-theme="dark"] .nuwa-brand-heading {
+  color: var(--logo-light-color) !important;
+}
+.custom-radio-option {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Force specific properties to override Amplify styles */
+.amplify-radio__button {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  margin-right: 0.5rem !important;
+  margin-left: 0 !important;
+}
+
+/* Create a grid-based layout for radio options that ensures alignment */
+.radio-options-container {
+  flex-direction: column !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  margin-left: 1rem !important;
+
+}
+
+/* Force radio items to fill the grid properly */
+.custom-radio-option {
+  display: contents !important; 
+  padding-left: 1rem !important;
+}
+
+
+/* Style the radio label */
+.amplify-radio__label {
+  padding-left: 1rem !important;
+ }

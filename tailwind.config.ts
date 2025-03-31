@@ -10,6 +10,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        mint: {
+          1: 'var(--mint-1)',
+          2: 'var(--mint-2)',
+          3: 'var(--mint-3)',
+          4: 'var(--mint-4)',
+          5: 'var(--mint-5)',
+          6: 'var(--mint-6)',
+          7: 'var(--mint-7)',
+          8: 'var(--mint-8)',
+          9: 'var(--mint-9)',
+          10: 'var(--mint-10)',
+          11: 'var(--mint-11)',
+          12: 'var(--mint-12)',
+        },
         'logo-deep': '#0A5E5C', // Deep teal-blue at the bottom
         'logo-mid': '#16A396', // Mid teal shade
         'logo-light': '#21DDB8', // Bright mint/turquoise at the top
@@ -44,6 +58,8 @@ module.exports = {
       },
       backgroundImage: {
         'logo-gradient': 'linear-gradient(to top, #0A5E5C, #16A396, #21DDB8)',
+        'gradient-mint-light': 'linear-gradient(135deg, var(--mint-3) 0%, var(--mint-7) 50%, var(--mint-11) 100%)',
+        'gradient-mint-dark': 'linear-gradient(135deg, var(--mint-3) 0%, var(--mint-5) 50%, var(--mint-8) 100%)',
       },
       borderRadius: {
         lg: "var(--radius)",

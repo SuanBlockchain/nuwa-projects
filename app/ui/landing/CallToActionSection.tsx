@@ -27,7 +27,7 @@ export default function CallToActionSection() {
                         size="3"
                         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                         style={{
-                            backgroundColor: 'var(--mint-9)',
+                            backgroundColor: 'var(--mint-8)',
                             color: 'white',
                             borderRadius: '0.375rem',
                             padding: '0.75rem 1.5rem',
@@ -37,8 +37,8 @@ export default function CallToActionSection() {
                             boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
                             transition: 'background-color 0.2s ease-in-out'
                         }}
-                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-10)'}
-                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-9)'}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-11)'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-7)'}
                     >
                         {t('callToActionButton')}
                     </Button>

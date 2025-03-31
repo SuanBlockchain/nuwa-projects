@@ -96,7 +96,7 @@ const FeatureCard = ({
       variant="outline"
       onClick={() => window.location.href = linkHref}
       style={{
-        borderColor: 'var(--mint-9)',
+        borderColor: 'var(--mint-8)',
         color: 'var(--mint-9)',
         borderRadius: '0.375rem',
         cursor: 'pointer',

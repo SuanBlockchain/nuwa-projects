@@ -34,15 +34,14 @@ export default function HeroSection() {
                             className="px-6 py-3 text-base font-medium shadow-sm"
                             onClick={() => window.location.href = '/dashboard'}
                             style={{
-                                backgroundColor: 'var(--mint-9)',
+                                backgroundColor: 'var(--mint-8)',
                                 color: 'white',
                                 borderRadius: '0.375rem',
                                 transition: 'background-color 0.2s ease-in-out',
                                 cursor: 'pointer',
                             }}
-                            // Apply hover effect with inline CSS since Radix UI doesn't directly support Tailwind hover
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-10)'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-9)'}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-11)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--mint-7)'}
                         >
                             {t('heroButton')}
                         </Button>

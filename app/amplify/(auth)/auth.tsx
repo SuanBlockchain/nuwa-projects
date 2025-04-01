@@ -1,13 +1,15 @@
 'use client';
+
 import { Authenticator, Heading, Radio, RadioGroupField, useAuthenticator } from '@aws-amplify/ui-react';
 import { Amplify } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
-import '@/app/amplify/(auth)/auth-theme.css'
+import '@/app/amplify/(auth)/auth-theme.css';
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 // Amplify configuration
 Amplify.configure({
@@ -23,26 +25,23 @@ Amplify.configure({
 const components = {
   Header() {
     const { resolvedTheme } = useTheme();
-    const isDarkMode = resolvedTheme === 'dark';
-    
-    const logoPath = isDarkMode 
-      ? '/nuwa-logo1.png'  // Path to your light version logo for dark mode
-      : '/nuwa-logo1.png';  // Path to your dark version logo for light mode
       
     return (
       <div className="mt-4 mb-7 text-center">
         <div className="mb-2 flex items-center justify-center">
           <Image 
-            src={logoPath} 
+            src='/nuwa-logo1.png'
             alt="NUWA Logo" 
             width={40} 
             height={40} 
             className="mb-3"
           />
         </div>
-        <Heading level={4} className="text-2xl font-bold nuwa-brand-heading">
-          NUWA
-        </Heading>
+        <Link href="/" passHref>
+          <Heading level={4} className="text-2xl font-bold nuwa-brand-heading">
+            NUWA
+          </Heading>
+        </Link>
       </div>
     );
   },
@@ -67,6 +66,24 @@ const components = {
               className="text-mint-9 hover:text-mint-10 hover:underline bg-transparent border-none p-0 font-medium transition-colors dark:text-mint-8"
             >
               Sign up here
+            </button>
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Forgot password?{" "}
+            <button
+              onClick={() => window.location.href = '/forgot-password'}
+              className="text-mint-9 hover:text-mint-10 hover:underline bg-transparent border-none p-0 font-medium transition-colors dark:text-mint-8 ml-2"
+            >
+              Forgot password?
+            </button>
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Back to Home{" "}
+            <button
+              onClick={() => window.location.href = '/'}
+              className="text-mint-9 hover:text-mint-10 hover:underline bg-transparent border-none p-0 font-medium transition-colors dark:text-mint-8 ml-2"
+            >
+              Home
             </button>
           </p>
         </div>
@@ -167,9 +184,9 @@ export default function Auth({ children }: { children: React.ReactNode }) {
 }
 
 function AuthContent({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthenticator((context) => [context.user, context.route]);
+  const { user, route } = useAuthenticator((context) => [context.user, context.route]);
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   const { resolvedTheme } = useTheme();
   
   // Use client-side only rendering for theme-dependent elements
@@ -181,9 +198,31 @@ function AuthContent({ children }: { children: React.ReactNode }) {
   
   const isDarkMode = isMounted ? resolvedTheme === 'dark' : false;
 
-  const isAuthPage = pathname === '/signin' || pathname === '/signup';
-  const isDashboardPage = pathname.startsWith('/dashboard');
+  // Define the public and auth pages
+  const authPages = ['/signin', '/signup'];
+  
+  // Check if current path is an auth page
+  const isAuthPage = authPages.some(page => pathname === page || pathname.endsWith(page) || pathname.endsWith(`${page}/`));
+  
+  // Root page is always accessible
+  const isRootPage = pathname === '/';
+  
+  // All other pages are protected
+  const isProtectedPage = !isAuthPage && !isRootPage;
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Auth state:', { 
+      pathname, 
+      isAuthPage, 
+      isRootPage, 
+      isProtectedPage, 
+      user: !!user,
+      route 
+    });
+  }, [pathname, isAuthPage, isRootPage, isProtectedPage, user, route]);
+
+  // Handle auth redirection
   useEffect(() => {
     // Redirect authenticated users away from auth pages
     if (user && isAuthPage) {
@@ -191,10 +230,10 @@ function AuthContent({ children }: { children: React.ReactNode }) {
     }
     
     // Redirect unauthenticated users away from protected pages
-    if (!user && isDashboardPage) {
+    if (!user && isProtectedPage) {
       router.push('/signin');
     }
-  }, [user, isAuthPage, isDashboardPage, router]);
+  }, [user, isAuthPage, isProtectedPage, router]);
 
   // Render the authentication UI on auth pages
   if (isAuthPage) {
@@ -202,7 +241,6 @@ function AuthContent({ children }: { children: React.ReactNode }) {
       <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className={`absolute inset-0 ${isMounted && isDarkMode ? 'bg-gradient-mint-dark' : 'bg-gradient-mint-light'}`}></div>
-
           <div className="absolute inset-0 bg-black opacity-30"></div>
         </div>
         
@@ -216,7 +254,7 @@ function AuthContent({ children }: { children: React.ReactNode }) {
           >
             <div className="w-full max-w-full overflow-visible">
               <Authenticator 
-                initialState={pathname === '/signup' ? 'signUp' : 'signIn'} 
+                initialState={pathname.includes('/signup') ? 'signUp' : 'signIn'} 
                 components={components} 
                 formFields={formFields}
                 className="width-constrained-authenticator compact-auth"
@@ -239,12 +277,12 @@ function AuthContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Protected routes check
-  if (isDashboardPage && !user) {
+  // Protected routes check - don't render content for protected pages if user is not authenticated
+  if (isProtectedPage && !user) {
     // This will be handled by the useEffect redirect
     return null;
   }
 
-  // For all other routes, render the children
+  // For root page or authenticated users on protected pages, render the children
   return <>{children}</>;
 }

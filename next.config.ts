@@ -5,9 +5,18 @@ import { i18n } from "./next-i18next.config";
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
   i18n,
-
+  
+  // Enable static file serving for locales directory
+  async rewrites() {
+    return [
+      {
+        source: '/locales/:locale/:file',
+        destination: '/public/locales/:locale/:file',
+      },
+    ];
+  },
+  
   webpack: (config, { isServer }) => {
-
     // Ensure `resolve.plugins` exists
     config.resolve.plugins = [
       ...(config.resolve.plugins || []), // Keep existing plugins
@@ -15,7 +24,7 @@ const nextConfig: NextConfig = {
         configFile: './tsconfig.json', // Adjust the path to your tsconfig.json if necessary
       }),
     ];
-  
+    
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true, // Enable async WebAssembly
@@ -28,7 +37,6 @@ const nextConfig: NextConfig = {
     
     return config;
   },
-
 };
 
 export default nextConfig;

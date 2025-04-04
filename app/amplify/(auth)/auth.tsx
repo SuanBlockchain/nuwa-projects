@@ -11,20 +11,23 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-// Amplify configuration
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      userPoolId: "us-east-2_B8PlrPumH",
-      userPoolClientId: "48cr50230aq1mfrjlgsha3iudm",
+import { config } from '@/app/amplify/(auth)/amplifyConfig';
+if (config.Auth?.Cognito?.userPoolId && config.Auth?.Cognito?.userPoolClientId) {
+  Amplify.configure({
+    Auth: {
+      Cognito: {
+        userPoolId: config.Auth.Cognito.userPoolId as string,
+        userPoolClientId: config.Auth.Cognito.userPoolClientId as string,
+      },
     },
-  }
-});
+  });
+} else {
+  console.error('Amplify configuration is missing required Cognito parameters.');
+}
 
 // Custom components for the Authenticator
 const components = {
   Header() {
-    const { resolvedTheme } = useTheme();
       
     return (
       <div className="mt-4 mb-7 text-center">

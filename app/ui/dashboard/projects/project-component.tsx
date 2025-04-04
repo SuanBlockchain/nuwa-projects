@@ -5,17 +5,17 @@ import BarChartCO2 from "./bar-chart-co2";
 // import MyResponsiveTreeMap from "./project-tree-map";
 
 import { EcosystemData } from "@/app/lib/definitions";
+import { lusitana } from "../../fonts";
 
 export default function ProjectComponent({ projectId }: { projectId?: string }) {
   const [parcelsData, setParcelsData] = useState<EcosystemData[]>([]);
   const [co2Data, setCo2Data] = useState([]);
-  // const [treeMapData, setTreeMapData] = useState<TreeNode | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     async function getParcels(projectIds: string[]) {
       try {
-        setLoading(true);
+        setLoading(true); // Set loading to true before fetching data
 
         // Fetch Aggregated Data
         const aggregatedResponse = await fetch("/api/getParcels", {
@@ -52,26 +52,10 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
 
         const co2Data = await co2Response.json();
         setCo2Data(co2Data);
-
-        // Fetch Detailed Data (Tree Map)
-
-        // const detailsResponse = await fetch("/api/getParcels", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ projectIds, queryType: "details" }),
-        // });
-
-        // if (!detailsResponse.ok) {
-        //   throw new Error("Failed to fetch detailed parcel data");
-        // }
-
-        // const detailsData: TreeNode = await detailsResponse.json();
-        // setTreeMapData(detailsData);
-
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching parcels", error);
-        setLoading(false);
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     }
 
@@ -82,48 +66,52 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
 
   return (
     <div>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="container-mx py-10 col">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-              <div>
-                {parcelsData.length > 0 ? (
-                  <div className="grid gap-4 p-4 rounded-md border">
-                    <h2 className="text-xl font-bold mb-4 text-center">AGB, BGB, SOC and CO2 by Specie</h2>
-                    <div className="w-full overflow-x-auto">
-                      <BarChartAggregated data={parcelsData} />
-                    </div>
-                  </div>
-                ) : (
-                  <p>No aggregated data available</p>
-                )}
-              </div>
-              <div>
-                {co2Data.length > 0 ? (
-                  <div className="grid gap-4 p-4 rounded-md border">
-                    <h2 className="text-xl font-bold mb-4 text-center">CO2eq per year</h2>
-                    <div className="w-full overflow-x-auto">
-                      <BarChartCO2 data={co2Data} />
-                    </div>
-                  </div>
-                ) : (
-                  <p>No CO2 data available</p>
-                )}
-              </div>
+      <h1
+        className={`${lusitana.className} mt-6 mb-6 text-2xl md:text-3xl font-bold text-center text-mint-11 dark:text-mint-9`}
+      >
+        Growth data for the project
+      </h1>
+      <div className="container-mx py-10 col">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+          <div>
+            {loading ? (
+              <p>Loading aggregated data...</p>
+            ) : parcelsData.length > 0 ? (
+              <div className="grid gap-4 p-4 rounded-md border">
+                <h2 className="text-xl font-bold mb-4 text-center">AGB, BGB, SOC and CO2 by Specie</h2>
+                <div className="w-full overflow-x-auto">
+                  <BarChartAggregated data={parcelsData} />
                 </div>
-              {/* <div>
-                <div style={{ height: "500px", marginTop: "20px" }}>
-                  {treeMapData ? (
-                    <MyResponsiveTreeMap data={treeMapData} />
-                  ) : (
-                    <p>No detailed parcel data available</p>
-                  )}
-                </div>
-              </div> */}
+              </div>
+            ) : (
+              <p>No aggregated data available</p>
+            )}
           </div>
-
-        )}
+          <div>
+            {loading ? (
+              <p>Loading CO2 data...</p>
+            ) : co2Data.length > 0 ? (
+              <div className="grid gap-4 p-4 rounded-md border">
+                <h2 className="text-xl font-bold mb-4 text-center">CO2eq per year</h2>
+                <div className="w-full overflow-x-auto">
+                  <BarChartCO2 data={co2Data} />
+                </div>
+              </div>
+            ) : (
+              <p>No CO2 data available</p>
+            )}
+          </div>
+        </div>
+        {/* <div>
+          <div style={{ height: "500px", marginTop: "20px" }}>
+            {treeMapData ? (
+              <MyResponsiveTreeMap data={treeMapData} />
+            ) : (
+              <p>No detailed parcel data available</p>
+            )}
+          </div>
+        </div> */}
+      </div>
     </div>
   );
 }

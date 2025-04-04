@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { PopulationResult, Event } from '@/app/lib/definitions';
 import BarChartCO2 from '../bar-chart-co2-production';
+import { Button } from '@/app/ui/button';
 
 
 
@@ -86,9 +87,8 @@ export default function SimulateParamsFormClient({
   const yearOptions = getYearOptions();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-      <div className="grid gap-4 p-4 rounded-md border">
-        <h1 className="text-2xl font-bold mb-4">Simulate Growth for the project</h1>
+    <div className="w-full">
+      <div className="flex items-center py-4 px-4">
         <div className="w-full overflow-x-auto">
             <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -97,7 +97,7 @@ export default function SimulateParamsFormClient({
                 id="species"
                 name="species"
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border border-mint-6 rounded focus:border-mint-8 focus:ring-mint-7 dark:border-mint-8 dark:bg-zinc-800"
               >
                 <option value="">Select a species</option>
                 {speciesList.map((species) => (
@@ -115,7 +115,7 @@ export default function SimulateParamsFormClient({
                 id="startDate"
                 name="startDate"
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border border-mint-6 rounded focus:border-mint-8 focus:ring-mint-7 dark:border-mint-8 dark:bg-zinc-800"
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </div>
@@ -127,7 +127,7 @@ export default function SimulateParamsFormClient({
                 id="endDate"
                 name="endDate"
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border border-mint-6 rounded focus:border-mint-8 focus:ring-mint-7 dark:border-mint-8 dark:bg-zinc-800"
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
@@ -142,7 +142,7 @@ export default function SimulateParamsFormClient({
                       value={event.year}
                       onChange={(e) => handleEventChange(index, 'year', e.target.value)}
                       required
-                      className="p-2 border rounded"
+                      className="p-2 border border-mint-6 rounded focus:border-mint-8 focus:ring-mint-7 dark:border-mint-8 dark:bg-zinc-800"
                       disabled={!startDate || !endDate}
                     >
                       <option value="">Select year</option>
@@ -162,35 +162,40 @@ export default function SimulateParamsFormClient({
                       min="0"
                       max="100"
                       required
-                      className="p-2 border rounded w-24"
+                      className="p-2 border border-mint-6 rounded w-24 focus:border-mint-8 focus:ring-mint-7 dark:border-mint-8 dark:bg-zinc-800"
                     />
                   </div>
                   {events.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeEvent(index)}
-                      className="p-2 text-red-500 hover:text-red-700"
+                      className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600"
                     >
                       Remove
                     </button>
                   )}
                 </div>
               ))}
-              <button
+              {/* <button
                 type="button"
                 onClick={addEvent}
-                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
               >
                 Add Thinning Harvest Event
-              </button>
+              </button> */}
+              <Button onClick={addEvent} variant="outline" className="ml-auto bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700">
+              Add Thinning Harvest Event
+              </Button>
             </div>
-
-            <button
+            <Button variant="default" className="ml-auto bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700">
+            Submit
+              </Button>
+            {/* <button
               type="submit"
-              className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
             >
               Submit
-            </button>
+            </button> */}
             </form>
         </div>
       </div>
@@ -220,22 +225,22 @@ export default function SimulateParamsFormClient({
             </div>
           )}
           {activeTab === 'table' && (
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse border border-mint-6 dark:border-mint-8">
               <thead>
-                <tr className="bg-white dark:bg-zinc-900">
-                  <th className="border p-2 text-center">Period</th>
-                  <th className="border p-2 text-center">Population</th>
-                  <th className="border p-2 text-center">Co2eq (Tonnes)</th>
-                  <th className="border p-2 text-center">Co2eq Accumulated</th>
+                <tr className="bg-mint-2 dark:bg-zinc-800">
+                  <th className="border border-mint-6 dark:border-mint-8 p-2 text-center text-mint-11 dark:text-mint-9">Period</th>
+                  <th className="border border-mint-6 dark:border-mint-8 p-2 text-center text-mint-11 dark:text-mint-9">Population</th>
+                  <th className="border border-mint-6 dark:border-mint-8 p-2 text-center text-mint-11 dark:text-mint-9">Co2eq (Tonnes)</th>
+                  <th className="border border-mint-6 dark:border-mint-8 p-2 text-center text-mint-11 dark:text-mint-9">Co2eq Accumulated</th>
                 </tr>
               </thead>
               <tbody>
                 {populationTable.map((row) => (
-                  <tr key={row.period}>
-                    <td className="border p-2 text-center">{row.period} </td>
-                    <td className="border p-2 text-center">{row.population}</td>
-                    <td className="border p-2 text-center">{row.co2eq_tonnes}</td>
-                    <td className="border p-2 text-center">{row.co2eq_accumulated}</td>
+                  <tr key={row.period} className="border-b border-mint-5 dark:border-mint-7 hover:bg-mint-2 dark:hover:bg-zinc-800">
+                    <td className="border border-mint-6 dark:border-mint-8 p-2 text-center text-foreground dark:text-mint-12">{row.period}</td>
+                    <td className="border border-mint-6 dark:border-mint-8 p-2 text-center text-foreground dark:text-mint-12">{row.population}</td>
+                    <td className="border border-mint-6 dark:border-mint-8 p-2 text-center text-foreground dark:text-mint-12">{row.co2eq_tonnes}</td>
+                    <td className="border border-mint-6 dark:border-mint-8 p-2 text-center text-foreground dark:text-mint-12">{row.co2eq_accumulated}</td>
                   </tr>
                 ))}
               </tbody>

@@ -12,6 +12,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.2.2",
     "@auth/prisma-adapter": "^2.8.0",
+    "@aws-amplify/adapter-nextjs": "^1.5.8",
     "@aws-amplify/ui-react": "^6.9.4",
     "@cardano-foundation/cardano-connect-with-wallet": "^0.2.9",
     "@headlessui/react": "^2.2.0",

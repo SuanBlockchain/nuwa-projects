@@ -42,9 +42,15 @@
     "navSignup": "Regístrate",
     "navBlockchain": "Blockchain",
     "uploadTitle": "Sube Tu Archivo",
+    "uploadSubtitle": "Subida de Archivo Excel",
+    "uploadDragDrop": "Arrastra y suelta o haz clic para subir",
+    "uploadSupportedFormats": "Admite archivos Excel (.xlsx)",
     "uploadNoFile": "Por favor selecciona un archivo primero.",
     "uploadUploading": "Subiendo...",
     "uploadError": "Ocurrió un error al subir el archivo.",
     "uploadSelectedFile": "Archivo seleccionado:",
-    "uploadButton": "Subir"
+    "uploadButton": "Subir Archivo",
+    "uploadInvalidFileType": "Por favor sube un archivo Excel (.xlsx)",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbUpload": "Subir"
 }

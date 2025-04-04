@@ -42,9 +42,15 @@
     "navSignup": "Sign up",
     "navBlockchain": "Blockchain",
     "uploadTitle": "Upload Your File",
+    "uploadSubtitle": "Excel File Upload",
+    "uploadDragDrop": "Drag and drop or click to upload",
+    "uploadSupportedFormats": "Supports Excel (.xlsx) files",
     "uploadNoFile": "Please select a file first.",
     "uploadUploading": "Uploading...",
     "uploadError": "An error occurred while uploading the file.",
     "uploadSelectedFile": "Selected file:",
-    "uploadButton": "Upload"
+    "uploadButton": "Upload File",
+    "uploadInvalidFileType": "Please upload an Excel (.xlsx) file",
+    "breadcrumbHome": "Home",
+    "breadcrumbUpload": "Upload"
 }

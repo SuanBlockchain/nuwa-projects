@@ -1,7 +1,6 @@
 import { clsx } from 'clsx';
 import Link from 'next/link';
 import { lusitana } from '@/app/ui/fonts';
-
 import { Breadcrumb } from '@/app/lib/definitions';
 
 export default function Breadcrumbs({
@@ -9,6 +8,7 @@ export default function Breadcrumbs({
 }: {
   breadcrumbs: Breadcrumb[];
 }) {
+
   return (
     <nav aria-label="Breadcrumb" className="mb-6 block">
       <ol className={clsx(lusitana.className, 'flex justify-center text-base sm:text-lg md:text-xl lg:text-2xl')}>

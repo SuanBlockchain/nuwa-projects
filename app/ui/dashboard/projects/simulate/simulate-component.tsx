@@ -18,9 +18,7 @@ export default async function SimulateComponent({ projectId }: { projectId?: str
                 >
                 Forecast growth for the project
             </h1>
-            {/* <div className="container-mx py-10 col"> */}
                 <SimulateParamsForm projectId={projectId} speciesList={speciesList} initialPopulationTable={[]} />
-            {/* </div> */}
         </main>
     )
 

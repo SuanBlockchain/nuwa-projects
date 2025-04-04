@@ -12,7 +12,7 @@ import { Analytics } from "@vercel/analytics/react";
 import I18nProvider from "./ui/i18n-provider";
 import "@aws-amplify/ui-react/styles.css";
 import dynamic from 'next/dynamic';
-import Auth from "@/app/amplify/(auth)/auth";
+// import Auth from "@/app/amplify/(auth)/auth";
 
 const Navbar = dynamic(() => import('@/app/ui/navbar/navbar'), { ssr: false });
 
@@ -33,14 +33,14 @@ export default function RootLayout({
         >
           <Theme accentColor="mint" grayColor="slate" scaling="100%" radius="medium">
             <I18nProvider>
-              <Auth>
+              {/* <Auth> */}
                 <Navbar />
                 <main className="min-h-screen">
                   {children}
                 </main>
                 <Analytics />
                 <Footer />
-              </Auth>
+              {/* </Auth> */}
             </I18nProvider>
             {/* Uncomment for development to adjust theme visually */}
             {/* <ThemePanel /> */}

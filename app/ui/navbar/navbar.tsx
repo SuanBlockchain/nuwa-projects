@@ -17,26 +17,26 @@ import { appConfig } from "@/app/app.config";
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from "@/app/ui/navbar/theme-toggle";
 import LanguageToggle from "@/app/ui/navbar/language-toggle";
-import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useRouter } from 'next/navigation';
+// import { useAuthenticator } from '@aws-amplify/ui-react';
+// import { useRouter } from 'next/navigation';
 import './navbar.css';
 
 const Navbar = () => {
     const { t } = useTranslation('common');
-    const { user, signOut } = useAuthenticator();
-    const router = useRouter();
+    // const { user, signOut } = useAuthenticator();
+    // const router = useRouter();
 
-    const handleSignIn = () => {
-        router.push('/signin');
-    };
+    // const handleSignIn = () => {
+    //     router.push('/signin');
+    // };
 
-    const handleSignUp = () => {
-        router.push('/signup');
-    };
+    // const handleSignUp = () => {
+    //     router.push('/signup');
+    // };
 
-    const handleSignOut = () => {
-        signOut();
-    };
+    // const handleSignOut = () => {
+    //     signOut();
+    // };
 
     const navigation: NavigationItem[] = [
         { name: t('navHome'), href: '/', current: true },
@@ -140,7 +140,7 @@ const Navbar = () => {
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 px-6">
                                 <ThemeToggle />
                                 <LanguageToggle />
-                                <div className="flex items-center space-x-2 pl-4">
+                                {/* <div className="flex items-center space-x-2 pl-4">
                                     {!user ? (
                                         <>
                                             <button
@@ -164,7 +164,7 @@ const Navbar = () => {
                                             {t('navLogout') || 'Sign Out'}
                                         </button>
                                     )}
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>

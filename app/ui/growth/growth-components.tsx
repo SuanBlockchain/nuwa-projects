@@ -1,11 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GrowthChart from './growth-chart';
 import GrowthParamsForm from './growth-params-form';
 import GrowthTable from './growth-table';
 import Pagination from './pagination';
 import { GrowthData } from '@/app/lib/definitions';
-import { lusitana } from '@/app/ui/fonts';
 
 const convertToPlainObject = (value: { toNumber?: () => number } | number): number => {
   if (value && typeof value === 'object' && 'toNumber' in value) {
@@ -22,11 +21,10 @@ const formatGrowthData = (growthData: GrowthData[]) => {
     }
     acc[curr.species].push({
       x: curr.year,
-      y: convertToPlainObject(curr.co2eq), // Convert `altura` to plain number
+      y: convertToPlainObject(curr.co2eq),
     });
     return acc;
   }, {});
-
 
   // Convert grouped data into Nivo-compatible format
   return Object.keys(groupedData).map((species) => ({
@@ -40,9 +38,11 @@ export default function GrowthComponent() {
   const [activeTab, setActiveTab] = useState<'table' | 'chart'>('chart');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (selectedSpecies: string[], selectedYear: number) => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/getGrowCurves', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,61 +55,104 @@ export default function GrowthComponent() {
 
       const data = await response.json();
       setGrowthData(data);
-      setTotalPages(Math.ceil((selectedSpecies.length * selectedYear) / 10));
+      
+      // Calculate total items for pagination
+      const totalItems = data.reduce((count: number, species: { co2eq?: { length: number }[] }) => {
+        return count + (species.co2eq ? species.co2eq.length : 0);
+      }, 0);
+      
+      // Use 15 items per page (matching the GrowthTable's recordsPerPage)
+      setTotalPages(Math.ceil(totalItems / 15));
+      setCurrentPage(1); // Reset to first page when new data is loaded
     } catch (error) {
       console.error('Error fetching growth data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const formattedData = formatGrowthData(growthData);
+  
+  // Calculate actual total data items for pagination
+  const totalDataItems = formattedData.reduce((count, species) => {
+    return count + species.data.length;
+  }, 0);
+  
+  // Ensure total pages is correctly set based on formatted data
+  useEffect(() => {
+    if (formattedData.length > 0) {
+      const recordsPerPage = 15; // Same as in GrowthTable
+      const calculatedPages = Math.max(1, Math.ceil(totalDataItems / recordsPerPage));
+      
+      if (calculatedPages !== totalPages) {
+        setTotalPages(calculatedPages);
+        // Also reset to page 1 if current page is now invalid
+        if (currentPage > calculatedPages) {
+          setCurrentPage(1);
+        }
+      }
+    }
+  }, [formattedData, totalDataItems, currentPage, totalPages]);
 
   return (
-    <div className="container-mx py-10 col">
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl p-4`}>GROWTH MODELS</h1>
-      <GrowthParamsForm
-        onSubmit={handleSubmit}
-      />
-      {formattedData.length > 0 && (
-        <div className="grid gap-6 p-4 w-full md:w-auto overflow-x-hidden bg-gray-50 dark:bg-zinc-900">
-          <div className="flex border-b border-gray-300">
+    <div className="w-full space-y-6">
+      <GrowthParamsForm onSubmit={handleSubmit} />
+      
+      {isLoading && (
+        <div className="w-full flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mint-9"></div>
+        </div>
+      )}
+
+      {!isLoading && formattedData.length > 0 && (
+        <div className="w-full rounded-md border border-mint-6 dark:border-mint-8 overflow-hidden bg-gray-50 p-4 md:p-6 dark:bg-zinc-900">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-mint-6 dark:border-mint-8 mb-4">
             <button
-              onClick={() => setActiveTab('chart')}
-              className={`px-4 py-2 text-sm font-medium ${
-                activeTab === 'chart' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'chart' 
+                  ? 'border-b-2 border-mint-9 text-mint-11 dark:text-mint-9' 
+                  : 'text-gray-500 hover:text-mint-11 dark:hover:text-mint-9'
               }`}
+              onClick={() => setActiveTab('chart')}
             >
               Graph
             </button>
             <button
-              onClick={() => setActiveTab('table')}
-              className={`px-4 py-2 text-sm font-medium ${
-                activeTab === 'table' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'table' 
+                  ? 'border-b-2 border-mint-9 text-mint-11 dark:text-mint-9' 
+                  : 'text-gray-500 hover:text-mint-11 dark:hover:text-mint-9'
               }`}
+              onClick={() => setActiveTab('table')}
             >
               Table
             </button>
           </div>
 
+          {/* Tab Content */}
+          <div className="mt-4">
             {activeTab === 'chart' && (
-              <div className="grid gap-4 p-4 rounded-md border">
-                <h2 className="text-xl font-bold mb-4 text-center">Growth Curves (CO2eq vs years)</h2>
-              <div className="w-full overflow-x-auto">
-              <GrowthChart data={formattedData} />
-              </div>
+              <div className="w-full h-[400px] md:h-[500px] lg:h-[600px]">
+                <GrowthChart data={formattedData} />
               </div>
             )}
+            
             {activeTab === 'table' && (
-              <>
-                <div className="w-full md:w-auto overflow-x-hidden">
-                  <div className="w-full h-64 md:h-full">
-                    <GrowthTable data={formattedData} currentPage={currentPage} />
-                  </div>
+              <div className="space-y-4">
+                <div className="w-full overflow-x-auto">
+                  <GrowthTable data={formattedData} currentPage={currentPage} />
                 </div>
-                <div className="mt-5 flex w-full justify-center md:w-auto overflow-x-hidden">
-                  <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
+                <div className="flex justify-center mt-4">
+                  <Pagination 
+                    totalPages={totalPages} 
+                    currentPage={currentPage} 
+                    onPageChange={setCurrentPage} 
+                  />
                 </div>
-              </>
+              </div>
             )}
+          </div>
         </div>
       )}
     </div>

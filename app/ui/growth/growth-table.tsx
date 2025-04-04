@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from 'next-themes';
+// import { useTheme } from 'next-themes';
 
 interface GrowthTableProps {
   data: {
@@ -10,93 +10,135 @@ interface GrowthTableProps {
 }
 
 const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
-  const { theme } = useTheme();
-  const textColor = theme === 'dark' ? '#fff' : '#000';
 
   if (!data || data.length === 0) {
-    return <p className="text-center text-gray-500">No data available</p>;
+    return (
+      <div className="w-full py-12 flex justify-center items-center">
+        <p className="text-center text-mint-11 dark:text-mint-9 opacity-70">No data available</p>
+      </div>
+    );
   }
 
   const recordsPerPage = 15;
   const startIndex = (currentPage - 1) * recordsPerPage;
   const endIndex = startIndex + recordsPerPage;
-  const paginatedData = data.flatMap((item) =>
+  
+  // Create flattened array of all data points
+  const allData = data.flatMap((item) =>
     item.data.map((record) => ({
       species: item.id,
       year: record.x,
       co2eq: record.y,
     }))
-  ).slice(startIndex, endIndex);
+  );
+  
+  // Sort by species and then by year for consistent ordering
+  allData.sort((a, b) => {
+    if (a.species !== b.species) {
+      return a.species.localeCompare(b.species);
+    }
+    return a.year - b.year;
+  });
+  
+  // Get current page data
+  const paginatedData = allData.slice(startIndex, endIndex);
 
   return (
-    <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg p-2 md:pt-0" style={{ backgroundColor: theme === 'dark' ? '#18181b' : '#f9fafb' }}>
-          {/* Mobile-friendly version */}
-          <div className="md:hidden">
-            {paginatedData.map((record, index) => (
-              <div
-                key={`${record.species}-${index}`}
-                className="mb-2 w-full rounded-md bg-white p-4"
-              >
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: textColor }}>Species</p>
-                    <p className="text-sm text-gray-500">{record.species}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: textColor }}>Year</p>
-                    <p className="text-sm text-gray-500">{record.year}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-4">
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: textColor }}>CO2eq (kg)</p>
-                    <p className="text-sm text-gray-500">{record.co2eq.toFixed(2)}</p>
-                  </div>
-                </div>
+    <div className="w-full">
+      {/* Mobile-friendly version */}
+      <div className="md:hidden space-y-3">
+        {paginatedData.map((record, index) => (
+          <div
+            key={`${record.species}-${record.year}-${index}`}
+            className="w-full rounded-md bg-white dark:bg-zinc-800 p-4 border border-mint-6 dark:border-mint-8 shadow-sm"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">Species</p>
+                <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">{record.species}</p>
               </div>
-            ))}
+              
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">Year</p>
+                <p className="text-sm text-gray-900 dark:text-gray-100">{record.year}</p>
+              </div>
+              
+              <div className="col-span-2 pt-2 border-t border-mint-6/20 dark:border-mint-8/20 space-y-1">
+                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">CO2eq (kg)</p>
+                <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">{record.co2eq.toFixed(2)}</p>
+              </div>
+            </div>
           </div>
-          {/* Desktop version */}
-          <table className="hidden min-w-full text-gray-900 md:table">
-            <thead className="rounded-lg text-left text-sm font-normal">
-              <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6" style={{ color: textColor }}>
-                  Species
-                </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6" style={{ color: textColor }}>
-                  Year
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium" style={{ color: textColor }}>
-                  CO2eq (kg)
-                </th>
+        ))}
+        
+        {paginatedData.length === 0 && (
+          <div className="w-full py-8 text-center text-sm text-mint-11 dark:text-mint-9 opacity-70">
+            No results for this page
+          </div>
+        )}
+      </div>
+
+      {/* Desktop version */}
+      <div className="hidden md:block overflow-hidden rounded-lg border border-mint-6 dark:border-mint-8">
+        <table className="min-w-full divide-y divide-mint-6 dark:divide-mint-8">
+          <thead className="bg-mint-3 dark:bg-zinc-800">
+            <tr>
+              <th 
+                scope="col" 
+                className="px-6 py-3 text-left text-xs font-medium text-mint-11 dark:text-mint-9 uppercase tracking-wider"
+              >
+                Species
+              </th>
+              <th 
+                scope="col" 
+                className="px-6 py-3 text-left text-xs font-medium text-mint-11 dark:text-mint-9 uppercase tracking-wider"
+              >
+                Year
+              </th>
+              <th 
+                scope="col" 
+                className="px-6 py-3 text-left text-xs font-medium text-mint-11 dark:text-mint-9 uppercase tracking-wider"
+              >
+                CO2eq (kg)
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-zinc-900 divide-y divide-mint-6/20 dark:divide-mint-8/20">
+            {paginatedData.map((record, index) => (
+              <tr 
+                key={`${record.species}-${record.year}-${index}`}
+                className="hover:bg-mint-1 dark:hover:bg-zinc-800/50 transition-colors"
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {record.species}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                  {record.year}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                  {record.co2eq.toFixed(2)}
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-zinc-900">
-              {paginatedData.map((record, index) => (
-                <tr
-                  key={`${record.species}-${index}`}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <p style={{ color: textColor }}>{record.species}</p>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3" style={{ color: textColor }}>
-                    {record.year}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3" style={{ color: textColor }}>
-                    {record.co2eq.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            
+            {paginatedData.length === 0 && (
+              <tr>
+                <td colSpan={3} className="px-6 py-8 text-center text-sm text-mint-11 dark:text-mint-9 opacity-70">
+                  No results for this page
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Page indicator */}
+      <div className="mt-4 text-xs text-center text-mint-11 dark:text-mint-9">
+        {paginatedData.length > 0 ? (
+          <>Showing page {currentPage} · {paginatedData.length} records</>
+        ) : (
+          <>No data to display</>
+        )}
       </div>
     </div>
   );

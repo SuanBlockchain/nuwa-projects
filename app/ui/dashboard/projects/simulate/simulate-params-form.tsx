@@ -68,7 +68,6 @@ export default function SimulateParamsFormClient({
       setPopulationTable(newPopulationTable);
     } catch (error) {
       console.error('Error generating population table:', error);
-      // Handle error (e.g., show error message to user)
     }
   };
 
@@ -176,13 +175,7 @@ export default function SimulateParamsFormClient({
                   )}
                 </div>
               ))}
-              {/* <button
-                type="button"
-                onClick={addEvent}
-                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
-              >
-                Add Thinning Harvest Event
-              </button> */}
+
               <Button onClick={addEvent} variant="outline" className="ml-auto bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700">
               Add Thinning Harvest Event
               </Button>
@@ -190,12 +183,7 @@ export default function SimulateParamsFormClient({
             <Button variant="default" className="ml-auto bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700">
             Submit
               </Button>
-            {/* <button
-              type="submit"
-              className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
-            >
-              Submit
-            </button> */}
+
             </form>
         </div>
       </div>

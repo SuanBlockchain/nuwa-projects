@@ -1,21 +1,23 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Button } from "@/app/ui/button"
+import { Button } from "@/app/ui/button";
 
 export default function GrowthParamsForm({
   onSubmit,
 }: {
-  onSubmit: (species: string[], year: number) => void; // Updated to accept an array of species and a year
+  onSubmit: (species: string[], year: number) => void;
 }) {
-  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]); // Array to hold multiple selections
+  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
   const [speciesOptions, setSpeciesOptions] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number>(5); // Default to 5 years
-  const [error, setError] = useState<string | null>(null); // State to hold error message
+  const [selectedYear, setSelectedYear] = useState<number>(5);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Fetch species options from the database
   useEffect(() => {
     async function fetchSpecies() {
       try {
+        setIsLoading(true);
         const response = await fetch('/api/getSpecies');
         if (!response.ok) {
           throw new Error('Failed to fetch species options.');
@@ -25,6 +27,9 @@ export default function GrowthParamsForm({
         setSpeciesOptions(speciesList);
       } catch (error) {
         console.error('Error fetching species options:', error);
+        setError('Failed to load species. Please try again later.');
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -33,11 +38,11 @@ export default function GrowthParamsForm({
 
   const handleSpeciesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
-    setSelectedSpecies(selectedOptions); // Update state with selected options
+    setSelectedSpecies(selectedOptions);
   };
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedYear(Number(event.target.value)); // Update state with selected year
+    setSelectedYear(Number(event.target.value));
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -50,46 +55,56 @@ export default function GrowthParamsForm({
       setError('Please select a year.');
       return;
     }
-    setError(null); // Clear any previous error
-    onSubmit(selectedSpecies, selectedYear); // Pass the array of selected species and the selected year to the parent component
+    setError(null); 
+    onSubmit(selectedSpecies, selectedYear); 
   };
 
   return (
-    <div className="grid gap-6 p-4">
-      <div className="grid gap-6 p-4 rounded-md border bg-gray-50 dark:bg-zinc-900">
-        <form onSubmit={handleSubmit} className="mb-8">
-          <div className="rounded-md bg-gray-50 p-4 md:p-6 dark:bg-zinc-900">
-            <div className="mb-4">
-              <label htmlFor="species" className="mb-2 block text-sm font-medium">
-                Select Species (Multiple)
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="rounded-md border border-mint-6 dark:border-mint-8 overflow-hidden">
+        <div className="rounded-md bg-gray-50 p-4 md:p-6 dark:bg-zinc-900">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Species Selection */}
+            <div className="space-y-2">
+              <label htmlFor="species" className="block text-mint-11 dark:text-mint-9 font-semibold">
+                Select Species
               </label>
-              <select
-                id="species"
-                name="species"
-                multiple // Enable multiple selection
-                className="block w-full rounded-md border py-2 pl-3 pr-10 text-sm focus:ring-2"
-                value={selectedSpecies} // Bind to array state
-                onChange={handleSpeciesChange} // Update state on selection
-              >
-                {speciesOptions.map((species) => (
-                  <option key={species} value={species}>
-                    {species}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-2 text-sm text-gray-500">Hold CTRL (or CMD) to select multiple options.</p>
+              {isLoading ? (
+                <div className="h-10 w-full bg-mint-3 dark:bg-zinc-800 animate-pulse rounded-md"></div>
+              ) : (
+                <>
+                  <select
+                    id="species"
+                    name="species"
+                    multiple
+                    className="block w-full h-32 text-mint-11 dark:text-mint-9 border-mint-6 dark:border-mint-8 rounded-md border py-2 pl-3 pr-10 text-sm focus:ring-2 focus:ring-mint-6 dark:focus:ring-mint-8 focus:border-mint-6 dark:focus:border-mint-8 bg-white dark:bg-zinc-800 transition-colors"
+                    value={selectedSpecies}
+                    onChange={handleSpeciesChange}
+                  >
+                    {speciesOptions.map((species) => (
+                      <option key={species} value={species}>
+                        {species}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-mint-11 dark:text-mint-9 opacity-70">
+                    Hold CTRL (or CMD) to select multiple options.
+                  </p>
+                </>
+              )}
             </div>
 
-            <div className="mb-4">
-              <label htmlFor="year" className="mb-2 block text-sm font-medium">
+            {/* Year Selection */}
+            <div className="space-y-2">
+              <label htmlFor="year" className="block text-mint-11 dark:text-mint-9 font-semibold">
                 Select Year
               </label>
               <select
                 id="year"
                 name="year"
-                className="block w-full rounded-md border py-2 pl-3 pr-10 text-sm focus:ring-2"
-                value={selectedYear} // Bind to state
-                onChange={handleYearChange} // Update state on selection
+                className="block w-full text-mint-11 dark:text-mint-9 rounded-md border border-mint-6 dark:border-mint-8 py-2 pl-3 pr-10 text-sm focus:ring-2 focus:ring-mint-6 dark:focus:ring-mint-8 focus:border-mint-6 dark:focus:border-mint-8 bg-white dark:bg-zinc-800 transition-colors"
+                value={selectedYear}
+                onChange={handleYearChange}
               >
                 {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((year) => (
                   <option key={year} value={year}>
@@ -98,19 +113,25 @@ export default function GrowthParamsForm({
                 ))}
               </select>
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error message if any */}
-            <div className="mt-6 flex justify-end gap-4">
-              <Button variant="destructive" type="submit"
-                className="bg-gray-300 text-gray-700 hover:bg-gray-700 hover:text-white rounded-md border px-3 py-2 text-sm font-medium"
-              >
-                Generate trend
-              </Button>
-            </div>
           </div>
-        </form>
-
-      </div>
-
+          
+          {error && (
+            <div className="mt-4 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+          
+          <div className="mt-6 flex justify-end">
+            <Button 
+              variant="outline" 
+              type="submit" 
+              className="bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 transition-colors"
+            >
+              Generate Growth Trend
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }

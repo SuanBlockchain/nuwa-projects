@@ -5,6 +5,9 @@ import GrowthParamsForm from './growth-params-form';
 import GrowthTable from './growth-table';
 import Pagination from './pagination';
 import { GrowthData } from '@/app/lib/definitions';
+import { useTranslation } from 'react-i18next';
+import Breadcrumbs from '../breadcrumbs';
+import { lusitana } from '../fonts';
 
 const convertToPlainObject = (value: { toNumber?: () => number } | number): number => {
   if (value && typeof value === 'object' && 'toNumber' in value) {
@@ -34,6 +37,7 @@ const formatGrowthData = (growthData: GrowthData[]) => {
 };
 
 export default function GrowthComponent() {
+  const { t } = useTranslation('common');
   const [growthData, setGrowthData] = useState<GrowthData[]>([]);
   const [activeTab, setActiveTab] = useState<'table' | 'chart'>('chart');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -95,6 +99,16 @@ export default function GrowthComponent() {
   }, [formattedData, totalDataItems, currentPage, totalPages]);
 
   return (
+    <div>
+      <Breadcrumbs
+        breadcrumbs={[
+          { label: t('breadcrumbHome'), href: '/' },
+          { label: t('breadcrumbGrowth'), href: '/growth', active: true }
+        ]}
+      />
+      <h1 className={`${lusitana.className} mb-6 text-2xl md:text-3xl font-bold text-mint-11 dark:text-mint-9`}>
+      {t('growthModels')}
+      </h1>
     <div className="w-full space-y-6">
       <GrowthParamsForm onSubmit={handleSubmit} />
       
@@ -116,7 +130,7 @@ export default function GrowthComponent() {
               }`}
               onClick={() => setActiveTab('chart')}
             >
-              Graph
+              {t('Graph')}
             </button>
             <button
               className={`px-4 py-2 text-sm font-medium transition-colors ${
@@ -126,7 +140,7 @@ export default function GrowthComponent() {
               }`}
               onClick={() => setActiveTab('table')}
             >
-              Table
+              {t('Table')}
             </button>
           </div>
 
@@ -155,6 +169,7 @@ export default function GrowthComponent() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

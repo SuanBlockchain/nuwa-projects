@@ -1,20 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
-import { fetchProjectData } from '@/app/lib/queries/queries';
+import { getProjects } from '@/app/actions/actions';
+import { ProjectTableClient } from './project-table-client';
+import { Growth } from '@/app/lib/definitions';
 
 export default async function ProjectTable() {
-  const rawData = await fetchProjectData();
-  const projectData = rawData.map((item: any) => ({
-    ...item,
-    values: item.values || { total_investment: { value: 0 } },
-  }));
+  // Fetch data on the server
+  const projects = await getProjects();
+  
+  // Serialize dates for client transfer (Next.js requires serialization)
+  const serializedProjects = projects.map(project => ({
+    ...project,
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
+  })) as unknown as Growth[];
 
   return (
     <div className="container mx-auto py-10">
       <div className="rounded-xl p-2">
-        <DataTable columns={columns} data={projectData} />
+        <ProjectTableClient initialData={serializedProjects} />
       </div>
     </div>
-  )
+  );
 }

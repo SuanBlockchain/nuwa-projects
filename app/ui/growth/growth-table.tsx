@@ -1,5 +1,6 @@
+'use client';
 import React from 'react';
-// import { useTheme } from 'next-themes';
+import { useTranslation } from 'react-i18next';
 
 interface GrowthTableProps {
   data: {
@@ -10,11 +11,12 @@ interface GrowthTableProps {
 }
 
 const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
+  const { t } = useTranslation('common');
 
   if (!data || data.length === 0) {
     return (
       <div className="w-full py-12 flex justify-center items-center">
-        <p className="text-center text-mint-11 dark:text-mint-9 opacity-70">No data available</p>
+        <p className="text-center text-mint-11 dark:text-mint-9 opacity-70">{t('NoDataAvailable')}</p>
       </div>
     );
   }
@@ -54,17 +56,17 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
           >
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">Species</p>
+                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">{t('Species')}</p>
                 <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">{record.species}</p>
               </div>
               
               <div className="space-y-1">
-                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">Year</p>
+                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">{t('year')}</p>
                 <p className="text-sm text-gray-900 dark:text-gray-100">{record.year}</p>
               </div>
               
               <div className="col-span-2 pt-2 border-t border-mint-6/20 dark:border-mint-8/20 space-y-1">
-                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">CO2eq (kg)</p>
+                <p className="text-xs font-medium text-mint-11 dark:text-mint-9">{t('CO2eq')} (kg)</p>
                 <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">{record.co2eq.toFixed(2)}</p>
               </div>
             </div>
@@ -73,7 +75,7 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
         
         {paginatedData.length === 0 && (
           <div className="w-full py-8 text-center text-sm text-mint-11 dark:text-mint-9 opacity-70">
-            No results for this page
+            {t('NoResultsForThisPage')}
           </div>
         )}
       </div>
@@ -87,19 +89,19 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
                 scope="col" 
                 className="px-6 py-3 text-left text-xs font-medium text-mint-11 dark:text-mint-9 uppercase tracking-wider"
               >
-                Species
+                {t('Species')}
               </th>
               <th 
                 scope="col" 
                 className="px-6 py-3 text-left text-xs font-medium text-mint-11 dark:text-mint-9 uppercase tracking-wider"
               >
-                Year
+                {t('year')}
               </th>
               <th 
                 scope="col" 
                 className="px-6 py-3 text-left text-xs font-medium text-mint-11 dark:text-mint-9 uppercase tracking-wider"
               >
-                CO2eq (kg)
+                {t('CO2eq')} (kg)
               </th>
             </tr>
           </thead>
@@ -124,7 +126,7 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
             {paginatedData.length === 0 && (
               <tr>
                 <td colSpan={3} className="px-6 py-8 text-center text-sm text-mint-11 dark:text-mint-9 opacity-70">
-                  No results for this page
+                  {t('NoResultsForThisPage')}
                 </td>
               </tr>
             )}
@@ -132,12 +134,13 @@ const GrowthTable: React.FC<GrowthTableProps> = ({ data, currentPage }) => {
         </table>
       </div>
       
-      {/* Page indicator */}
       <div className="mt-4 text-xs text-center text-mint-11 dark:text-mint-9">
         {paginatedData.length > 0 ? (
-          <>Showing page {currentPage} · {paginatedData.length} records</>
+          <>
+            {t('ShowingPage', { currentPage })} · {t('Records', { count: paginatedData.length })}
+          </>
         ) : (
-          <>No data to display</>
+          <>{t('NoDataToDisplay')}</>
         )}
       </div>
     </div>

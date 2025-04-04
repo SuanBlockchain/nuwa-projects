@@ -9,7 +9,7 @@ import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/app/ui/theme-provider";
 import Footer from "./ui/footer";
 import { Analytics } from "@vercel/analytics/react";
-import I18nProvider from "./ui/i18n-provider";
+import I18nProviderClientWrapper from "./providers/i18n-client-wrapper";
 import "@aws-amplify/ui-react/styles.css";
 import dynamic from 'next/dynamic';
 // import Auth from "@/app/amplify/(auth)/auth";
@@ -32,7 +32,7 @@ export default function RootLayout({
           enableSystem
         >
           <Theme accentColor="mint" grayColor="slate" scaling="100%" radius="medium">
-            <I18nProvider>
+            <I18nProviderClientWrapper>
               {/* <Auth> */}
                 <Navbar />
                 <main className="min-h-screen">
@@ -41,7 +41,7 @@ export default function RootLayout({
                 <Analytics />
                 <Footer />
               {/* </Auth> */}
-            </I18nProvider>
+            </I18nProviderClientWrapper>
             {/* Uncomment for development to adjust theme visually */}
             {/* <ThemePanel /> */}
           </Theme>

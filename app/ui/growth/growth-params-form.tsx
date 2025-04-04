@@ -1,12 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Button } from "@/app/ui/button";
+import { useTranslation } from 'react-i18next';
 
 export default function GrowthParamsForm({
   onSubmit,
 }: {
   onSubmit: (species: string[], year: number) => void;
 }) {
+  const { t } = useTranslation('common');
   const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
   const [speciesOptions, setSpeciesOptions] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<number>(5);
@@ -20,21 +22,21 @@ export default function GrowthParamsForm({
         setIsLoading(true);
         const response = await fetch('/api/getSpecies');
         if (!response.ok) {
-          throw new Error('Failed to fetch species options.');
+          throw new Error(t('FailedToFetchSpecies'));
         }
 
         const speciesList = await response.json();
         setSpeciesOptions(speciesList);
       } catch (error) {
         console.error('Error fetching species options:', error);
-        setError('Failed to load species. Please try again later.');
+        setError(t('FailedToLoadSpecies'));
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchSpecies();
-  }, []);
+  }, [t]);
 
   const handleSpeciesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
@@ -48,11 +50,11 @@ export default function GrowthParamsForm({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (selectedSpecies.length === 0) {
-      setError('Please select at least one species.');
+      setError(t('SelectAtLeastOneSpecies'));
       return;
     }
     if (!selectedYear) {
-      setError('Please select a year.');
+      setError(t('SelectOneYear'));
       return;
     }
     setError(null); 
@@ -67,7 +69,7 @@ export default function GrowthParamsForm({
             {/* Species Selection */}
             <div className="space-y-2">
               <label htmlFor="species" className="block text-mint-11 dark:text-mint-9 font-semibold">
-                Select Species
+                {t('SelectSpecies')}
               </label>
               {isLoading ? (
                 <div className="h-10 w-full bg-mint-3 dark:bg-zinc-800 animate-pulse rounded-md"></div>
@@ -88,7 +90,7 @@ export default function GrowthParamsForm({
                     ))}
                   </select>
                   <p className="text-xs text-mint-11 dark:text-mint-9 opacity-70">
-                    Hold CTRL (or CMD) to select multiple options.
+                    {t('MultipleOptions')}
                   </p>
                 </>
               )}
@@ -97,7 +99,7 @@ export default function GrowthParamsForm({
             {/* Year Selection */}
             <div className="space-y-2">
               <label htmlFor="year" className="block text-mint-11 dark:text-mint-9 font-semibold">
-                Select Year
+                {t('SelectYear')}
               </label>
               <select
                 id="year"
@@ -108,7 +110,7 @@ export default function GrowthParamsForm({
               >
                 {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((year) => (
                   <option key={year} value={year}>
-                    {year} years
+                    {t('{{year}} years', { year })}
                   </option>
                 ))}
               </select>
@@ -127,7 +129,7 @@ export default function GrowthParamsForm({
               type="submit" 
               className="bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 transition-colors"
             >
-              Generate Growth Trend
+              {t('GenerateGrowthTrend')}
             </Button>
           </div>
         </div>

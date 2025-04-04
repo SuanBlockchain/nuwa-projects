@@ -5,6 +5,7 @@ import { configSchema, explanationsSchema, Result, Config } from "@/app/ui/analy
 import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
+import { Growth } from '@/app/lib/definitions';
 
 /**
  * Executes a SQL query and returns the result data
@@ -867,3 +868,63 @@ export const generateChartConfig = async (
     throw new Error("Failed to generate chart suggestion");
   }
 };
+
+export async function getProjects(): Promise<Growth[]> {
+  try {
+    const projectsData = await prisma.project.findMany();
+
+    return projectsData.map(project => {
+      // Define default values structure
+      const defaultValues = {
+        total_investment: { value: 0 },
+        impact: { value: 0 },
+        bankable_investment: { value: 0 },
+        income: { value: 0 },
+        tree_quantity: { value: 0 },
+        lands: { value: 0 },
+        abstract: { value: '' },
+        polygone: { value: '' },
+        geolocation_point: { value: '' },
+        investment_teaser: { value: '' },
+        token_granularity: { value: 0 },
+      };
+
+      // Parse and merge the values from the database with defaults
+      const projectValues = project.values ? 
+        (typeof project.values === 'string' ? 
+          JSON.parse(project.values) : project.values) : {};
+      
+      // Transform to Growth type
+      return {
+        id: project.id,
+        name: project.name,
+        title: project.title,
+        description: project.description,
+        country: project.country,
+        status: String(project.status), // Convert enum to string
+        department: project.department,
+        // Merge default values with actual values
+        values: {
+          ...defaultValues,
+          ...Object.entries(projectValues).reduce((acc, [key, value]) => {
+            // Check if the value is an object with a 'value' property
+            if (value && typeof value === 'object' && 'value' in value) {
+              acc[key] = value;
+            } 
+            // If it's just a value, wrap it in the expected structure
+            else if (value !== undefined && value !== null) {
+              acc[key] = { value };
+            }
+            return acc;
+          }, {} as Record<string, { value: unknown }>)
+        },
+        // Convert string dates to Date objects
+        createdAt: new Date(project.createdAt || new Date()),
+        updatedAt: new Date(project.updatedAt || new Date()),
+      } as Growth;
+    });
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    throw new Error("Failed to fetch projects");
+  }
+}

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import {
   ColumnDef,
   flexRender,
@@ -42,6 +43,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { t } = useTranslation('common');
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
@@ -81,7 +83,7 @@ export function DataTable<TData, TValue>({
     <div className="w-full">
       <div className="flex items-center py-4 px-4">
         <Input
-          placeholder="Filter Project name"
+          placeholder={t('filterProjectName')}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
@@ -92,7 +94,7 @@ export function DataTable<TData, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="flex items-center ml-auto">
             <Button variant="outline" className="ml-auto bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700">
-              Add columns
+              {t('addColumns')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 shadow-lg">
@@ -111,7 +113,7 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {t(column.id)}
                   </DropdownMenuCheckboxItem>
                 )
               })}
@@ -157,7 +159,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-mint-11 dark:text-mint-9">
-                  No results.
+                  {t('noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -166,8 +168,10 @@ export function DataTable<TData, TValue>({
         
         <div className="flex items-center justify-between space-x-2 py-4 px-4 border-t border-mint-5 dark:border-mint-7 bg-white dark:bg-zinc-900">
           <div className="flex-1 text-sm text-mint-11 dark:text-mint-9">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {t('selectedRows', {
+              selected: table.getFilteredSelectedRowModel().rows.length,
+              total: table.getFilteredRowModel().rows.length
+            })}
           </div>
           
           <div className="flex space-x-2">
@@ -178,7 +182,7 @@ export function DataTable<TData, TValue>({
               disabled={!table.getCanPreviousPage()}
               className="border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 disabled:opacity-50"
             >
-              Previous
+              {t('previous')}
             </Button>
             <Button
               variant="outline"
@@ -187,7 +191,7 @@ export function DataTable<TData, TValue>({
               disabled={!table.getCanNextPage()}
               className="border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 disabled:opacity-50"
             >
-              Next
+              {t('next')}
             </Button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import i18next from '@/lib/i18n';
+import i18next from '@/app/providers/i18n';
 import { useEffect, useState } from 'react';
 
 export default function LanguageToggle() {

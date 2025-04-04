@@ -283,7 +283,10 @@ export type Growth = {
 
 export type LayoutProps = React.ComponentPropsWithoutRef<typeof Flex> & {
   focusable?: boolean;
-  data: {totalImpact: number;
+  data: {
+      projectId: string | undefined;
+      projectName: string;
+      totalImpact: number;
       totalInvestment: number;
       totalBankableInvestment: number;
       totalIncome: number;

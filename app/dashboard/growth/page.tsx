@@ -1,9 +1,8 @@
-import Breadcrumbs from '@/app/ui/breadcrumbs';
-import { lusitana } from '@/app/ui/fonts';
-import GrowthComponent from '@/app/ui/growth/growth-components';
+// app/dashboard/growth/page.tsx
 import { Suspense } from 'react';
+import GrowthClientWrapper from './growth-client-wrapper';
 
-export default async function Growth() {
+export default function Growth() {
   return (
     <main className="min-h-screen w-full">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-12">
@@ -14,20 +13,7 @@ export default async function Growth() {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mint-9"></div>
               </div>
             }>
-              <Breadcrumbs
-                breadcrumbs={[
-                  { label: 'Home', href: '/' },
-                  { label: 'Growth', href: '/growth', active: true }
-                ]}
-              />
-              
-              <h1 className={`${lusitana.className} mb-6 text-2xl md:text-3xl font-bold text-mint-11 dark:text-mint-9`}>
-                GROWTH MODELS
-              </h1>
-              
-              <div className="space-y-6">
-                <GrowthComponent />
-              </div>
+              <GrowthClientWrapper />
             </Suspense>
           </div>
         </div>

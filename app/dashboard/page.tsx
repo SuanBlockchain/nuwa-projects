@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 import CardWrapper from '@/app/ui/dashboard/cards';
 import ProjectTable from '@/app/ui/dashboard/projects/page';
 import { Suspense } from 'react';

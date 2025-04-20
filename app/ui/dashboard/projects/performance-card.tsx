@@ -52,7 +52,6 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
 
         const tabIndex = focusable ? undefined : -1;
 
-        // Simple state to make the example functional
         const [state, setState] = React.useState({
             todo: [
                 { id: "a", completed: false },
@@ -133,7 +132,7 @@ export default function PerformanceCard({ data, focusable, ...props }: LayoutPro
                             <Indicator title="TotalCO2eq" color="iris" icon="doubleArrowRight" value={totalco2} units="TonnesCO2eq" />
                             <Indicator title="Area" color="teal" icon="alignBaseline" value={area} units="Ha" />
                             <Indicator title="CO2eq" color="amber" icon="move" value={safeDivide(totalco2, area)} units="TonnesCO2eq/Ha" />
-                            <Indicator title="CO2eq Year" color="violet" icon="opacity" value={safeDivide(totalco2, area) / 20} units="TonnesCO2eq/Ha/year" />
+                            <Indicator title="Co2eq Year" color="violet" icon="opacity" value={safeDivide(totalco2, area) / 20} units="TonnesCO2eq/Ha/year" />
                             <Indicator title="Area Tokens" color="teal" icon="alignBaseline" value={area} />
                             <Indicator title="Token Value" color="tomato" icon="doubleArrowDownIcon" value={averageCo2Total} units="TonnesCO2eq/Ha" />
                             <Indicator title="Token Value Total" color="mint" icon="doubleArrowRightIcon" value={sumCo2Total} units="TonnesCO2eq" />

@@ -1,14 +1,15 @@
 import * as React from "react";
 import { HoverCard } from "radix-ui";
 import { useMediaQuery } from "react-responsive";
+import { lusitana } from "@/app/ui/fonts";
 
-interface HoverCardDemoProps {
+interface CardHoverProps {
 	children: React.ReactNode;
 	icon: React.ElementType;
 	message: { title: string; content: string };
 }
 
-const HoverCardDemo: React.FC<HoverCardDemoProps> = ({ children, icon: Icon, message }) => {
+const CardHover: React.FC<CardHoverProps> = ({ children, icon: Icon, message }) => {
 	const isMobile = useMediaQuery({ maxWidth: 767 });
 	const [open, setOpen] = React.useState(false);
 	return (
@@ -20,7 +21,7 @@ const HoverCardDemo: React.FC<HoverCardDemoProps> = ({ children, icon: Icon, mes
 		</HoverCard.Trigger>
 		<HoverCard.Portal>
 			<HoverCard.Content
-				className="w-[300px] rounded-md bg-white p-5 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade data-[state=open]:transition-all dark:bg-zinc-900"
+				className="w-[300px] rounded-md bg-white p-5 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade data-[state=open]:transition-all dark:bg-zinc-900 dark:text-white"
 				sideOffset={5}
 			>
 				<div className="flex flex-col gap-[7px]">
@@ -29,13 +30,13 @@ const HoverCardDemo: React.FC<HoverCardDemoProps> = ({ children, icon: Icon, mes
                         height="32"
                         style={{ marginLeft: -2 }}
                     />
-					<div className="flex flex-col gap-[15px]">
+					<div className={`${lusitana.className} flex flex-col gap-[15px]` }>
 						<div>
-							<div className="m-0 text-[15px] font-medium text-mauve12">
+							<div className={`${lusitana.className} m-0 text-[15px] font-medium text-mauve12`}>
 								{message.title}
 							</div>
 						</div>
-						<div className="m-0 text-[15px] text-mauve12">
+						<div className={`${lusitana.className} m-0 text-[15px] text-mauve12`}>
 							{message.content}
 						</div>
 					</div>
@@ -48,4 +49,4 @@ const HoverCardDemo: React.FC<HoverCardDemoProps> = ({ children, icon: Icon, mes
 	);
 };
 
-export default HoverCardDemo;
+export default CardHover;

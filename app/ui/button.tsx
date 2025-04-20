@@ -38,20 +38,54 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  href?: string
+  target?: string
+  rel?: string
 }
 
+type AnchorHTMLProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof ButtonProps>;
+
+// This is a polymorphic component that can be an anchor or button based on props
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  ({ className, variant, size, asChild = false, href, target, rel, children, ...props }, ref) => {
+    if (asChild) {
+      return (
+        <Slot
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref as React.ForwardedRef<HTMLElement>}
+          {...props}
+        >
+          {children}
+        </Slot>
+      );
+    }
+
+    if (href) {
+      return (
+        <a
+          className={cn(buttonVariants({ variant, size, className }))}
+          href={href}
+          target={target}
+          rel={rel}
+          {...(props as unknown as AnchorHTMLProps)}
+        >
+          {children}
+        </a>
+      );
+    }
+
     return (
-      <Comp
+      <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
-    )
+      >
+        {children}
+      </button>
+    );
   }
-)
+);
+
 Button.displayName = "Button"
 
 export { Button, buttonVariants }

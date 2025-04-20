@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useWallet } from "./useWallet";
 import { theme } from "./theme";
+import { Button } from "@/app/ui/button";
 // import type { Cardano } from "@lucid-evolution/core-types";
 import type { Cardano } from "@/app/lib/lucid-client";
 
@@ -36,47 +37,33 @@ const ConnectButton = () => {
 
   return (
     <>
-  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-    <button
-      onClick={isConnected ? undefined : handleConnect}
-      style={{
-        background: "transparent",
-        border: "none",
-        color: theme.colors.text.secondary,
-        fontFamily: "inherit",
-        fontSize: "0.875rem",
-        padding: "8px 16px",
-        cursor: isConnected ? "default" : "pointer",
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        transition: "color 0.2s ease",
-      }}
-    >
-      {isConnected ? "Connected" : "Click to connect your wallet"}
-    </button>
-      {isConnected && (
-        <button
-          onClick={disconnect}
-          style={{
-            background: "transparent",
-            // border: "rounded",
-            color: theme.colors.text.secondary,
-            padding: "4px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "color 0.2s ease",
-            width: "20px",
-            height: "20px",
-            borderRadius: "4px",
-          }}
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <Button
+          onClick={isConnected ? undefined : handleConnect}
+          disabled={isConnected}
+          variant="outline"
+          className="bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 transition-colors"
         >
-          ×
-        </button>
-      )}
-    </div>
+          {isConnected ? "Connected" : "Click to connect your wallet"}
+        </Button>
+        {isConnected && (
+          <Button
+            onClick={disconnect}
+            variant="outline"
+            className="bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 transition-colors"
+            style={{
+              width: "20px",
+              height: "20px",
+              padding: "0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            ×
+          </Button>
+        )}
+      </div>
       <dialog
         id="wallet-modal"
         style={{

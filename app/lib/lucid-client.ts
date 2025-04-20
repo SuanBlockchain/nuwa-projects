@@ -14,6 +14,7 @@ export type {
     applyDoubleCborEncoding as applyDoubleCborEncodingType,
     applyParamsToScript as applyParamsToScriptType,
     fromText as fromTextType,
+    fromHex as fromHexType,
     validatorToAddress as validatorToAddressType,
     validatorToScriptHash as validatorToScriptHashType,
     Blockfrost as BlockfrostType,
@@ -27,6 +28,7 @@ export type {
     Lucid: typeof LucidType;
     Blockfrost: typeof BlockfrostType;
     fromText: typeof fromTextType;
+    fromHex: typeof fromHexType;
     applyParamsToScript: typeof applyParamsToScriptType;
     applyDoubleCborEncoding: typeof applyDoubleCborEncodingType;
     validatorToAddress: typeof validatorToAddressType;
@@ -47,8 +49,8 @@ export type {
         throw new Error("Failed to initialize Lucid WASM");
       }
   
-    const { Constr, Data, Lucid, Blockfrost, fromText, applyParamsToScript, applyDoubleCborEncoding, validatorToAddress, validatorToScriptHash } = await import("@lucid-evolution/lucid");
+    const { Constr, Data, Lucid, Blockfrost, fromText, fromHex, applyParamsToScript, applyDoubleCborEncoding, validatorToAddress, validatorToScriptHash } = await import("@lucid-evolution/lucid");
   
-    return { Constr, Data, Lucid, Blockfrost, fromText, applyParamsToScript, applyDoubleCborEncoding, validatorToAddress, validatorToScriptHash };
+    return { Constr, Data, Lucid, Blockfrost, fromText, fromHex, applyParamsToScript, applyDoubleCborEncoding, validatorToAddress, validatorToScriptHash };
   };
   

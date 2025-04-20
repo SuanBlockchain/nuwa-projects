@@ -12,6 +12,11 @@ import {
 } from "@radix-ui/react-icons";
 import { Flex } from "@radix-ui/themes";
 
+import type {
+  MintingPolicy,
+  SpendingValidator
+} from "@/app/lib/lucid-client";
+
 // Define IconProps type manually
 export type IconProps = {
   width?: number;
@@ -345,6 +350,11 @@ export const hoverMessages: Record<string, HoverMessage> = {
         title: "CO2eq",
         content: "CO2 equivalent (CO2eq) per hectare represents the amount of greenhouse gases reduced or sequestered per hectare of land involved in the carbon credit projects."
     },
+    co2eq_year: {
+        icon: OpacityIcon,
+        title: "CO2eq Year",
+        content: "CO2 equivalent (CO2eq) per hectare per year represents the amount of greenhouse gases reduced or sequestered per hectare of land per year involved in the carbon credit projects."
+    },
     area_tokens: {
         icon: AlignBaselineIcon,
         title: "Area Tokens",
@@ -359,11 +369,6 @@ export const hoverMessages: Record<string, HoverMessage> = {
         icon: DoubleArrowRightIcon,
         title: "Token Value Total",
         content: "Token Value Total represents the total value of all tokenized units of land area in terms of the total amount of CO2 equivalent (CO2eq) they represent."
-    },
-    co2eq_year: {
-        icon: OpacityIcon,
-        title: "CO2eq Year",
-        content: "CO2 equivalent (CO2eq) per hectare per year represents the amount of greenhouse gases reduced or sequestered per hectare of land per year involved in the carbon credit projects."
     },
     default: {
         icon: MoveIcon,
@@ -382,3 +387,10 @@ export interface UseCardanoReturn {
   enabledWallet: string | null;
   usedAddresses: string[];
 }
+
+export type AppliedValidators = {
+  redeem: SpendingValidator;
+  giftCard: MintingPolicy;
+  policyId: string;
+  lockAddress: string;
+};

@@ -120,7 +120,6 @@ export default function GrowthComponent() {
 
       {!isLoading && formattedData.length > 0 && (
         <div className="w-full rounded-md border border-mint-6 dark:border-mint-8 overflow-hidden bg-gray-50 p-4 md:p-6 dark:bg-zinc-900">
-          {/* Tab Navigation */}
           <div className="flex border-b border-mint-6 dark:border-mint-8 mb-4">
             <button
               className={`px-4 py-2 text-sm font-medium transition-colors ${

@@ -3,23 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function GlobalLayout({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Mark component as mounted
     setMounted(true);
-    
-    // Add dashboard-page class to body
-    document.body.classList.add('dashboard-page');
-    
-    // Clean up by removing the class when the component unmounts
-    return () => {
-      document.body.classList.remove('dashboard-page');
-    };
   }, []);
-  
+
   // Determine background style based on theme, but only after mounting
   const backgroundStyle = mounted ? {
     zIndex: -1,

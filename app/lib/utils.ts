@@ -8,12 +8,9 @@ import { twMerge } from "tailwind-merge"
 
 import blueprint from "@/contracts/plutus.json" assert { type: "json" };
 import {  getLucidWasmBindings } from "@/app/lib/lucid-client";
-import type {
-  MintingPolicy,
-  OutRef,
-  SpendingValidator
-} from "@/app/lib/lucid-client";
+import type { OutRef } from "@/app/lib/lucid-client";
 import { theme } from "../app.config";
+import { AppliedValidators } from "@/app/lib/definitions";
 
 // import {
 //   applyDoubleCborEncoding,
@@ -123,13 +120,6 @@ export function readValidators(): Validators {
     giftCard: giftCard.compiledCode,
   };
 }
-
-export type AppliedValidators = {
-  redeem: SpendingValidator;
-  giftCard: MintingPolicy;
-  policyId: string;
-  lockAddress: string;
-};
  
 export async function applyParams(
   tokenName: string,
@@ -143,6 +133,9 @@ export async function applyParams(
     outputReference.txHash,
     BigInt(outputReference.outputIndex),
   ]);
+
+  console.log("tokenNameHex", lucidWasm.fromText(tokenName));
+  console.log("outRef", outRef);
  
   const giftCard = lucidWasm.applyParamsToScript(validator, [
     lucidWasm.fromText(tokenName),

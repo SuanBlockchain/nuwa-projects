@@ -175,6 +175,22 @@
             "title": "CO2eq",
             "content": "El CO2 equivalente (CO2eq) por hectárea representa la cantidad de gases de efecto invernadero reducidos o secuestrados por hectárea de tierra."
         },
+        "co2eq_year": {
+            "title": "CO2eq Año",
+            "content": "El CO2 equivalente (CO2eq) por hectárea por año representa la cantidad de gases de efecto invernadero reducidos o secuestrados por hectárea de tierra por año involucrada en los proyectos de créditos de carbono."
+        },
+        "area_tokens": {
+            "title": "Tokens de Área",
+            "content": "Los Tokens de Área representan las unidades tokenizadas del área de tierra involucrada en los proyectos de créditos de carbono, utilizadas para seguimiento y comercio."
+        },
+        "token_value": {
+            "title": "Valor del Token",
+            "content": "El Valor del Token representa el valor de cada unidad tokenizada del área de tierra en términos de la cantidad de CO2 equivalente (CO2eq) que representa."
+        },
+        "token_value_total": {
+            "title": "Valor Total del Token",
+            "content": "El Valor Total del Token representa el valor total de todas las unidades tokenizadas del área de tierra en términos de la cantidad total de CO2 equivalente (CO2eq) que representan."
+        },
         "default": {
             "title": "Predeterminado",
             "content": "No hay información específica disponible para este indicador."

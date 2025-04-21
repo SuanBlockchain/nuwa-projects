@@ -661,7 +661,7 @@ const LockGiftCard: React.FC<LockGiftCardProps> = ({ instance, usedAddresses, is
                 <Flex gap="2" p="2">
                   <Button
                     onClick={() => createGiftCard(destinAddress, amount)}
-                    disabled={!contracts || !amount.trim() || !destinAddress.trim() || watingLockTx}
+                    disabled={!contracts || !amount.trim() || !destinAddress.trim() || watingLockTx || lockTxHash !== null}
                     variant="outline"
                     className="bg-white dark:bg-zinc-800 border-mint-6 dark:border-mint-8 text-mint-11 dark:text-mint-9 hover:bg-mint-3 dark:hover:bg-zinc-700 transition-colors"
                   >

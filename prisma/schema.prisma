@@ -6,10 +6,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// generator erd {
-//   provider = "prisma-erd-generator"
-//   output   = "erd.svg"
-// }
 
 model User {
   name          String?
@@ -125,7 +121,7 @@ model Parcels {
   projectId    String?          @db.Uuid
   ecosystemId  String?          @db.Uuid
   speciesId    String           @db.Uuid
-  area         Int?
+  area         Decimal?         @db.Decimal(10, 7)
   municipality String?
   department   String?
   cadastral_id String?

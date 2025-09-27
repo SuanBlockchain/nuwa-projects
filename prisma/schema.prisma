@@ -121,7 +121,7 @@ model Parcels {
   projectId    String?          @db.Uuid
   ecosystemId  String?          @db.Uuid
   speciesId    String           @db.Uuid
-  area         Decimal?         @db.Decimal(10, 7)
+  area         Decimal?         @db.Decimal(15, 7)
   municipality String?
   department   String?
   cadastral_id String?

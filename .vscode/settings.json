@@ -1,0 +1,21 @@
+{
+  "typescript.preferences.maxNodeModuleJsFileSize": 40000,
+  "typescript.suggest.autoImports": false,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.next/**": true,
+    "**/coverage/**": true,
+    "**/tmp/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true
+  },
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "typescript.surveys.enabled": false
+}

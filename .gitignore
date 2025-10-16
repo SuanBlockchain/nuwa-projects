@@ -44,3 +44,5 @@ next-env.d.ts
 
 # Archivos de configuración local que contienen secretos
 .env
+vercel.json
+vercel

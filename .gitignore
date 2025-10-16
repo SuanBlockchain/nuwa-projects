@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .amplify*
+
+# Archivos de configuración local que contienen secretos
+.env

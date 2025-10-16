@@ -39,13 +39,14 @@ const Navbar = () => {
     // };
 
     const navigation: NavigationItem[] = [
-        { name: t('navHome'), href: '/', current: true },
+        { name: t('navHome'), href: '/en', current: true },
         { name: t('navDashboard'), href: '/dashboard', current: false, subLinks: [
             { name: t('navProjects'), href: '/dashboard' },
             { name: t('navGrowthCurves'), href: '/dashboard/growth' },
         ]},
         { name: t('navUpload'), href: '/upload', current: false },
         { name: t('navConnect'), href: '/connect', current: false },
+        { name: t('navProjects'), href: '/projects', current: false },
     ];
 
     function classNames(...classes: (string | boolean | undefined)[]): string {

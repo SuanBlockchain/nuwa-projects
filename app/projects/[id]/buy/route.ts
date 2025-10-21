@@ -1,35 +1,33 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 
-export async function POST(
-  req: Request,
-  ctx: { params: Promise<{ id: string }> }
-) {
-  const { id } = await ctx.params;
-  const body = await req.json().catch(() => null);
+type BuyBody = { wallet: string; amount: number };
 
-  if (!body || typeof body.wallet !== "string" || typeof body.amount !== "number") {
-    return NextResponse.json({ ok: false, error: "Payload inválido" }, { status: 400 });
+function isBuyBody(x: unknown): x is BuyBody {
+  if (typeof x !== "object" || x === null) return false;
+  const o = x as Record<string, unknown>;
+  return typeof o.wallet === "string" && typeof o.amount === "number";
+}
+
+export async function POST(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const { id } = params;
+    const bodyUnknown = await req.json();
+
+    if (!isBuyBody(bodyUnknown)) {
+      return NextResponse.json({ ok: false, error: "Body inválido" }, { status: 400 });
+    }
+
+    const { wallet, amount } = bodyUnknown;
+
+    const holding = await prisma.holding.create({
+      data: { projectId: id, wallet, amount },
+      select: { id: true },
+    });
+
+    return NextResponse.json({ ok: true, holdingId: holding.id, onChain: false });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
-
-  const project = await prisma.project.findUnique({ where: { id }, select: { id: true } });
-  if (!project) {
-    return NextResponse.json({ ok: false, error: "Proyecto no encontrado" }, { status: 404 });
-  }
-
-  const holding = await prisma.holding.create({
-    data: {
-      projectId: id,
-      wallet: body.wallet,
-      amount: body.amount.toString(), // Prisma Decimal acepta string
-    },
-    select: { id: true },
-  });
-
-  return NextResponse.json({
-    ok: true,
-    holdingId: holding.id,
-    onChain: false,
-    txHash: null,
-  });
 }

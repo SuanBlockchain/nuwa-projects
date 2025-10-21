@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 
+const projectWith = Prisma.validator<Prisma.ProjectDefaultArgs>()({
+  include: { holdings: true, projectToken: true },
+});
+type ProjectWith = Prisma.ProjectGetPayload<typeof projectWith>;
+
 export default async function ProjectsIndex() {
-  // 👉 Lista (findMany), no unique
-  const projects = await prisma.project.findMany({
-    include: { holdings: true, projectToken: true },
+  const projects: ProjectWith[] = await prisma.project.findMany({
+    ...projectWith,
     orderBy: { createdAt: "desc" },
   });
 
@@ -20,7 +25,7 @@ export default async function ProjectsIndex() {
     <main className="p-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {projects.map((p) => {
         const total = Number(p.supplyTotal ?? 0);
-        const bought = p.holdings.reduce((sum, h) => sum + Number(h.amount), 0);
+        const bought = p.holdings.reduce((sum: number, h) => sum + Number(h.amount), 0);
         const progress = total > 0 ? Math.min(100, Math.round((bought / total) * 100)) : 0;
 
         return (

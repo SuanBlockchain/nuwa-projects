@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 export default function MintButton({ projectId }: { projectId: string }) {
@@ -10,27 +11,26 @@ export default function MintButton({ projectId }: { projectId: string }) {
     setMsg(null);
     try {
       const r = await fetch(`/projects/${projectId}/mint`, { method: "POST" });
-      const data = await r.json(); // <- ahora sí es JSON
-      if (!r.ok || !data?.ok) throw new Error(data?.error || "Error al mintear");
-      setMsg(`Mint OK. Supply: ${data.supplyTotal}${data.onChain && data.txHash ? " | Tx: " + data.txHash : ""}`);
-    } catch (e) {
-      const err = e as Error;
-      setMsg(err.message);
+      const data: { txHash?: string; onChain?: boolean; supplyTotal?: number; error?: string } = await r.json();
+      if (!r.ok) throw new Error(data?.error || "Error al mintear");
+      setMsg(`Mint OK. ${data.onChain ? "Tx: " + data.txHash : "Off-chain"} | Supply: ${data.supplyTotal}`);
+    } catch (e: unknown) {
+      setMsg(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-2">
+    <div>
       <button
         onClick={onMint}
         disabled={loading}
-        className="px-3 py-1.5 rounded-xl border hover:bg-gray-50 disabled:opacity-50"
+        className="px-4 py-2 rounded-xl border hover:bg-gray-50 disabled:opacity-50"
       >
-        {loading ? "Minteando..." : "Mintear supply +1000"}
+        {loading ? "Minteando..." : "Mintear"}
       </button>
-      {msg && <div className="text-sm opacity-80">{msg}</div>}
+      {msg && <p className="text-sm mt-2">{msg}</p>}
     </div>
   );
 }

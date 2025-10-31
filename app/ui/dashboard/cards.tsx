@@ -25,7 +25,7 @@ export default async function CardWrapper({ projectId }: { projectId?: string })
   
   const performanceData = {
     projectId,
-    projectName,
+    projectName: projectName ?? '',
     totalImpact,
     totalInvestment,
     totalBankableInvestment,

@@ -10,7 +10,6 @@ datasource db {
 /**
  * ===================== USUARIOS / AUTH =====================
  */
-
 model User {
   id            String    @id @default(uuid()) @db.Uuid
   name          String?
@@ -67,7 +66,6 @@ model VerificationToken {
 /**
  * ===================== DOMINIO / PROYECTOS =====================
  */
-
 model MathModels {
   id   String @id @default(uuid()) @db.Uuid
   name String @unique
@@ -115,20 +113,12 @@ model Project {
   description String?
   name        String   @unique
 
-<<<<<<< HEAD
-  // 👇 campos del shape, en camelCase
-=======
-  // ➕ Campos para el “shape” (MVP inversión)
->>>>>>> 0afbe97 (fireblocks)
+  // Campos del “shape” (MVP inversión)
   supplyTotal  Int?
   projectToken ProjectToken? @relation("Project_ProjectToken")
   holdings     Holding[]     @relation("Project_Holdings")
 
-<<<<<<< HEAD
-  // resto igual…
-=======
   // Relaciones existentes
->>>>>>> 0afbe97 (fireblocks)
   contracts Contracts[]
   parcels   Parcels[]
   creator   User             @relation(fields: [creatorId], references: [id], onDelete: Cascade)
@@ -151,7 +141,7 @@ model Parcels {
   projectId    String?  @db.Uuid
   ecosystemId  String?  @db.Uuid
   speciesId    String   @db.Uuid
-  area         Decimal? @db.Decimal(10, 7)
+  area         Decimal? @db.Decimal(15, 7)
   municipality String?
   department   String?
   cadastral_id String?
@@ -215,50 +205,11 @@ model Transactions {
   lockedInContract Boolean  @default(false)
 
   contract Contracts? @relation(fields: [contractId], references: [contractId], onDelete: Cascade)
-<<<<<<< HEAD
-}
-
-model ProjectToken {
-  id        String  @id @default(cuid())
-  projectId String  @unique @db.Uuid
-  symbol    String
-  decimals  Int     @default(18)
-  address   String?
-  network   String?
-
-  // 👇 enlaza por nombre de relación
-  project Project @relation("Project_ProjectToken", fields: [projectId], references: [id])
-}
-
-model Holding {
-  id        String   @id @default(cuid())
-  projectId String   @db.Uuid
-  wallet    String
-  amount    Decimal  @db.Decimal(65, 18)
-  createdAt DateTime @default(now())
-
-  // 👇 ANTES (sin nombre de relación):
-  // project Project @relation(fields: [projectId], references: [id])
-
-  // 👇 DESPUÉS (parea con Project.holdings):
-  project Project @relation("Project_Holdings", fields: [projectId], references: [id])
-
-  @@index([wallet])
-}
-
-model Whitelist {
-  id       String  @id @default(cuid())
-  wallet   String  @unique
-  approved Boolean @default(false)
-  note     String?
-=======
->>>>>>> 0afbe97 (fireblocks)
 }
 
 /**
  * ===================== TOKENIZACIÓN (MVP) =====================
  */
-
 model ProjectToken {
   id        String  @id @default(cuid())
   projectId String  @unique @db.Uuid
@@ -292,7 +243,6 @@ model Whitelist {
 /**
  * ===================== ENUMS =====================
  */
-
 enum Role {
   GESTOR
   ADMIN

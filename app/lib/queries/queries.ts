@@ -117,6 +117,15 @@ export async function fetchProjectData() {
   }
 }
 
+export async function fetchSpeciesByProjectId(projectId: string): Promise<string[]> {
+  const rows = await prisma.species.findMany({
+    where: { parcels: { some: { projectId } } },
+    select: { common_name: true },
+    distinct: ["common_name"], // ← evita repetidos por nombre común
+  });
+  return rows.map(r => r.common_name);
+}
+
 // ---------- Por proyecto ----------
 type ValueNum = { value?: number | string | Prisma.Decimal } | null | undefined;
 interface ProjectValues {

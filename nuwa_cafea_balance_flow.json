@@ -1,0 +1,106 @@
+{
+  "name": "Nuwa CAFEA – Balances y Upsert",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "nuwa/cafea/balances",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "content-type", "value": "application/json" }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [ 300, 300 ],
+      "webhookId": "",
+      "name": "Webhook (POST)",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = items[0].json || {};\n// Admite array o CSV en body.holders\nlet holders = [];\nif (Array.isArray(body.holders)) holders = body.holders;\nelse if (typeof body.holders === 'string') holders = body.holders.split(',');\n\n// Limpieza básica\nholders = holders\n  .map(s => String(s).trim())\n  .filter(s => /^0x[a-fA-F0-9]{40}$/.test(s));\n\nconst holdersParam = holders.join(',');\n\nreturn [{ json: {\n  projectId: body.projectId || $env.PROJECT_ID || 'REEMPLAZA_UUID',\n  holders,\n  holdersParam\n}}];"
+      },
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [ 560, 300 ],
+      "name": "Normaliza holders"
+    },
+    {
+      "parameters": {
+        "url": "={{$env.NUWA_BASE_URL}}/api/cafea/balances?holders={{$json.holdersParam}}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [ 820, 300 ],
+      "name": "GET /api/cafea/balances",
+      "credentials": {},
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "functionCode": "if (!items[0].json || items[0].json.ok === false) {\n  throw new Error('Fallo en /balances: ' + (items[0].json?.error || 'desconocido'));\n}\n\nconst { token, balances } = items[0].json;\nconst projectId = $json.projectId || $env.PROJECT_ID || 'REEMPLAZA_UUID';\n\nreturn [{ json: { projectId, token, balances } }];"
+      },
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [ 1060, 300 ],
+      "name": "Prepara body upsert"
+    },
+    {
+      "parameters": {
+        "url": "={{$env.NUWA_BASE_URL}}/api/cafea/holdings/upsert",
+        "options": {
+          "timeout": 10000
+        },
+        "sendBody": true,
+        "jsonParameters": true,
+        "optionsUi": {
+          "bodyContentType": "json"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [ 1320, 300 ],
+      "name": "POST /api/cafea/holdings/upsert",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "responseBody": "={{JSON.stringify(Object.assign({}, $json, { ok: true }))}}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [ 1560, 300 ],
+      "name": "Responder"
+    }
+  ],
+  "connections": {
+    "Webhook (POST)": { "main": [ [ { "node": "Normaliza holders", "type": "main", "index": 0 } ] ] },
+    "Normaliza holders": { "main": [ [ { "node": "GET /api/cafea/balances", "type": "main", "index": 0 } ] ] },
+    "GET /api/cafea/balances": { "main": [ [ { "node": "Prepara body upsert", "type": "main", "index": 0 } ] ] },
+    "Prepara body upsert": { "main": [ [ { "node": "POST /api/cafea/holdings/upsert", "type": "main", "index": 0 } ] ] },
+    "POST /api/cafea/holdings/upsert": { "main": [ [ { "node": "Responder", "type": "main", "index": 0 } ] ] }
+  },
+  "pinData": {},
+  "settings": {
+    "timezone": "America/Bogota",
+    "env": [
+      { "name": "NUWA_BASE_URL", "value": "https://tu-app.com" },
+      { "name": "PROJECT_ID", "value": "REEMPLAZA_CON_UUID" }
+    ]
+  },
+  "staticData": {},
+  "meta": {
+    "templateCredsSetup": []
+  },
+  "id": "nuwa-cafea-flow-001",
+  "active": false
+}

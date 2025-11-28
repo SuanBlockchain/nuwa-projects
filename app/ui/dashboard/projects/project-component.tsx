@@ -19,18 +19,29 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
       try {
         setLoading(true); // Set loading to true before fetching data
 
-        // Fetch Aggregated Data
-        const aggregatedResponse = await fetch("/api/getParcels", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ projectIds, queryType: "aggregated" }),
-        });
+        // OPTIMIZATION: Fetch both queries in parallel using Promise.all
+        const [aggregatedResponse, co2Response] = await Promise.all([
+          fetch("/api/getParcels", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ projectIds, queryType: "aggregated" }),
+          }),
+          fetch("/api/getParcels", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ projectIds, queryType: "co2" }),
+          }),
+        ]);
 
-        if (!aggregatedResponse.ok) {
-          throw new Error(t('fetchAggregatedDataError'));
+        if (!aggregatedResponse.ok || !co2Response.ok) {
+          throw new Error(t('fetchDataError'));
         }
 
-        const aggregatedData = await aggregatedResponse.json();
+        const [aggregatedData, co2Data] = await Promise.all([
+          aggregatedResponse.json(),
+          co2Response.json(),
+        ]);
+
         setParcelsData(
           aggregatedData.map((item: EcosystemData) => ({
             ecosystem: item.ecosystem,
@@ -40,19 +51,6 @@ export default function ProjectComponent({ projectId }: { projectId?: string }) 
             soc: item.soc,
           }))
         );
-
-        // Fetch CO2 Data
-        const co2Response = await fetch("/api/getParcels", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ projectIds, queryType: "co2" }),
-        });
-
-        if (!co2Response.ok) {
-          throw new Error(t('fetchCO2DataError'));
-        }
-
-        const co2Data = await co2Response.json();
         setCo2Data(co2Data);
       } catch (error) {
         console.error(t('fetchParcelsError'), error);

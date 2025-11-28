@@ -102,44 +102,55 @@ export async function POST(req: Request) {
 function formatTreeMapData(data: ParcelData[]): TreeNode {
   const treeMapData: TreeNode = { name: "Projects", children: [] };
 
+  // OPTIMIZATION: Use Maps for O(1) lookup instead of O(n) Array.find()
   const projectMap = new Map<string, TreeNode>();
+  const departmentMap = new Map<string, Map<string, TreeNode>>();
+  const ecosystemMap = new Map<string, Map<string, Map<string, TreeNode>>>();
 
   data.forEach((item) => {
+    // Get or create project node
     if (!projectMap.has(item.project)) {
-      projectMap.set(item.project, { name: item.project, children: [], total: 0 });
-      treeMapData.children!.push(projectMap.get(item.project)!);
+      const projectNode: TreeNode = { name: item.project, children: [], total: 0 };
+      projectMap.set(item.project, projectNode);
+      treeMapData.children!.push(projectNode);
+      departmentMap.set(item.project, new Map());
+      ecosystemMap.set(item.project, new Map());
     }
 
     const projectNode = projectMap.get(item.project)!;
     projectNode.total! += item.area;
 
-    let departmentNode = projectNode.children!.find((d) => d.name === item.department);
-
-    if (!departmentNode) {
-      departmentNode = { name: item.department, children: [], total: 0 };
-      projectNode.children!.push(departmentNode);
+    // Get or create department node
+    const projectDeptMap = departmentMap.get(item.project)!;
+    if (!projectDeptMap.has(item.department)) {
+      const deptNode: TreeNode = { name: item.department, children: [], total: 0 };
+      projectDeptMap.set(item.department, deptNode);
+      projectNode.children!.push(deptNode);
+      ecosystemMap.get(item.project)!.set(item.department, new Map());
     }
 
+    const departmentNode = projectDeptMap.get(item.department)!;
     departmentNode.total! += item.area;
 
-    let ecosystemNode = departmentNode.children!.find((e) => e.name === item.ecosystem);
-
-    if (!ecosystemNode) {
-      ecosystemNode = { name: item.ecosystem, children: [], total: 0 };
-      departmentNode.children!.push(ecosystemNode);
+    // Get or create ecosystem node
+    const projectEcoMap = ecosystemMap.get(item.project)!.get(item.department)!;
+    if (!projectEcoMap.has(item.ecosystem)) {
+      const ecoNode: TreeNode = { name: item.ecosystem, children: [], total: 0 };
+      projectEcoMap.set(item.ecosystem, ecoNode);
+      departmentNode.children!.push(ecoNode);
     }
 
+    const ecosystemNode = projectEcoMap.get(item.ecosystem)!;
     ecosystemNode.total! += item.area;
 
+    // Species nodes: keep find() since typically few species per ecosystem
     let speciesNode = ecosystemNode.children!.find((s) => s.name === item.species);
-
     if (!speciesNode) {
       speciesNode = { name: item.species, children: [], total: 0 };
       ecosystemNode.children!.push(speciesNode);
     }
 
     speciesNode.total! += item.area;
-
     speciesNode.children!.push({ name: item.parcelname, loc: item.area });
   });
 

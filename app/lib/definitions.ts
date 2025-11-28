@@ -12,11 +12,6 @@ import {
 } from "@radix-ui/react-icons";
 import { Flex } from "@radix-ui/themes";
 
-import type {
-  MintingPolicy,
-  SpendingValidator
-} from "@/app/lib/lucid-client";
-
 // Define IconProps type manually
 export type IconProps = {
   width?: number;
@@ -375,22 +370,4 @@ export const hoverMessages: Record<string, HoverMessage> = {
         title: "Default",
         content: "No specific information available for this indicator."
     }
-};
-
-export interface UseCardanoReturn {
-  isConnected: boolean;
-  connect: () => void;
-  disconnect: () => void;
-  stakeAddress: string | null;
-  accountBalance: string | null;
-  installedExtensions: string[];
-  enabledWallet: string | null;
-  usedAddresses: string[];
-}
-
-export type AppliedValidators = {
-  redeem: SpendingValidator;
-  giftCard: MintingPolicy;
-  policyId: string;
-  lockAddress: string;
 };

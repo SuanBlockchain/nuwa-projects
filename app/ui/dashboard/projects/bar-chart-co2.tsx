@@ -3,6 +3,7 @@ import { ResponsiveBar } from '@nivo/bar';
 import { BarDatum } from '@nivo/bar';
 import { useMediaQuery } from 'react-responsive';
 import { useTheme } from 'next-themes';
+import { useMemo, memo } from 'react';
 
 interface MyResponsiveBarProps {
     data: BarDatum[];
@@ -17,7 +18,9 @@ function formatNumber(value: number): string {
     return value.toString();
   }
 }
-const CustomTooltip = ({ value }: { value: number }) => {
+
+// OPTIMIZATION: Memoize tooltip component
+const CustomTooltip = memo(({ value }: { value: number }) => {
   const { theme } = useTheme();
   const labelBackgroundColor = theme === 'dark' ? '#333' : '#fff';
   const textColor = theme === 'dark' ? '#fff' : '#000';
@@ -27,7 +30,8 @@ const CustomTooltip = ({ value }: { value: number }) => {
       {formatNumber(value)}
     </div>
   );
-};
+});
+CustomTooltip.displayName = 'CustomTooltip';
 
 const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -36,40 +40,98 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
 
   const textColor = theme === 'dark' ? '#fff' : '#000';
 
-  // Transform data to sum CO2 by year and species across all ecosystems
-  const transformedData = data.reduce((acc: { year: string | number, [key: string]: string | number }[], curr) => {
-    const existingYear = acc.find(item => item.year === curr.year);
-    if (existingYear) {
-      existingYear[curr.species as string] = (parseFloat(existingYear[curr.species as string]?.toString() || '0') || 0) + parseFloat(curr.co2total as string);
-    } else {
-      acc.push({
-        year: curr.year,
-        [curr.species]: parseFloat(curr.co2total as string),
-      });
+  // OPTIMIZATION: Memoize expensive data transformation to prevent recalculation on re-renders
+  const transformedData = useMemo(() => {
+    return data.reduce((acc: { year: string | number, [key: string]: string | number }[], curr) => {
+      const existingYear = acc.find(item => item.year === curr.year);
+      if (existingYear) {
+        existingYear[curr.species as string] = (parseFloat(existingYear[curr.species as string]?.toString() || '0') || 0) + parseFloat(curr.co2total as string);
+      } else {
+        acc.push({
+          year: curr.year,
+          [curr.species]: parseFloat(curr.co2total as string),
+        });
+      }
+      return acc;
+    }, []);
+  }, [data]);
+
+  // OPTIMIZATION: Memoize species keys extraction
+  const speciesKeys = useMemo(() =>
+    Array.from(new Set(data.map(d => d.species as string))),
+    [data]
+  );
+
+  // OPTIMIZATION: Memoize theme configuration
+  const chartTheme = useMemo(() => ({
+    labels: {
+      text: {
+        fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+        fill: textColor
+      },
+    },
+    axis: {
+      ticks: {
+        text: {
+          fontSize: isMobile ? 8 : isTablet ? 10 : 10,
+          fill: textColor
+        },
+      },
+      legend: {
+        text: {
+          fill: textColor
+        }
+      }
+    },
+    legends: {
+      text: {
+        fill: textColor
+      }
     }
-    return acc;
-  }, []);
+  }), [isMobile, isTablet, textColor]);
+
+  // OPTIMIZATION: Memoize legends configuration
+  const legends = useMemo(() => {
+    const itemDirection: 'top-to-bottom' | 'left-to-right' = isMobile ? 'top-to-bottom' : 'left-to-right';
+    return [{
+      dataFrom: 'keys' as const,
+      anchor: "top" as const,
+      direction: 'row' as const,
+      justify: false,
+      translateX: 0,
+      translateY: isMobile ? -50 : -30,
+      itemsSpacing: 2,
+      itemWidth: isMobile ? 100 : 100,
+      itemHeight: 20,
+      itemDirection,
+      itemOpacity: 0.85,
+      symbolSize: isMobile ? 10 : 20,
+      effects: [
+        {
+          on: 'hover' as const,
+          style: {
+            itemOpacity: 1
+          }
+        }
+      ]
+    }];
+  }, [isMobile]);
 
   return (
-    <div style={{ height: isMobile ? '300px' : '500px', width: '100%' }}> {/* Adjust height and width for mobile view */}
+    <div style={{ height: isMobile ? '300px' : '500px', width: '100%' }}>
         <ResponsiveBar
             data={transformedData}
-            keys={Array.from(new Set(data.map(d => d.species as string)))}
+            keys={speciesKeys}
             indexBy="year"
-            margin={{ top: 50, right: 30, bottom: isMobile ? 100 : 50, left: 60 }} // Adjusted bottom margin for mobile view
+            margin={{ top: 50, right: 30, bottom: isMobile ? 100 : 50, left: 60 }}
             padding={0.3}
-            groupMode="grouped" 
+            groupMode="grouped"
             valueScale={{ type: 'linear' }}
             indexScale={{ type: 'band', round: true }}
             colors={{ scheme: 'nivo' }}
             borderColor={{
                 from: 'color',
-                modifiers: [
-                    [
-                        'darker',
-                        1.6
-                    ]
-                ]
+                modifiers: [['darker', 1.6]]
             }}
             axisTop={null}
             axisRight={null}
@@ -96,69 +158,17 @@ const BarChartCO2 = ({ data }: MyResponsiveBarProps) => {
             labelSkipHeight={12}
             labelTextColor={{
                 from: 'color',
-                modifiers: [
-                    [
-                        'darker',
-                        1.6
-                    ]
-                ]
-            }} // Set label text color to gray
+                modifiers: [['darker', 1.6]]
+            }}
             tooltip={({ value }) => <CustomTooltip value={value as number} />}
             label={(d) => formatNumber(d.value as number)}
-            enableLabel={true} // Ensure labels are always enabled
-            legends={[
-                {
-                    dataFrom: 'keys',
-                    anchor: "top",
-                    direction: 'row',
-                    justify: false,
-                    translateX: 0,
-                    translateY: isMobile ? -50 : -30,
-                    itemsSpacing: 2,
-                    itemWidth: isMobile ? 100 : 100,
-                    itemHeight: 20,
-                    itemDirection: isMobile ? 'top-to-bottom' : 'left-to-right',
-                    itemOpacity: 0.85,
-                    symbolSize: isMobile ? 10 : 20,
-                    effects: [
-                        {
-                            on: 'hover',
-                            style: {
-                                itemOpacity: 1
-                            }
-                        }
-                    ]
-                }
-            ]}
-            theme={{
-                labels: {
-                    text: {
-                        fontSize: isMobile ? 8 : isTablet ? 10 : 10,
-                        fill: textColor // Set label text color based on mode
-                    },
-                },
-                axis: {
-                    ticks: {
-                        text: {
-                            fontSize: isMobile ? 8 : isTablet ? 10 : 10,
-                            fill: textColor // Set axis tick text color based on mode
-                        },
-                    },
-                    legend: {
-                        text: {
-                            fill: textColor // Set axis legend text color based on mode
-                        }
-                    }
-                },
-                legends: {
-                    text: {
-                        fill: textColor // Set legend text color based on mode
-                    }
-                }
-            }}
+            enableLabel={true}
+            legends={legends}
+            theme={chartTheme}
         />
     </div>
   );
 };
 
-export default BarChartCO2;
+// OPTIMIZATION: Wrap component with React.memo for prop-based memoization
+export default memo(BarChartCO2);

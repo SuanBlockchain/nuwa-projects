@@ -100,7 +100,6 @@ model Project {
   creatorId   String           @db.Uuid
   description String?
   name        String           @unique
-  contracts   Contracts[]
   parcels     Parcels[]
   creator     User             @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   keywords    ProjectKeyword[]
@@ -152,34 +151,6 @@ model ParcelAnalysis {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   parcel       Parcels      @relation(fields: [parcelId], references: [id], onDelete: Cascade)
-}
-
-model Contracts {
-  contractId      String         @id @unique
-  projectId       String?        @db.Uuid
-  contractName    String
-  contractType    String
-  contractAddress String?
-  compiledCode    Json
-  tokenName       String?
-  lockTxHash      String?
-  active          Boolean
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  project         Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  transactions    Transactions[]
-}
-
-model Transactions {
-  transactionId    String     @id @unique
-  contractId       String?
-  from             String
-  to               String
-  value            BigInt
-  assets           Json?
-  timestamp        DateTime
-  lockedInContract Boolean    @default(false)
-  contract         Contracts? @relation(fields: [contractId], references: [contractId], onDelete: Cascade)
 }
 
 enum Role {

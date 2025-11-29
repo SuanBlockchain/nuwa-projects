@@ -42,3 +42,5 @@ next-env.d.ts
 
 .amplify*
 TODOS.md
+landing.html
+.evn.development.local

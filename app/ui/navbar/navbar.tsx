@@ -17,26 +17,10 @@ import { appConfig } from "@/app/app.config";
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from "@/app/ui/navbar/theme-toggle";
 import LanguageToggle from "@/app/ui/navbar/language-toggle";
-// import { useAuthenticator } from '@aws-amplify/ui-react';
-// import { useRouter } from 'next/navigation';
 import './navbar.css';
 
 const Navbar = () => {
     const { t } = useTranslation('common');
-    // const { user, signOut } = useAuthenticator();
-    // const router = useRouter();
-
-    // const handleSignIn = () => {
-    //     router.push('/signin');
-    // };
-
-    // const handleSignUp = () => {
-    //     router.push('/signup');
-    // };
-
-    // const handleSignOut = () => {
-    //     signOut();
-    // };
 
     const navigation: NavigationItem[] = [
         { name: t('navHome'), href: '/', current: true },

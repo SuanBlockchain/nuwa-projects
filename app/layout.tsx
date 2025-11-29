@@ -10,7 +10,6 @@ import { ThemeProvider } from "@/app/ui/theme-provider";
 import Footer from "./ui/footer";
 import { Analytics } from "@vercel/analytics/react";
 import I18nProviderClientWrapper from "./providers/i18n-client-wrapper";
-import "@aws-amplify/ui-react/styles.css";
 import dynamic from 'next/dynamic';
 import GlobalLayout from "./GlobalLayout";
 

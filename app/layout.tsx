@@ -4,7 +4,7 @@ import "./globals.css";
 import "./theme-config.css";
 import "@radix-ui/themes/styles.css";
 import "./radix-overrides.css";
-import { lusitana } from '@/app/ui/fonts';
+import { lusitana, spaceGrotesk } from '@/app/ui/fonts';
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/app/ui/theme-provider";
 import Footer from "./ui/footer";
@@ -22,8 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={`${lusitana.className} antialiased bg-background text-foreground`}
+        className={`${lusitana.className} ${spaceGrotesk.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider
           attribute="class"

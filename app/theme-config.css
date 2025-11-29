@@ -25,9 +25,9 @@
   --mint-6: #7ee0c6;
   --mint-7: #52d3b3;
   --mint-8: #21DDB8; /* Your logo-light color */
-  --mint-9: #16A396; /* Your logo-mid color */
+  --mint-9: #48e89f; /* Nuwa primary color (updated from #16A396) */
   --mint-10: #108f84;
-  --mint-11: #0A5E5C; /* Your logo-deep color */
+  --mint-11: #1d5b54; /* Nuwa primary-dark color (updated from #0A5E5C) */
   --mint-12: #053230;
   
   /* Use Radix's naming for theme variables */
@@ -44,6 +44,10 @@
   --color-background: white;
   --color-foreground: #1f2937;
   --color-border: #e5e7eb;
+
+  /* Nuwa background colors */
+  --background-light: #f6f8f7;
+  --background-dark: #0a1d1a;
   
   /* Radix component variables */
   --color-panel-solid: white;
@@ -90,11 +94,11 @@
   --mint-2: #053230;
   --mint-3: #064641;
   --mint-4: #085c56;
-  --mint-5: #0A5E5C; /* Your logo-deep color */
+  --mint-5: #1d5b54; /* Nuwa primary-dark (dark theme base) */
   --mint-6: #0d7b77;
   --mint-7: #108f84;
   --mint-8: #16A396; /* Your logo-mid color */
-  --mint-9: #21DDB8; /* Your logo-light color */
+  --mint-9: #48e89f; /* Nuwa primary color (updated from #21DDB8) */
   --mint-10: #4ce5c4;
   --mint-11: #7eedd0;
   --mint-12: #c6f7e9;
@@ -108,6 +112,10 @@
   --color-background: #111827;
   --color-foreground: #e5e7eb;
   --color-border: #1f2937;
+
+  /* Nuwa background colors (dark theme) */
+  --background-light: #f6f8f7;
+  --background-dark: #0a1d1a;
   
   /* Component variables */
   --color-panel-solid: var(--mint-2);

@@ -114,6 +114,7 @@ export interface NavigationItem {
     href: string;
     current: boolean;
     subLinks?: { name: string; href: string }[];
+    scrollTo?: boolean;
 }
 
 export interface EcosystemData extends BarDatum {

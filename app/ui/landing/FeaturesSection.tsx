@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@radix-ui/themes';
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { PrimaryButton } from '@/app/ui/primary-button';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -36,12 +36,20 @@ export default function FeaturesSection() {
       className="py-24 px-6 sm:px-8 lg:px-12 xl:px-16 bg-white dark:bg-gray-900"
     >
       <div className="max-w-4xl xl:max-w-6xl mx-auto">
-        <motion.h2
+        <motion.div
           variants={itemVariants}
-          className="text-2xl font-semibold text-center mb-8 w-full sm:w-2/3 mx-auto"
+          className="text-center mb-12"
         >
-          {t('featureTitle')}
-        </motion.h2>
+          <p className="text-sm font-display font-medium text-primary uppercase tracking-wider mb-3">
+            {t('featureEyebrow', 'Our Services')}
+          </p>
+          <h2 className="text-4xl font-display font-bold text-gradient mb-4">
+            {t('featureTitle')}
+          </h2>
+          <p className="text-lg font-display text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {t('featureSubtitle', 'Comprehensive carbon project solutions from assessment to quantification')}
+          </p>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 xl:gap-16">
           {[0, 1, 2].map((index) => (
             <motion.div key={index} variants={itemVariants}>
@@ -79,38 +87,24 @@ const FeatureCard = ({
   linkText: string;
   linkHref: string;
 }) => (
-  <div className="text-center">
-    <div className="p-4 rounded-lg mb-4 flex items-center justify-center h-48">
+  <div className="glass-card p-6 text-center">
+    <div className="p-4 rounded-lg mb-4 flex items-center justify-center h-48 overflow-hidden">
       <Image
         src={imageSrc}
         width={400}
         height={400}
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
         alt={title}
       />
     </div>
-    <h3 className="text-lg font-medium mb-2">{title}</h3>
-    <p className="text-sm mb-4">{description}</p>
-    <Button
-      size="2"
-      variant="outline"
+    <h3 className="text-xl font-display font-semibold mb-3">{title}</h3>
+    <p className="text-sm font-display text-gray-600 dark:text-gray-300 mb-6">{description}</p>
+    <PrimaryButton
+      variant="solid"
+      size="sm"
       onClick={() => window.location.href = linkHref}
-      style={{
-        borderColor: 'var(--mint-8)',
-        color: 'var(--mint-9)',
-        borderRadius: '0.375rem',
-        cursor: 'pointer',
-        backgroundColor: 'transparent',
-        transition: 'all 0.2s ease-in-out'
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--mint-3)';
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.backgroundColor = 'transparent';
-      }}
     >
       {linkText}
-    </Button>
+    </PrimaryButton>
   </div>
 );

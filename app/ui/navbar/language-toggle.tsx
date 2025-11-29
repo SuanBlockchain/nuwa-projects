@@ -23,7 +23,7 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggleLang}
-      className="flex items-center space-x-2 p-2 text-sm text-gray-300 hover:text-white"
+      className="flex items-center space-x-2 p-2 text-sm text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
     >
       {/* <GlobeIcon className="w-4 h-4" /> */}
       <span className="uppercase font-medium">

@@ -14,6 +14,7 @@ module.exports = {
         sans: ['var(--font-lusitana)', ...fontFamily.serif],
         serif: ['var(--font-lusitana)', ...fontFamily.serif],
         lusitana: ['var(--font-lusitana)', ...fontFamily.serif],
+        display: ['var(--font-space-grotesk)', ...fontFamily.sans],
         mono: fontFamily.mono,
       },
       colors: {
@@ -35,16 +36,17 @@ module.exports = {
         'logo-mid': '#16A396', // Mid teal shade
         'logo-light': '#21DDB8', // Bright mint/turquoise at the top
         'logo-accent': '#FFFFFF', // White sparkle/dots
-        
+
+        // Nuwa Design System colors
+        'primary': '#48e89f',
+        'primary-dark': '#1d5b54',
+        'bg-light': '#f6f8f7',
+        'bg-dark': '#0a1d1a',
+        'text-main': '#0f172a',
+
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         border: "hsl(var(--border))",
-        
-        // Add semantic color tokens
-        primary: {
-          DEFAULT: "var(--mint-9)",
-          foreground: "white",
-        },
         secondary: {
           DEFAULT: "var(--mint-3)",
           foreground: "var(--mint-11)",
@@ -68,10 +70,20 @@ module.exports = {
         'gradient-mint-light': 'linear-gradient(135deg, var(--mint-3) 0%, var(--mint-7) 50%, var(--mint-11) 100%)',
         'gradient-mint-dark': 'linear-gradient(135deg, var(--mint-3) 0%, var(--mint-5) 50%, var(--mint-8) 100%)',
       },
+      spacing: {
+        'card': '24px',
+        'section': '64px',
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        'card': '12px',
+        'pill': '9999px',
+      },
+      boxShadow: {
+        'glow-primary': '0 0 20px -5px rgba(72, 232, 159, 0.3)',
+        'glow-primary-lg': '0 0 30px -5px rgba(72, 232, 159, 0.5)',
       },
       keyframes: {
         "accordion-down": {

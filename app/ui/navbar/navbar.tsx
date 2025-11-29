@@ -6,13 +6,6 @@ import Image from 'next/image';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx';
 import { NavigationItem } from '@/app/lib/definitions';
-import { Button } from "@/app/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/ui/navbar/dropdown-menu";
 import { appConfig } from "@/app/app.config";
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from "@/app/ui/navbar/theme-toggle";
@@ -24,26 +17,45 @@ const Navbar = () => {
 
     const navigation: NavigationItem[] = [
         { name: t('navHome'), href: '/', current: true },
-        { name: t('navDashboard'), href: '/dashboard', current: false, subLinks: [
-            { name: t('navProjects'), href: '/dashboard' },
-            { name: t('navGrowthCurves'), href: '/dashboard/growth' },
-        ]},
-        { name: t('navUpload'), href: '/upload', current: false },
-        { name: t('navConnect'), href: '/connect', current: false },
+        {
+            name: t('navHowItWorks'),
+            href: '#how-it-works',
+            current: false,
+            scrollTo: true
+        },
+        {
+            name: t('navProjects'),
+            href: '/dashboard',
+            current: false
+        },
+        {
+            name: t('navAboutUs'),
+            href: '#about-us',
+            current: false,
+            scrollTo: true
+        },
     ];
+
+    const handleNavClick = (e: React.MouseEvent, href: string, scrollTo?: boolean) => {
+        if (scrollTo && href.startsWith('#')) {
+            e.preventDefault();
+            const element = document.querySelector(href);
+            element?.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     function classNames(...classes: (string | boolean | undefined)[]): string {
         return classes.filter(Boolean).join(' ');
     }
 
     return (
-        <Disclosure as="nav" className="bg-logo-deep shadow-md">
+        <Disclosure as="nav" className="sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                         <div className="relative flex h-16 items-center justify-between">
                             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 navbar-text-muted hover:bg-logo-mid hover:text-white focus:outline-none focus:ring-2 focus:ring-logo-light">
+                                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-primary">
                                     <span className="sr-only">Open main menu</span>
                                     {open ? (
                                         <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -66,51 +78,34 @@ const Navbar = () => {
                                         }}
                                     />
                                     <div className="flex items-center">
-                                        <span className="hidden sm:inline navbar-text font-medium">
+                                        <span className="hidden sm:inline text-slate-900 dark:text-white font-medium">
                                             {t('navTitle')}
                                         </span>
                                     </div>
                                 </Link>
                                 
                                 <div className="hidden sm:ml-6 sm:block">
-                                    <div className="flex space-x-1">
+                                    <div className="flex space-x-1 items-center">
                                         {navigation.map((link) => (
-                                            link.subLinks ? (
-                                                <DropdownMenu key={link.name}>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" className={clsx(
-                                                            "navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium",
-                                                            {
-                                                                'bg-logo-mid navbar-text': link.current,
-                                                            })}
-                                                        >
-                                                            {link.name}
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="start" className="navbar-dropdown">
-                                                        {link.subLinks.map((subLink) => (
-                                                            <DropdownMenuItem key={subLink.name} asChild className="hover:bg-logo-light/10">
-                                                                <Link href={subLink.href}>
-                                                                    {subLink.name}
-                                                                </Link>
-                                                            </DropdownMenuItem>
-                                                        ))}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            ) : (
-                                                <Link
-                                                    key={link.name}
-                                                    href={link.href}
-                                                    className={clsx(
-                                                        "navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium",
-                                                        {
-                                                            'bg-logo-mid navbar-text': link.current,
-                                                        })}
-                                                >
-                                                    {link.name}
-                                                </Link>
-                                            )
+                                            <Link
+                                                key={link.name}
+                                                href={link.href}
+                                                onClick={(e) => handleNavClick(e, link.href, link.scrollTo)}
+                                                className={clsx(
+                                                    "text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2",
+                                                    {
+                                                        'text-primary': link.current,
+                                                    })}
+                                            >
+                                                {link.name}
+                                            </Link>
                                         ))}
+                                        <Link
+                                            href="/upload"
+                                            className="flex items-center justify-center rounded-full h-10 px-4 bg-primary text-slate-900 text-sm font-bold hover:bg-opacity-90 transition-all ml-2"
+                                        >
+                                            {t('navUpload')}
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -156,42 +151,29 @@ const Navbar = () => {
                     <DisclosurePanel className="sm:hidden">
                         <div className="space-y-1 px-2 pt-2 pb-3">
                             {navigation.map((item) => (
-                                item.subLinks ? (
-                                    <div key={item.name} className="border-l-2 border-logo-light/40">
-                                        <DisclosureButton
-                                            as="div"
-                                            className="block rounded-md px-3 py-2 text-base font-medium navbar-text-muted hover:bg-logo-mid hover:text-white"
-                                        >
-                                            {item.name}
-                                        </DisclosureButton>
-                                        <div className="pl-4">
-                                            {item.subLinks.map((subLink) => (
-                                                <DisclosureButton
-                                                    key={subLink.name}
-                                                    as="a"
-                                                    href={subLink.href}
-                                                    className="block rounded-md px-3 py-2 text-sm font-medium navbar-text-muted hover:bg-logo-mid hover:text-white"
-                                                >
-                                                    {subLink.name}
-                                                </DisclosureButton>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <DisclosureButton
-                                        key={item.name}
-                                        as="a"
-                                        href={item.href}
-                                        aria-current={item.current ? 'page' : undefined}
-                                        className={classNames(
-                                            item.current ? 'bg-logo-mid navbar-text' : 'navbar-text-muted hover:bg-logo-mid hover:text-white',
-                                            'block rounded-md px-3 py-2 text-base font-medium',
-                                        )}
-                                    >
-                                        {item.name}
-                                    </DisclosureButton>
-                                )
+                                <DisclosureButton
+                                    key={item.name}
+                                    as="a"
+                                    href={item.href}
+                                    onClick={(e: React.MouseEvent) => handleNavClick(e, item.href, item.scrollTo)}
+                                    aria-current={item.current ? 'page' : undefined}
+                                    className={classNames(
+                                        item.current
+                                            ? 'text-primary'
+                                            : 'text-slate-700 dark:text-slate-300 hover:text-primary',
+                                        'block rounded-md px-3 py-2 text-base font-medium transition-colors',
+                                    )}
+                                >
+                                    {item.name}
+                                </DisclosureButton>
                             ))}
+                            <DisclosureButton
+                                as="a"
+                                href="/upload"
+                                className="flex items-center justify-center rounded-full h-10 px-4 bg-primary text-slate-900 text-sm font-bold hover:bg-opacity-90 transition-all mx-3 mt-4"
+                            >
+                                {t('navUpload')}
+                            </DisclosureButton>
                         </div>
                     </DisclosurePanel>
                 </>

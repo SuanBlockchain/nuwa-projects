@@ -6,6 +6,7 @@ import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { Growth } from '@/app/lib/definitions';
+import { auth } from '@/auth';
 
 /**
  * Executes a SQL query and returns the result data
@@ -871,7 +872,24 @@ export const generateChartConfig = async (
 
 export async function getProjects(): Promise<Growth[]> {
   try {
-    const projectsData = await prisma.project.findMany();
+    const session = await auth();
+
+    // Public access: show all projects
+    // Authenticated GESTOR: show only their projects
+    // Authenticated ADMIN: show all projects
+    let where = {};
+
+    if (session?.user) {
+      // User is logged in
+      if (session.user.role === 'GESTOR') {
+        // GESTOR users only see their own projects
+        where = { creatorId: session.user.id };
+      }
+      // ADMIN users see all projects (where = {})
+    }
+    // Public users see all projects (where = {})
+
+    const projectsData = await prisma.project.findMany({ where });
 
     return projectsData.map(project => {
       // Define default values structure

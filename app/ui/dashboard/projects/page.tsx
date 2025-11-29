@@ -2,6 +2,8 @@ import { getProjects } from '@/app/actions/actions';
 import { ProjectTableClient } from './project-table-client';
 import { Growth } from '@/app/lib/definitions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProjectTable() {
   // Fetch data on the server
   const projects = await getProjects();

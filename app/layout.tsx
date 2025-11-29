@@ -12,6 +12,7 @@ import { Analytics } from "@vercel/analytics/react";
 import I18nProviderClientWrapper from "./providers/i18n-client-wrapper";
 import dynamic from 'next/dynamic';
 import GlobalLayout from "./GlobalLayout";
+import { SessionProvider } from 'next-auth/react';
 
 const Navbar = dynamic(() => import('@/app/ui/navbar/navbar'), { ssr: false });
 
@@ -38,7 +39,7 @@ export default function RootLayout({
         >
           <Theme accentColor="mint" grayColor="slate" scaling="100%" radius="medium">
             <I18nProviderClientWrapper>
-              {/* <Auth> */}
+              <SessionProvider>
                 <Navbar />
                 <GlobalLayout>
                 <main className="min-h-screen">
@@ -47,7 +48,7 @@ export default function RootLayout({
                 </GlobalLayout>
                 <Analytics />
                 <Footer />
-              {/* </Auth> */}
+              </SessionProvider>
             </I18nProviderClientWrapper>
             {/* Uncomment for development to adjust theme visually */}
             {/* <ThemePanel /> */}

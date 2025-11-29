@@ -10,10 +10,12 @@ import { appConfig } from "@/app/app.config";
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from "@/app/ui/navbar/theme-toggle";
 import LanguageToggle from "@/app/ui/navbar/language-toggle";
+import { useSession, signOut } from 'next-auth/react';
 import './navbar.css';
 
 const Navbar = () => {
     const { t } = useTranslation('common');
+    const { data: session, status } = useSession();
 
     const navigation: NavigationItem[] = [
         { name: t('navHome'), href: '/', current: true },
@@ -119,31 +121,45 @@ const Navbar = () => {
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 px-6">
                                 <ThemeToggle />
                                 <LanguageToggle />
-                                {/* <div className="flex items-center space-x-2 pl-4">
-                                    {!user ? (
+                                <div className="flex items-center space-x-2 pl-4">
+                                    {status === 'loading' ? (
+                                        <div className="h-8 w-20 animate-pulse bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                    ) : session ? (
                                         <>
+                                            <div className="hidden md:flex items-center gap-2 px-3 py-2">
+                                                <span className="text-sm text-slate-700 dark:text-slate-300 font-display">
+                                                    {session.user.name || session.user.email}
+                                                </span>
+                                                {session.user.role === 'ADMIN' && (
+                                                    <span className="text-xs bg-primary text-slate-900 px-2 py-0.5 rounded-full font-semibold">
+                                                        Admin
+                                                    </span>
+                                                )}
+                                            </div>
                                             <button
-                                                onClick={handleSignIn}
-                                                className="navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                                                onClick={() => signOut({ callbackUrl: '/' })}
+                                                className="text-slate-700 dark:text-slate-300 hover:text-primary rounded-md px-3 py-2 text-sm font-medium transition-colors font-display"
                                             >
-                                                {t('navLogin')}
-                                            </button>
-                                            <button
-                                                onClick={handleSignUp}
-                                                className="navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                                            >
-                                                {t('navSignup')}
+                                                {t('navLogout') || 'Sign Out'}
                                             </button>
                                         </>
                                     ) : (
-                                        <button
-                                            onClick={handleSignOut}
-                                            className="navbar-text-muted hover:bg-logo-mid hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                                        >
-                                            {t('navLogout') || 'Sign Out'}
-                                        </button>
+                                        <>
+                                            <Link
+                                                href="/auth/signin"
+                                                className="text-slate-700 dark:text-slate-300 hover:text-primary rounded-md px-3 py-2 text-sm font-medium transition-colors font-display"
+                                            >
+                                                {t('navLogin') || 'Sign In'}
+                                            </Link>
+                                            <Link
+                                                href="/auth/signup"
+                                                className="bg-primary text-slate-900 hover:bg-opacity-90 rounded-md px-3 py-2 text-sm font-medium transition-all font-display"
+                                            >
+                                                {t('navSignup') || 'Sign Up'}
+                                            </Link>
+                                        </>
                                     )}
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>

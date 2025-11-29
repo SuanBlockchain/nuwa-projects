@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import fs from "fs";
 import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser, parcelsParser, coverageParser, parcelAnalysisParser } from "@/app/lib/seed/helper";
+import { requireAdmin } from "@/app/lib/auth-utils";
 
 export const config = {
   api: { bodyParser: false },
@@ -28,6 +29,9 @@ function handleError(error: unknown): NextResponse {
 // ✅ Named export for POST method (Next.js App Router)
 export async function POST(req: Request) {
   try {
+    // Check admin authorization
+    await requireAdmin();
+
     // Extract file from formData
     const formData = await req.formData();
     const file = formData.get("file") as File;

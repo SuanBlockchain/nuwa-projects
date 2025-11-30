@@ -1,10 +1,13 @@
 import CardWrapper from '@/app/ui/dashboard/cards';
 import ProjectTable from '@/app/ui/dashboard/projects/page';
 import { Suspense } from 'react';
+import { requireAuth } from '@/app/lib/auth-utils';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
+  await requireAuth();
+
   return (
     <main className="min-h-screen">
       <div className="flex-grow md:overflow-y-auto md:p-12">

@@ -30,7 +30,7 @@ function handleError(error: unknown): NextResponse {
 export async function POST(req: Request) {
   try {
     // Check admin authorization
-    await requireAdmin();
+    const session = await requireAdmin();
 
     // Extract file from formData
     const formData = await req.formData();
@@ -107,11 +107,18 @@ export async function POST(req: Request) {
 
           await Promise.all(
             projects.map(async (project) => {
+              // Destructure to exclude any creator field and avoid conflicts
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { creator, ...projectData } = project as typeof project & { creator?: unknown };
+
               // ✅ Upsert project into Prisma
               await prisma.project.upsert({
                 where: { name: project.name }, // Assuming id is unique
                 update: {}, // No update if it exists
-                create: project,
+                create: {
+                  ...projectData,
+                  creatorId: session.user.id, // Associate project with current admin user
+                },
               });
             })
           );

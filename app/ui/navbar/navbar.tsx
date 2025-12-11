@@ -102,6 +102,14 @@ const Navbar = () => {
                                                 {link.name}
                                             </Link>
                                         ))}
+                                        {session?.user?.role === 'ADMIN' && (
+                                            <Link
+                                                href="/blockchain/wallets"
+                                                className="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2"
+                                            >
+                                                Blockchain
+                                            </Link>
+                                        )}
                                         <Link
                                             href="/upload"
                                             className="flex items-center justify-center rounded-full h-10 px-4 bg-primary text-slate-900 text-sm font-bold hover:bg-opacity-90 transition-all ml-2"
@@ -112,11 +120,6 @@ const Navbar = () => {
                                 </div>
                             </div>
                             
-                            <div className="flex items-center justify-center sm:items-stretch sm:justify-start">
-                                <p className="navbar-text-muted hidden md:block mx-4 text-sm">
-                                    {t('navTagline')}
-                                </p>
-                            </div>
                             
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 px-6">
                                 <ThemeToggle />
@@ -183,6 +186,15 @@ const Navbar = () => {
                                     {item.name}
                                 </DisclosureButton>
                             ))}
+                            {session?.user?.role === 'ADMIN' && (
+                                <DisclosureButton
+                                    as="a"
+                                    href="/blockchain/wallets"
+                                    className="text-slate-700 dark:text-slate-300 hover:text-primary block rounded-md px-3 py-2 text-base font-medium transition-colors"
+                                >
+                                    Blockchain
+                                </DisclosureButton>
+                            )}
                             <DisclosureButton
                                 as="a"
                                 href="/upload"

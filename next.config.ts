@@ -1,11 +1,9 @@
 import type { NextConfig } from "next";
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import { i18n } from "./next-i18next.config";
 
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
-  i18n,
-  
+
   // Enable static file serving for locales directory
   async rewrites() {
     return [
@@ -15,7 +13,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
+
+  // Add empty turbopack config to acknowledge Turbopack usage
+  turbopack: {},
+
   webpack: (config, { isServer }) => {
     // Ensure `resolve.plugins` exists
     config.resolve.plugins = [
@@ -24,7 +25,7 @@ const nextConfig: NextConfig = {
         configFile: './tsconfig.json', // Adjust the path to your tsconfig.json if necessary
       }),
     ];
-    
+
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true, // Enable async WebAssembly
@@ -34,7 +35,7 @@ const nextConfig: NextConfig = {
     if (!isServer) {
       config.output.environment = { ...config.output.environment, asyncFunction: true };
     }
-    
+
     return config;
   },
 };

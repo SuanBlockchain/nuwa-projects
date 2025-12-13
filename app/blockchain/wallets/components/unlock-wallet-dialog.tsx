@@ -9,9 +9,10 @@ interface UnlockWalletDialogProps {
   wallet: Wallet;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
-export default function UnlockWalletDialog({ wallet, open, onOpenChange }: UnlockWalletDialogProps) {
+export default function UnlockWalletDialog({ wallet, open, onOpenChange, onSuccess }: UnlockWalletDialogProps) {
   const [password, setPassword] = useState('');
   const { unlockWallet, loading } = useWallets();
 
@@ -19,6 +20,7 @@ export default function UnlockWalletDialog({ wallet, open, onOpenChange }: Unloc
     try {
       await unlockWallet(wallet.id, password);
       setPassword('');
+      onSuccess?.();
       onOpenChange(false);
     } catch {
       // Error handled by hook

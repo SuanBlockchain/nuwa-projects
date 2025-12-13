@@ -1,20 +1,50 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import type { Wallet } from '@/app/lib/cardano/types';
 import UnlockWalletDialog from './unlock-wallet-dialog';
 import DeleteWalletDialog from './delete-wallet-dialog';
 import { useWallets } from '@/app/hooks/use-wallets';
-import { WalletIcon } from '@heroicons/react/24/outline';
+import { useWalletSession } from '@/app/contexts/wallet-session-context';
+import { WalletIcon, ArrowUpCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 interface WalletCardProps {
   wallet: Wallet;
+  onWalletDeleted?: () => void;
+  onWalletUpdated?: () => void;
 }
 
-export default function WalletCard({ wallet }: WalletCardProps) {
+export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }: WalletCardProps) {
   const [showUnlock, setShowUnlock] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const { lockWallet } = useWallets();
+  const { lockWallet, promoteWallet, loading } = useWallets();
+  const { data: session } = useSession();
+  const { isUnlocked, walletId: unlockedWalletId, hasCoreWallet, refreshSession } = useWalletSession();
+  const isAdmin = session?.user?.role === 'ADMIN';
+  const isThisWalletUnlocked = isUnlocked && unlockedWalletId === wallet.id;
+
+  const handleUnlockSuccess = async () => {
+    await refreshSession();
+    onWalletUpdated?.();
+  };
+
+  const handleLock = async () => {
+    await lockWallet(wallet.id);
+    await refreshSession();
+    onWalletUpdated?.();
+  };
+
+  const handlePromote = async () => {
+    if (confirm(`Promote "${wallet.name}" to CoreWallet? This action cannot be undone.`)) {
+      try {
+        await promoteWallet(wallet.id);
+        onWalletUpdated?.();
+      } catch (error) {
+        // Error handled by hook
+      }
+    }
+  };
 
   return (
     <>
@@ -37,7 +67,7 @@ export default function WalletCard({ wallet }: WalletCardProps) {
           {wallet.enterprise_address}
         </p>
 
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
           <span className="text-xs text-zinc-500 dark:text-zinc-500">
             {wallet.network}
           </span>
@@ -46,9 +76,36 @@ export default function WalletCard({ wallet }: WalletCardProps) {
               Default
             </span>
           )}
+          {wallet.role === 'core' && (
+            <span className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 px-2 py-0.5 rounded">
+              CoreWallet
+            </span>
+          )}
+          {isThisWalletUnlocked && (
+            <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 px-2 py-0.5 rounded flex items-center gap-1">
+              <CheckCircleIcon className="h-3 w-3" />
+              Active Session
+            </span>
+          )}
         </div>
 
-        <div className="flex gap-2">
+        {/* Owner Info - Only visible to admins */}
+        {isAdmin && wallet.owner && (
+          <div className="mb-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+            <p className="text-xs text-zinc-500 dark:text-zinc-500 mb-1">Owner</p>
+            <p className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">
+              {wallet.owner.userName || wallet.owner.userEmail || 'Unknown'}
+            </p>
+            {wallet.owner.userEmail && wallet.owner.userName && (
+              <p className="text-xs text-zinc-500 dark:text-zinc-500">{wallet.owner.userEmail}</p>
+            )}
+            <p className="text-xs text-zinc-500 dark:text-zinc-500">
+              Role: {wallet.owner.userRole}
+            </p>
+          </div>
+        )}
+
+        <div className="flex gap-2 flex-wrap">
           {wallet.is_locked ? (
             <button
               onClick={() => setShowUnlock(true)}
@@ -58,7 +115,7 @@ export default function WalletCard({ wallet }: WalletCardProps) {
             </button>
           ) : (
             <button
-              onClick={() => lockWallet(wallet.id)}
+              onClick={handleLock}
               className="flex-1 px-3 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded text-sm transition-colors"
             >
               Lock
@@ -71,18 +128,40 @@ export default function WalletCard({ wallet }: WalletCardProps) {
             Delete
           </button>
         </div>
+
+        {/* Promote Button - Only visible to admins for non-core wallets */}
+        {isAdmin && wallet.role !== 'core' && (
+          <>
+            <button
+              onClick={handlePromote}
+              disabled={loading || !hasCoreWallet}
+              className="w-full mt-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              title={!hasCoreWallet ? 'Please unlock a CORE wallet first' : ''}
+            >
+              <ArrowUpCircleIcon className="h-4 w-4" />
+              Promote to CoreWallet
+            </button>
+            {!hasCoreWallet && (
+              <div className="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
+                ⚠️ Unlock a CORE wallet to enable promotion
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <UnlockWalletDialog
         wallet={wallet}
         open={showUnlock}
         onOpenChange={setShowUnlock}
+        onSuccess={handleUnlockSuccess}
       />
 
       <DeleteWalletDialog
         wallet={wallet}
         open={showDelete}
         onOpenChange={setShowDelete}
+        onDeleted={onWalletDeleted}
       />
     </>
   );

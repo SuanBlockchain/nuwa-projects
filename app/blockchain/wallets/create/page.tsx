@@ -1,8 +1,8 @@
-import { requireAdmin } from '@/app/lib/auth-utils';
+import { requireAuth } from '@/app/lib/auth-utils';
 import WalletConfigTabs from '../components/wallet-config-tabs';
 
 export default async function CreateWalletPage() {
-  await requireAdmin();
+  await requireAuth();
 
   return (
     <main className="min-h-screen">

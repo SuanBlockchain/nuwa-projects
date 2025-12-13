@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { importWalletSchema } from '@/app/lib/cardano/validation';
@@ -10,6 +11,7 @@ type ImportWalletFormData = z.infer<typeof importWalletSchema>;
 
 export default function ImportWalletForm() {
   const { importWallet, loading } = useWallets();
+  const router = useRouter();
 
   const {
     register,
@@ -21,7 +23,22 @@ export default function ImportWalletForm() {
 
   const onSubmit = async (data: ImportWalletFormData) => {
     try {
-      await importWallet(data);
+      const wallet = await importWallet(data);
+
+      // Store wallet creation data in sessionStorage
+      // Note: imported wallets won't have mnemonic in response (user already has it)
+      sessionStorage.setItem('wallet_creation_data', JSON.stringify({
+        wallet_id: wallet.wallet_id,
+        name: wallet.name,
+        mnemonic: data.mnemonic, // Use the mnemonic from the form
+        enterprise_address: wallet.enterprise_address,
+        staking_address: wallet.staking_address,
+        network: wallet.network,
+        created_at: wallet.created_at,
+      }));
+
+      // Redirect to success page
+      router.push('/blockchain/wallets/success');
     } catch {
       // Error handled by hook
     }

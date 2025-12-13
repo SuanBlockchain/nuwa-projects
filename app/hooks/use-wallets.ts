@@ -1,20 +1,22 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import type { Wallet, CreateWalletRequest, ImportWalletRequest } from '@/app/lib/cardano/types';
+import { useWalletSession } from '@/app/contexts/wallet-session-context';
 
 export function useWallets() {
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const { refreshSession } = useWalletSession();
 
   const fetchWallets = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/blockchain/wallets');
+      const res = await fetch('/api/blockchain/wallets', {
+        cache: 'no-store',
+      });
       if (!res.ok) throw new Error('Failed to fetch wallets');
       const data = await res.json();
       setWallets(data);
@@ -36,7 +38,6 @@ export function useWallets() {
       });
       if (!res.ok) throw new Error('Failed to create wallet');
       const wallet = await res.json();
-      router.push('/blockchain/wallets');
       return wallet;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -44,7 +45,7 @@ export function useWallets() {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, []);
 
   const importWallet = useCallback(async (data: ImportWalletRequest & { confirmPassword: string }) => {
     setLoading(true);
@@ -57,7 +58,6 @@ export function useWallets() {
       });
       if (!res.ok) throw new Error('Failed to import wallet');
       const wallet = await res.json();
-      router.push('/blockchain/wallets');
       return wallet;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -65,7 +65,7 @@ export function useWallets() {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, []);
 
   const unlockWallet = useCallback(async (walletId: string, password: string) => {
     setLoading(true);
@@ -78,13 +78,14 @@ export function useWallets() {
       });
       if (!res.ok) throw new Error('Failed to unlock wallet');
       await fetchWallets();
+      await refreshSession(); // Refresh session state
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [fetchWallets]);
+  }, [fetchWallets, refreshSession]);
 
   const lockWallet = useCallback(async (walletId: string) => {
     setLoading(true);
@@ -97,6 +98,31 @@ export function useWallets() {
       });
       if (!res.ok) throw new Error('Failed to lock wallet');
       await fetchWallets();
+      await refreshSession(); // Clear session state
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchWallets, refreshSession]);
+
+  const deleteWallet = useCallback(async (walletId: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/blockchain/wallets/${walletId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Failed to delete wallet' }));
+        throw new Error(errorData.error || 'Failed to delete wallet');
+      }
+
+      await fetchWallets();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       throw err;
@@ -105,14 +131,21 @@ export function useWallets() {
     }
   }, [fetchWallets]);
 
-  const deleteWallet = useCallback(async (walletId: string) => {
+  const promoteWallet = useCallback(async (walletId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/blockchain/wallets/${walletId}`, {
-        method: 'DELETE',
+      const res = await fetch('/api/blockchain/wallets/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet_id: walletId }),
       });
-      if (!res.ok) throw new Error('Failed to delete wallet');
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Failed to promote wallet' }));
+        throw new Error(errorData.error || 'Failed to promote wallet');
+      }
+
       await fetchWallets();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -132,5 +165,6 @@ export function useWallets() {
     unlockWallet,
     lockWallet,
     deleteWallet,
+    promoteWallet,
   };
 }

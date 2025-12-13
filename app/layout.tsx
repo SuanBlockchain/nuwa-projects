@@ -13,6 +13,7 @@ import I18nProviderClientWrapper from "./providers/i18n-client-wrapper";
 import dynamic from 'next/dynamic';
 import GlobalLayout from "./GlobalLayout";
 import { SessionProvider } from 'next-auth/react';
+import { WalletSessionProvider } from '@/app/contexts/wallet-session-context';
 
 const Navbar = dynamic(() => import('@/app/ui/navbar/navbar'), { ssr: false });
 
@@ -40,14 +41,16 @@ export default function RootLayout({
           <Theme accentColor="mint" grayColor="slate" scaling="100%" radius="medium">
             <I18nProviderClientWrapper>
               <SessionProvider>
-                <Navbar />
-                <GlobalLayout>
-                <main className="min-h-screen">
-                  {children}
-                </main>
-                </GlobalLayout>
-                <Analytics />
-                <Footer />
+                <WalletSessionProvider>
+                  <Navbar />
+                  <GlobalLayout>
+                  <main className="min-h-screen">
+                    {children}
+                  </main>
+                  </GlobalLayout>
+                  <Analytics />
+                  <Footer />
+                </WalletSessionProvider>
               </SessionProvider>
             </I18nProviderClientWrapper>
             {/* Uncomment for development to adjust theme visually */}

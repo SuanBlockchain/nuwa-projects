@@ -1,10 +1,10 @@
-import { requireAdmin } from '@/app/lib/auth-utils';
+import { requireAuth } from '@/app/lib/auth-utils';
 import WalletList from './components/wallet-list';
 
 export const dynamic = 'force-dynamic';
 
 export default async function WalletsPage() {
-  await requireAdmin();
+  await requireAuth();
 
   return (
     <main className="min-h-screen">

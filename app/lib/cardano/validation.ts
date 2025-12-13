@@ -32,3 +32,7 @@ export const importWalletSchema = z.object({
 export const unlockWalletSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
+
+export const deleteWalletSchema = z.object({
+  password: z.string().min(1, 'Password is required'),
+});

@@ -18,7 +18,8 @@ interface WalletCardProps {
 export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }: WalletCardProps) {
   const [showUnlock, setShowUnlock] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const { lockWallet, promoteWallet, loading } = useWallets();
+  const [lockError, setLockError] = useState<string | null>(null);
+  const { lockWallet, promoteWallet, loading, error } = useWallets();
   const { data: session } = useSession();
   const { isUnlocked, walletId: unlockedWalletId, hasCoreWallet, refreshSession } = useWalletSession();
   const isAdmin = session?.user?.role === 'ADMIN';
@@ -30,9 +31,17 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
   };
 
   const handleLock = async () => {
-    await lockWallet(wallet.id);
-    await refreshSession();
-    onWalletUpdated?.();
+    setLockError(null);
+    try {
+      await lockWallet(wallet.id);
+      await refreshSession();
+      onWalletUpdated?.();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to lock wallet';
+      setLockError(errorMessage);
+      // Auto-hide error after 5 seconds
+      setTimeout(() => setLockError(null), 5000);
+    }
   };
 
   const handlePromote = async () => {
@@ -105,8 +114,15 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
           </div>
         )}
 
+        {/* Lock Error Display */}
+        {lockError && (
+          <div className="mb-3 p-2 bg-red-500/10 border border-red-500/20 rounded">
+            <p className="text-xs text-red-600 dark:text-red-400">{lockError}</p>
+          </div>
+        )}
+
         <div className="flex gap-2 flex-wrap">
-          {wallet.is_locked ? (
+          {!isThisWalletUnlocked ? (
             <button
               onClick={() => setShowUnlock(true)}
               className="flex-1 px-3 py-2 bg-mint-9 hover:bg-mint-10 text-white rounded text-sm transition-colors"
@@ -116,9 +132,10 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
           ) : (
             <button
               onClick={handleLock}
-              className="flex-1 px-3 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded text-sm transition-colors"
+              disabled={loading}
+              className="flex-1 px-3 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded text-sm transition-colors disabled:opacity-50"
             >
-              Lock
+              {loading ? 'Locking...' : 'Lock'}
             </button>
           )}
           <button

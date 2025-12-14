@@ -39,10 +39,17 @@ module.exports = {
 
         // Nuwa Design System colors
         'primary': '#48e89f',
+        'primary-hover': '#3dd68f',
         'primary-dark': '#1d5b54',
         'bg-light': '#f6f8f7',
         'bg-dark': '#0a1d1a',
         'text-main': '#0f172a',
+
+        // Dark theme surface colors
+        'background-dark': '#10221a',
+        'surface-dark': '#162b22',
+        'surface-darker': '#0b1812',
+        'border-dark': '#2a4238',
 
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

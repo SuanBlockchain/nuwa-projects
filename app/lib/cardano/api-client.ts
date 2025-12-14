@@ -1,4 +1,5 @@
-import type { WalletListResponse, CreateWalletRequest, ImportWalletRequest, UnlockWalletRequest, WalletResponse, JWTTokenResponse } from './types';
+import type { WalletListResponse, CreateWalletRequest, ImportWalletRequest, UnlockWalletRequest, WalletResponse, JWTTokenResponse, ListSessionsResponse, RevokeSessionResponse, HeartbeatResponse } from './types';
+import type { BuildTransactionRequest, BuildTransactionResponse, SignAndSubmitRequest, SignAndSubmitResponse } from './transaction-types';
 import { getWalletSession, getCoreWalletSession, setWalletSession, clearWalletSession, isTokenExpired, type WalletSession } from './jwt-manager';
 
 const BASE_URL = process.env.CARDANO_API_URL;
@@ -171,6 +172,36 @@ export const cardanoAPI = {
     revoke: () =>
       fetchCardanoAPI<{ message: string }>('/api/v1/wallets/token/revoke', {
         method: 'POST',
+      }),
+
+    // Session management endpoints (new session-based locking)
+    getSessions: (walletId: string) =>
+      fetchCardanoAPI<ListSessionsResponse>(`/api/v1/wallets/${walletId}/sessions`, {
+        method: 'GET',
+      }),
+
+    revokeSession: (walletId: string, jti: string) =>
+      fetchCardanoAPI<RevokeSessionResponse>(`/api/v1/wallets/${walletId}/sessions/${jti}`, {
+        method: 'DELETE',
+      }),
+
+    heartbeat: (walletId: string) =>
+      fetchCardanoAPI<HeartbeatResponse>(`/api/v1/wallets/${walletId}/heartbeat`, {
+        method: 'POST',
+      }),
+  },
+
+  transactions: {
+    build: (data: BuildTransactionRequest) =>
+      fetchCardanoAPI<BuildTransactionResponse>('/api/v1/transactions/build', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    signAndSubmit: (data: SignAndSubmitRequest) =>
+      fetchCardanoAPI<SignAndSubmitResponse>('/api/v1/transactions/sign-and-submit', {
+        method: 'POST',
+        body: JSON.stringify(data),
       }),
   },
 };

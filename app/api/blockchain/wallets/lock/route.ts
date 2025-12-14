@@ -4,6 +4,14 @@ import { cardanoAPI } from '@/app/lib/cardano/api-client';
 import { getWalletSession, clearWalletSession } from '@/app/lib/cardano/jwt-manager';
 import { checkWalletOwnership } from '@/app/actions/wallet-actions';
 
+/**
+ * Lock wallet by revoking the current session
+ *
+ * New session-based locking:
+ * - Locks wallet by revoking the current session token
+ * - Wallet auto-locks when all sessions are revoked/expired
+ * - Multiple sessions can exist, so locking only affects current client
+ */
 export async function POST(req: Request) {
   try {
     await requireAuth();
@@ -18,35 +26,50 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verify this wallet is currently unlocked
+    // Check if we have a session to revoke
     const session = await getWalletSession();
-    if (!session || session.wallet_id !== wallet_id) {
+    if (!session) {
       return NextResponse.json(
-        { error: 'Wallet is not currently unlocked' },
+        { error: 'No active session to lock' },
         { status: 400 }
       );
     }
 
-    // Step 1: Revoke token on backend
+    // Revoke current session token on backend
+    // Note: Backend validates that the token belongs to this wallet
     try {
       await cardanoAPI.wallets.revoke();
-    } catch (revokeError) {
+      console.log(`Session revoked for wallet ${wallet_id}`);
+    } catch (revokeError: any) {
       console.error('Token revocation failed:', revokeError);
-      // Continue anyway - token might already be revoked
+
+      // If backend says no active session, clear our local session too
+      if (revokeError.status === 401 || revokeError.status === 404) {
+        await clearWalletSession();
+        return NextResponse.json(
+          { error: 'No active session found' },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: revokeError.message || 'Failed to revoke session' },
+        { status: revokeError.status || 500 }
+      );
     }
 
-    // Step 2: Lock wallet on backend
-    await cardanoAPI.wallets.lock(wallet_id);
-
-    // Step 3: Clear session cookie
+    // Clear session cookie locally
     await clearWalletSession();
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
+    return NextResponse.json({
+      success: true,
+      message: 'Wallet locked (session revoked)'
+    });
+  } catch (error: any) {
     console.error('Error locking wallet:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to lock wallet' },
-      { status: 500 }
+      { error: error.message || 'Failed to lock wallet' },
+      { status: error.status || 500 }
     );
   }
 }

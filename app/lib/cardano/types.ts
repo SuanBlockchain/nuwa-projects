@@ -71,3 +71,37 @@ export interface WalletSessionState {
 export interface DeleteWalletRequest {
   password: string;
 }
+
+// Session management types (new session-based locking)
+export interface SessionInfo {
+  jti: string;
+  session_name: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  client_fingerprint: string | null;
+  created_at: string;
+  expires_at: string;
+  is_current: boolean;
+}
+
+export interface ListSessionsResponse {
+  wallet_id: string;
+  wallet_name: string;
+  sessions: SessionInfo[];
+  total: number;
+}
+
+export interface RevokeSessionResponse {
+  success: boolean;
+  message: string;
+  jti: string;
+  session_name: string | null;
+}
+
+export interface HeartbeatResponse {
+  success: boolean;
+  message: string;
+  session_valid: boolean;
+  expires_at?: string;
+  time_remaining_seconds?: number;
+}

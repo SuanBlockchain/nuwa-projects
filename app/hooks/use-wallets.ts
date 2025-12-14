@@ -96,7 +96,12 @@ export function useWallets() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ wallet_id: walletId }),
       });
-      if (!res.ok) throw new Error('Failed to lock wallet');
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Failed to lock wallet' }));
+        throw new Error(errorData.error || 'Failed to lock wallet');
+      }
+
       await fetchWallets();
       await refreshSession(); // Clear session state
     } catch (err) {

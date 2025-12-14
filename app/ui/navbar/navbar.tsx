@@ -103,12 +103,20 @@ const Navbar = () => {
                                             </Link>
                                         ))}
                                         {session?.user?.role === 'ADMIN' && (
-                                            <Link
-                                                href="/blockchain/wallets"
-                                                className="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2"
-                                            >
-                                                Blockchain
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    href="/blockchain/wallets"
+                                                    className="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2"
+                                                >
+                                                    Wallets
+                                                </Link>
+                                                <Link
+                                                    href="/blockchain/transactions"
+                                                    className="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2"
+                                                >
+                                                    Transactions
+                                                </Link>
+                                            </>
                                         )}
                                         <Link
                                             href="/upload"
@@ -187,13 +195,22 @@ const Navbar = () => {
                                 </DisclosureButton>
                             ))}
                             {session?.user?.role === 'ADMIN' && (
-                                <DisclosureButton
-                                    as="a"
-                                    href="/blockchain/wallets"
-                                    className="text-slate-700 dark:text-slate-300 hover:text-primary block rounded-md px-3 py-2 text-base font-medium transition-colors"
-                                >
-                                    Blockchain
-                                </DisclosureButton>
+                                <>
+                                    <DisclosureButton
+                                        as="a"
+                                        href="/blockchain/wallets"
+                                        className="text-slate-700 dark:text-slate-300 hover:text-primary block rounded-md px-3 py-2 text-base font-medium transition-colors"
+                                    >
+                                        Wallets
+                                    </DisclosureButton>
+                                    <DisclosureButton
+                                        as="a"
+                                        href="/blockchain/transactions"
+                                        className="text-slate-700 dark:text-slate-300 hover:text-primary block rounded-md px-3 py-2 text-base font-medium transition-colors"
+                                    >
+                                        Transactions
+                                    </DisclosureButton>
+                                </>
                             )}
                             <DisclosureButton
                                 as="a"

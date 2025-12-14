@@ -15,12 +15,23 @@ export default async function WalletsPage() {
               <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
                 Cardano Wallets
               </h1>
-              <a
-                href="/blockchain/wallets/create"
-                className="px-4 py-2 bg-mint-9 hover:bg-mint-10 text-white rounded-lg transition-colors"
-              >
-                New Wallet
-              </a>
+              <div className="flex gap-3">
+                <a
+                  href="/blockchain/transactions"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                  </svg>
+                  New Transaction
+                </a>
+                <a
+                  href="/blockchain/wallets/create"
+                  className="px-4 py-2 bg-mint-9 hover:bg-mint-10 text-white rounded-lg transition-colors"
+                >
+                  New Wallet
+                </a>
+              </div>
             </div>
             <WalletList />
           </div>

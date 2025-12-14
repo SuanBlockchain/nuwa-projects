@@ -34,11 +34,16 @@ export async function POST(req: Request) {
         expires_at: tokenResponse.expires_at,
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error unlocking wallet:', error);
+
+    // Return appropriate status code and message
+    const status = error.status || 500;
+    const message = error.message || 'Failed to unlock wallet';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to unlock wallet' },
-      { status: 500 }
+      { error: message },
+      { status }
     );
   }
 }

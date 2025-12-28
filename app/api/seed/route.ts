@@ -3,11 +3,10 @@ import ExcelJS from "exceljs";
 import fs from "fs";
 import { ecosystemsParser, keywordsParser, mathModelsParser, projectsParser, saveFile, speciesParser, parcelsParser, coverageParser, parcelAnalysisParser } from "@/app/lib/seed/helper";
 import { requireAdmin } from "@/app/lib/auth-utils";
-
-export const config = {
-  api: { bodyParser: false },
-};
 import { prisma } from '@/prisma';
+
+// Disable body parsing for this route (for file uploads)
+export const dynamic = 'force-dynamic';
 
 function handleError(error: unknown): NextResponse {
   console.error("❌ Error processing:", error);

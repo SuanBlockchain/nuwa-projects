@@ -1,4 +1,4 @@
-import type { WalletListResponse, CreateWalletRequest, ImportWalletRequest, UnlockWalletRequest, WalletResponse, JWTTokenResponse, ListSessionsResponse, RevokeSessionResponse, HeartbeatResponse } from './types';
+import type { WalletListResponse, CreateWalletRequest, ImportWalletRequest, UnlockWalletRequest, WalletResponse, JWTTokenResponse, ListSessionsResponse, RevokeSessionResponse, HeartbeatResponse, BackendBalanceResponse, StoreSessionPasswordRequest, StoreSessionPasswordResponse, AutoUnlockResponse, ListAutoUnlockSessionsResponse, RevokeAutoUnlockSessionResponse, ChangePasswordResponse } from './types';
 import type { BuildTransactionRequest, BuildTransactionResponse, SignAndSubmitRequest, SignAndSubmitResponse } from './transaction-types';
 import { getWalletSession, getCoreWalletSession, setWalletSession, clearWalletSession, isTokenExpired, type WalletSession } from './jwt-manager';
 
@@ -120,7 +120,24 @@ async function fetchCardanoAPI<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-    throw new CardanoAPIError(response.status, error.detail || 'API request failed');
+
+    // Handle detail being an object (e.g., validation errors)
+    let errorMessage = 'API request failed';
+    if (typeof error.detail === 'string') {
+      errorMessage = error.detail;
+    } else if (error.detail && typeof error.detail === 'object') {
+      // If detail is an object, try to extract meaningful error message
+      if (Array.isArray(error.detail)) {
+        // Validation errors are often arrays
+        errorMessage = error.detail.map((e: any) => e.msg || e.message || JSON.stringify(e)).join(', ');
+      } else {
+        errorMessage = JSON.stringify(error.detail);
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
+    throw new CardanoAPIError(response.status, errorMessage);
   }
 
   return response.json();
@@ -188,6 +205,50 @@ export const cardanoAPI = {
     heartbeat: (walletId: string) =>
       fetchCardanoAPI<HeartbeatResponse>(`/api/v1/wallets/${walletId}/heartbeat`, {
         method: 'POST',
+      }),
+
+    getBalance: (walletId: string) =>
+      fetchCardanoAPI<BackendBalanceResponse>(`/api/v1/wallets/${walletId}/balance`, {
+        method: 'GET',
+      }),
+
+    // Auto-unlock session management
+    storeSessionPassword: (walletId: string, data: StoreSessionPasswordRequest) =>
+      fetchCardanoAPI<StoreSessionPasswordResponse>(`/api/v1/wallets/${walletId}/session/store`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        skipAuth: true,  // Password verification happens in backend
+      }),
+
+    autoUnlock: (walletId: string, sessionKey: string, frontendSessionId: string) => {
+      const headers = new Headers();
+      headers.set('X-Session-Key', sessionKey);
+      headers.set('X-Frontend-Session-ID', frontendSessionId);
+
+      return fetchCardanoAPI<AutoUnlockResponse>(`/api/v1/wallets/${walletId}/auto-unlock`, {
+        method: 'POST',
+        headers,
+        skipAuth: true,  // This endpoint creates the session
+      });
+    },
+
+    listAutoUnlockSessions: (walletId: string) =>
+      fetchCardanoAPI<ListAutoUnlockSessionsResponse>(`/api/v1/wallets/${walletId}/sessions/auto-unlock`, {
+        method: 'GET',
+      }),
+
+    revokeAutoUnlockSession: (walletId: string, sessionId: string) =>
+      fetchCardanoAPI<RevokeAutoUnlockSessionResponse>(`/api/v1/wallets/${walletId}/sessions/auto-unlock/${sessionId}`, {
+        method: 'DELETE',
+      }),
+
+    changePassword: (walletId: string, currentPassword: string, newPassword: string) =>
+      fetchCardanoAPI<ChangePasswordResponse>(`/api/v1/wallets/${walletId}/change-password`, {
+        method: 'POST',
+        body: JSON.stringify({
+          old_password: currentPassword,
+          new_password: newPassword
+        }),
       }),
   },
 

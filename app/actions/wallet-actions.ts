@@ -37,8 +37,17 @@ export async function createWalletRecord(
 ) {
   const session = await requireAuth();
 
-  return await prisma.wallet.create({
-    data: {
+  // Use upsert to handle case where wallet already exists
+  // (e.g., when importing a wallet that was already created)
+  return await prisma.wallet.upsert({
+    where: { id: walletId },
+    update: {
+      name,
+      enterpriseAddress,
+      network,
+      userId: session.user.id, // Update owner if different
+    },
+    create: {
       id: walletId,
       name,
       userId: session.user.id,

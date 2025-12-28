@@ -33,6 +33,7 @@ export default async function WalletsPage() {
                 </a>
               </div>
             </div>
+
             <WalletList />
           </div>
         </div>

@@ -3,6 +3,7 @@ import { requireAuth } from '@/app/lib/auth-utils';
 import { cardanoAPI } from '@/app/lib/cardano/api-client';
 import { getWalletSession, clearWalletSession } from '@/app/lib/cardano/jwt-manager';
 import { checkWalletOwnership } from '@/app/actions/wallet-actions';
+import { clearSessionKey } from '@/app/lib/cardano/session-key-manager';
 
 /**
  * Lock wallet by revoking the current session
@@ -61,9 +62,15 @@ export async function POST(req: Request) {
     // Clear session cookie locally
     await clearWalletSession();
 
+    // Clear auto-unlock session key from localStorage
+    // Note: This runs on server-side, so we send a response header to trigger client-side cleanup
+    // The actual cleanup will happen via client-side hook or component
+
     return NextResponse.json({
       success: true,
-      message: 'Wallet locked (session revoked)'
+      message: 'Wallet locked (session revoked)',
+      clear_auto_unlock: true, // Signal to client to clear auto-unlock session
+      wallet_id
     });
   } catch (error: any) {
     console.error('Error locking wallet:', error);

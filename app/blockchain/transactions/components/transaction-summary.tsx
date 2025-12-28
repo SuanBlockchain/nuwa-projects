@@ -1,7 +1,10 @@
 'use client';
 
 import type { BuildTransactionResponse, TransactionStep } from '@/app/lib/cardano/transaction-types';
-import { DocumentTextIcon, WrenchScrewdriverIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { useWalletSession } from '@/app/contexts/wallet-session-context';
+import { useWalletBalance } from '@/app/hooks/use-wallet-balance';
+import { hasSufficientBalance, lovelaceToAda as formatLovelaceToAda } from '@/app/lib/cardano/format-utils';
+import { DocumentTextIcon, WrenchScrewdriverIcon, InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface TransactionSummaryProps {
   currentStep: TransactionStep;
@@ -24,6 +27,24 @@ export function TransactionSummary({
   network = 'Preprod',
   isUnlocked = false,
 }: TransactionSummaryProps) {
+  const { walletId } = useWalletSession();
+
+  // Fetch wallet balance for validation
+  const { balance } = useWalletBalance({
+    walletId,
+    autoRefresh: true,
+    enabled: isUnlocked,
+  });
+
+  // Calculate if transaction exceeds balance
+  const hasInsufficientBalance = buildResponse && balance
+    ? !hasSufficientBalance(
+        balance.balance_lovelace,
+        buildResponse.amount_lovelace,
+        buildResponse.fee_lovelace
+      )
+    : false;
+
   const getStatusColor = () => {
     switch (currentStep) {
       case 'build':
@@ -105,20 +126,38 @@ export function TransactionSummary({
           </div>
         </div>
 
+        {/* Balance Warning - Show if insufficient balance */}
+        {currentStep === 'build' && balance && buildResponse && hasInsufficientBalance && (
+          <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg relative z-10">
+            <div className="flex items-start gap-3">
+              <ExclamationTriangleIcon className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-medium text-red-600 dark:text-red-400 mb-1">Insufficient Balance</p>
+                <p className="text-xs text-red-600/80 dark:text-red-400/80">
+                  Available: {formatLovelaceToAda(balance.balance_lovelace, { precision: 2, includeSymbol: true })}
+                </p>
+                <p className="text-xs text-red-600/80 dark:text-red-400/80">
+                  Required: {formatLovelaceToAda(buildResponse.total_lovelace, { precision: 2, includeSymbol: true })}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Build Button - Only show on build step */}
         {currentStep === 'build' && (
           <div className="mt-8 relative z-10">
             <button
               type="submit"
               form="build-transaction-form"
-              disabled={!isUnlocked}
+              disabled={!isUnlocked || hasInsufficientBalance}
               className="w-full h-12 bg-primary hover:bg-primary-hover text-black text-base font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(19,236,146,0.3)] hover:shadow-[0_0_25px_rgba(19,236,146,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
             >
               <WrenchScrewdriverIcon className="w-5 h-5" />
               Build Transaction
             </button>
             <p className="text-center text-gray-500 text-xs mt-3">
-              Wait for wallet signature in next step
+              {hasInsufficientBalance ? 'Insufficient balance to build transaction' : 'Wait for wallet signature in next step'}
             </p>
           </div>
         )}

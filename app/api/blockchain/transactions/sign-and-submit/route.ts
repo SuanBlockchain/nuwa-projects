@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/app/lib/auth-utils';
 import { cardanoAPI } from '@/app/lib/cardano/api-client';
 import { signTransactionSchema } from '@/app/lib/cardano/transaction-validation';
+import { validateWalletSession } from '@/app/lib/cardano/session-validator';
 
 export async function POST(req: Request) {
   try {
@@ -10,6 +11,22 @@ export async function POST(req: Request) {
 
     // Validate request with Zod schema
     const validated = signTransactionSchema.parse(body);
+
+    // Validate wallet session before signing
+    const sessionValidation = await validateWalletSession();
+
+    if (!sessionValidation.isValid) {
+      console.error('Session validation failed:', sessionValidation.message);
+      return NextResponse.json(
+        {
+          error: sessionValidation.message || 'Wallet session is invalid',
+          sessionExpired: sessionValidation.isExpired
+        },
+        { status: 401 }
+      );
+    }
+
+    console.log('Session valid. Proceeding with transaction signing...');
 
     // Call backend API
     const response = await cardanoAPI.transactions.signAndSubmit({

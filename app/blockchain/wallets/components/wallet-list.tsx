@@ -1,18 +1,74 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useWallets } from '@/app/hooks/use-wallets';
 import { useWalletSession } from '@/app/contexts/wallet-session-context';
 import WalletCard from './wallet-card';
 import { WalletIcon } from '@heroicons/react/24/outline';
+import { hasAutoUnlock, getSessionKey } from '@/app/lib/cardano/session-key-manager';
 
 export default function WalletList() {
   const { wallets, loading, error, fetchWallets } = useWallets();
-  const { isUnlocked, walletName, walletRole } = useWalletSession();
+  const { isUnlocked, walletName, walletRole, refreshSession } = useWalletSession();
+  const autoUnlockAttempted = useRef(false);
 
   useEffect(() => {
     fetchWallets();
   }, [fetchWallets]);
+
+  // Auto-unlock wallet on page load if auto-unlock is enabled
+  useEffect(() => {
+    const attemptAutoUnlock = async () => {
+      // Skip if already attempted, loading, or already unlocked
+      if (autoUnlockAttempted.current || loading || isUnlocked || wallets.length === 0) {
+        return;
+      }
+
+      autoUnlockAttempted.current = true;
+
+      // Find wallet with auto-unlock enabled
+      // Prioritize: 1) Default wallet with auto-unlock, 2) First wallet with auto-unlock
+      const defaultWallet = wallets.find(w => w.is_default && hasAutoUnlock(w.id));
+      const walletToUnlock = defaultWallet || wallets.find(w => hasAutoUnlock(w.id));
+
+      if (!walletToUnlock) {
+        return;
+      }
+
+      const sessionData = getSessionKey(walletToUnlock.id);
+      if (!sessionData) {
+        return;
+      }
+
+      // Check if session is expired
+      if (new Date(sessionData.expiresAt) <= new Date()) {
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/blockchain/wallets/auto-unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            wallet_id: walletToUnlock.id,
+            session_key: sessionData.sessionKey,
+            frontend_session_id: sessionData.frontendSessionId,
+          }),
+          credentials: 'same-origin',
+        });
+
+        if (response.ok) {
+          // Refresh session to update UI
+          await refreshSession();
+          await fetchWallets();
+        }
+      } catch (error) {
+        console.error('Auto-unlock failed:', error);
+      }
+    };
+
+    attemptAutoUnlock();
+  }, [wallets, loading, isUnlocked, refreshSession, fetchWallets]);
 
   if (loading) {
     return (

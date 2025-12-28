@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircleIcon, ExclamationTriangleIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { ClipboardDocumentIcon, EyeSlashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import EnableAutoUnlockDialog from '../components/enable-auto-unlock-dialog';
 
 interface WalletCreationData {
   wallet_id: string;
@@ -22,6 +23,7 @@ export default function WalletSuccessPage() {
   const [confirmed, setConfirmed] = useState(false);
   const [showMnemonic, setShowMnemonic] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showAutoUnlockDialog, setShowAutoUnlockDialog] = useState(false);
 
   useEffect(() => {
     // Get wallet data from sessionStorage
@@ -48,10 +50,21 @@ export default function WalletSuccessPage() {
 
   const handleProceed = () => {
     if (confirmed) {
-      // Clear the wallet data from sessionStorage
-      sessionStorage.removeItem('wallet_creation_data');
-      router.push('/blockchain/wallets');
+      // Show auto-unlock dialog
+      setShowAutoUnlockDialog(true);
     }
+  };
+
+  const handleAutoUnlockSuccess = () => {
+    // Clear the wallet data from sessionStorage
+    sessionStorage.removeItem('wallet_creation_data');
+    router.push('/blockchain/wallets');
+  };
+
+  const handleAutoUnlockSkip = () => {
+    // User skipped auto-unlock setup, redirect anyway
+    sessionStorage.removeItem('wallet_creation_data');
+    router.push('/blockchain/wallets');
   };
 
   if (!walletData) {
@@ -263,6 +276,18 @@ export default function WalletSuccessPage() {
           </button>
         </div>
       </div>
+
+      {/* Enable Auto-Unlock Dialog */}
+      {walletData && (
+        <EnableAutoUnlockDialog
+          walletId={walletData.wallet_id}
+          walletName={walletData.name}
+          open={showAutoUnlockDialog}
+          onOpenChange={setShowAutoUnlockDialog}
+          onSuccess={handleAutoUnlockSuccess}
+          onSkip={handleAutoUnlockSkip}
+        />
+      )}
     </div>
   );
 }

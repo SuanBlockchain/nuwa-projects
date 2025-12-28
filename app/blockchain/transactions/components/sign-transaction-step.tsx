@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { signTransactionSchema, type SignTransactionFormData } from '@/app/lib/cardano/transaction-validation';
 import type { BuildTransactionResponse, SignAndSubmitResponse } from '@/app/lib/cardano/transaction-types';
 import { useTransactions } from '@/app/hooks/use-transactions';
+import { useWalletSession } from '@/app/contexts/wallet-session-context';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 interface SignTransactionStepProps {
@@ -29,6 +30,7 @@ function truncateAddress(address: string, chars: number = 12): string {
 
 export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTransactionStepProps) {
   const { signAndSubmit, loading } = useTransactions();
+  const { ensureSessionValid } = useWalletSession();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -46,14 +48,27 @@ export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTr
   const onSubmit = async (data: SignTransactionFormData) => {
     setError(null);
     try {
+      // Ensure session is valid before signing
+      console.log('Checking session validity before signing...');
+      const isValid = await ensureSessionValid();
+
+      if (!isValid) {
+        setError('Your wallet session has expired. Please go back to the wallets page and unlock your wallet again.');
+        return;
+      }
+
+      console.log('Session valid, proceeding with signature...');
+      console.log('Transaction ID being submitted:', data.transaction_id);
       const response = await signAndSubmit(data);
       onSuccess(response);
     } catch (err: any) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign and submit transaction';
 
-      // Special handling for authentication errors
-      if (err.status === 401 || errorMessage.includes('Authentication failed')) {
+      // Special handling for different error types
+      if (err.status === 401 || errorMessage.includes('Authentication failed') || errorMessage.includes('session')) {
         setError('Your session has expired. Please go back and unlock your wallet again, then rebuild the transaction.');
+      } else if (err.status === 404 || errorMessage.includes('not found')) {
+        setError('Transaction expired or not found. This usually happens when too much time passes between building and signing. Please go back and rebuild the transaction.');
       } else {
         setError(errorMessage);
       }

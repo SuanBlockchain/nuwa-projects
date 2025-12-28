@@ -5,9 +5,13 @@ import { useSession } from 'next-auth/react';
 import type { Wallet } from '@/app/lib/cardano/types';
 import UnlockWalletDialog from './unlock-wallet-dialog';
 import DeleteWalletDialog from './delete-wallet-dialog';
+import ChangePasswordDialog from './change-password-dialog';
 import { useWallets } from '@/app/hooks/use-wallets';
 import { useWalletSession } from '@/app/contexts/wallet-session-context';
-import { WalletIcon, ArrowUpCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { useWalletBalance } from '@/app/hooks/use-wallet-balance';
+import { formatBalanceSmart } from '@/app/lib/cardano/format-utils';
+import { hasAutoUnlock } from '@/app/lib/cardano/session-key-manager';
+import { WalletIcon, ArrowUpCircleIcon, CheckCircleIcon, ArrowPathIcon, ShieldCheckIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 interface WalletCardProps {
   wallet: Wallet;
@@ -18,12 +22,21 @@ interface WalletCardProps {
 export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }: WalletCardProps) {
   const [showUnlock, setShowUnlock] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const [lockError, setLockError] = useState<string | null>(null);
   const { lockWallet, promoteWallet, loading, error } = useWallets();
   const { data: session } = useSession();
   const { isUnlocked, walletId: unlockedWalletId, hasCoreWallet, refreshSession } = useWalletSession();
   const isAdmin = session?.user?.role === 'ADMIN';
   const isThisWalletUnlocked = isUnlocked && unlockedWalletId === wallet.id;
+
+  // Fetch wallet balance with auto-refresh
+  const { balance, loading: balanceLoading, error: balanceError, refresh: refreshBalance } = useWalletBalance({
+    walletId: wallet.id,
+    autoRefresh: true,
+    refreshInterval: 30000, // 30 seconds
+    enabled: isThisWalletUnlocked, // Only fetch for unlocked wallets (based on frontend session)
+  });
 
   const handleUnlockSuccess = async () => {
     await refreshSession();
@@ -96,6 +109,50 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
               Active Session
             </span>
           )}
+          {hasAutoUnlock(wallet.id) && (
+            <span className="text-xs bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded flex items-center gap-1" title="Auto-unlock enabled">
+              <ShieldCheckIcon className="h-3 w-3" />
+              Auto-Unlock
+            </span>
+          )}
+        </div>
+
+        {/* Balance Display */}
+        <div className="mb-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-xs text-zinc-500 dark:text-zinc-500">Balance</p>
+            {isThisWalletUnlocked && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  refreshBalance();
+                }}
+                disabled={balanceLoading}
+                className="text-xs text-mint-600 dark:text-mint-400 hover:text-mint-700 dark:hover:text-mint-300 disabled:opacity-50 transition-colors"
+                title="Refresh balance"
+                aria-label="Refresh balance"
+              >
+                <ArrowPathIcon className={`h-3 w-3 ${balanceLoading ? 'animate-spin' : ''}`} />
+              </button>
+            )}
+          </div>
+          {!isThisWalletUnlocked ? (
+            <p className="text-sm text-zinc-400 dark:text-zinc-600 italic">
+              Unlock to view balance
+            </p>
+          ) : balanceLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-24 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded"></div>
+            </div>
+          ) : balanceError ? (
+            <p className="text-sm text-red-600 dark:text-red-400">
+              Failed to load balance
+            </p>
+          ) : balance ? (
+            <p className="text-lg font-bold text-zinc-900 dark:text-white">
+              {formatBalanceSmart(balance.balance_lovelace)}
+            </p>
+          ) : null}
         </div>
 
         {/* Owner Info - Only visible to admins */}
@@ -139,6 +196,14 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
             </button>
           )}
           <button
+            onClick={() => setShowChangePassword(true)}
+            className="px-3 py-2 bg-zinc-700 hover:bg-zinc-800 text-white rounded text-sm transition-colors flex items-center gap-1"
+            title="Change Password"
+          >
+            <Cog6ToothIcon className="h-4 w-4" />
+            Settings
+          </button>
+          <button
             onClick={() => setShowDelete(true)}
             className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
           >
@@ -179,6 +244,18 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
         open={showDelete}
         onOpenChange={setShowDelete}
         onDeleted={onWalletDeleted}
+      />
+
+      <ChangePasswordDialog
+        walletId={wallet.id}
+        walletName={wallet.name}
+        open={showChangePassword}
+        onOpenChange={setShowChangePassword}
+        onSuccess={() => {
+          // Password changed successfully
+          // Backend locks the wallet, so refresh wallet list
+          onWalletUpdated?.();
+        }}
       />
     </>
   );

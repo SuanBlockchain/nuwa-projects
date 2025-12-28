@@ -16,14 +16,50 @@ export interface WalletSession {
  * Stores complete wallet session data in httpOnly cookie
  */
 export async function setWalletSession(tokenResponse: JWTTokenResponse): Promise<void> {
+  // Validate expires_in
+  if (!tokenResponse.expires_in || typeof tokenResponse.expires_in !== 'number') {
+    console.error('Invalid expires_in in token response:', tokenResponse.expires_in);
+    throw new Error('Invalid token response: expires_in must be a valid number');
+  }
+
+  // Convert expires_at to Unix timestamp if it's a string (ISO 8601)
+  let expiresAtTimestamp: number;
+
+  if (typeof tokenResponse.expires_at === 'string') {
+    // Backend returns ISO 8601 string, convert to Unix timestamp
+    const expiresAtDate = new Date(tokenResponse.expires_at);
+    if (isNaN(expiresAtDate.getTime())) {
+      console.error('Invalid ISO date string in expires_at:', tokenResponse.expires_at);
+      throw new Error('Invalid token response: expires_at is not a valid date');
+    }
+    expiresAtTimestamp = Math.floor(expiresAtDate.getTime() / 1000); // Convert to Unix timestamp (seconds)
+    console.log('Converted ISO date to Unix timestamp:', {
+      iso: tokenResponse.expires_at,
+      unix: expiresAtTimestamp,
+    });
+  } else if (typeof tokenResponse.expires_at === 'number') {
+    // Already a Unix timestamp
+    expiresAtTimestamp = tokenResponse.expires_at;
+  } else {
+    console.error('Invalid expires_at in token response:', tokenResponse.expires_at);
+    throw new Error('Invalid token response: expires_at must be a number or ISO date string');
+  }
+
   const session: WalletSession = {
     access_token: tokenResponse.access_token,
     refresh_token: tokenResponse.refresh_token,
-    expires_at: tokenResponse.expires_at,
+    expires_at: expiresAtTimestamp,
     wallet_id: tokenResponse.wallet_id,
     wallet_name: tokenResponse.wallet_name,
     wallet_role: tokenResponse.wallet_role,
   };
+
+  console.log('Storing wallet session:', {
+    wallet_id: session.wallet_id,
+    expires_at: session.expires_at,
+    expires_at_readable: new Date(session.expires_at * 1000).toISOString(),
+    expires_in: tokenResponse.expires_in,
+  });
 
   // Encode as base64 to avoid cookie parsing issues
   const encoded = Buffer.from(JSON.stringify(session)).toString('base64');
@@ -36,6 +72,8 @@ export async function setWalletSession(tokenResponse: JWTTokenResponse): Promise
     path: '/',
     maxAge: tokenResponse.expires_in, // Use token lifetime
   });
+
+  console.log('Session cookie set successfully');
 }
 
 /**

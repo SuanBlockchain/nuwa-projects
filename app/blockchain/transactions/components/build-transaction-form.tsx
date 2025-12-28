@@ -7,6 +7,8 @@ import { buildTransactionSchema, type BuildTransactionFormData } from '@/app/lib
 import type { BuildTransactionResponse, MetadataMode } from '@/app/lib/cardano/transaction-types';
 import { useTransactions } from '@/app/hooks/use-transactions';
 import { useWalletSession } from '@/app/contexts/wallet-session-context';
+import { useWalletBalance } from '@/app/hooks/use-wallet-balance';
+import { lovelaceToAda, getMaxSpendable } from '@/app/lib/cardano/format-utils';
 import { MetadataInput } from './metadata-input';
 import { CurrencyDollarIcon, ExclamationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
@@ -16,10 +18,17 @@ interface BuildTransactionFormProps {
 }
 
 export function BuildTransactionForm({ onSuccess, onError }: BuildTransactionFormProps) {
-  const { isUnlocked } = useWalletSession();
+  const { isUnlocked, walletId } = useWalletSession();
   const { buildTransaction } = useTransactions();
   const [error, setError] = useState<string | null>(null);
   const [metadataMode, setMetadataMode] = useState<MetadataMode>('json');
+
+  // Fetch wallet balance with auto-refresh
+  const { balance, loading: balanceLoading, refresh: refreshBalance } = useWalletBalance({
+    walletId,
+    autoRefresh: true,
+    enabled: isUnlocked,
+  });
 
   const {
     register,
@@ -40,6 +49,12 @@ export function BuildTransactionForm({ onSuccess, onError }: BuildTransactionFor
 
   const textMessage = watch('text_message') || '';
   const jsonData = watch('json_data') || '';
+  const amountAda = watch('amount_ada') || 0;
+
+  // Calculate if amount exceeds balance
+  const exceedsBalance = balance
+    ? (amountAda * 1_000_000) > balance.balance_lovelace
+    : false;
 
   const handleMetadataModeChange = (mode: MetadataMode) => {
     setMetadataMode(mode);
@@ -112,15 +127,38 @@ export function BuildTransactionForm({ onSuccess, onError }: BuildTransactionFor
               <p className="text-red-600 dark:text-red-400 text-xs">{errors.amount_ada.message}</p>
             )}
             <div className="flex justify-between text-xs text-gray-600 dark:text-gray-500 px-1">
-              <span>Available balance: 1,450.00 ADA</span>
-              <button
-                type="button"
-                onClick={() => setValue('amount_ada', 1450)}
-                className="text-primary hover:text-primary-hover transition-colors font-medium"
-              >
-                Use Max
-              </button>
+              <span>
+                Available balance: {
+                  balanceLoading && !balance
+                    ? 'Loading...'
+                    : balance
+                      ? lovelaceToAda(balance.balance_lovelace, { precision: 2, includeSymbol: true, includeCommas: true })
+                      : '-- ADA'
+                }
+              </span>
+              {balance && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Calculate max amount (balance - estimated fee of 0.17 ADA)
+                    const maxAmountLovelace = getMaxSpendable(balance.balance_lovelace, 170000);
+                    const maxAmountAda = maxAmountLovelace / 1_000_000;
+                    setValue('amount_ada', maxAmountAda);
+                  }}
+                  disabled={!balance || balance.balance_lovelace <= 170000}
+                  className="text-primary hover:text-primary-hover transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Use Max
+                </button>
+              )}
             </div>
+            {/* Insufficient Balance Warning */}
+            {exceedsBalance && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-lg p-3 text-sm flex items-start gap-2">
+                <ExclamationCircleIcon className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <span>Amount exceeds available balance</span>
+              </div>
+            )}
           </div>
 
           {/* Destination Address */}

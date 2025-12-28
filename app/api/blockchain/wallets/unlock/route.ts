@@ -21,6 +21,13 @@ export async function POST(req: Request) {
     // Get full token response
     const tokenResponse = await cardanoAPI.wallets.unlock({ wallet_id, password });
 
+    console.log('Token response from backend:', {
+      wallet_id: tokenResponse.wallet_id,
+      expires_at: tokenResponse.expires_at,
+      expires_at_type: typeof tokenResponse.expires_at,
+      expires_in: tokenResponse.expires_in,
+    });
+
     // Store complete session (access_token, refresh_token, expires_at, wallet_id, wallet_role)
     await setWalletSession(tokenResponse);
 

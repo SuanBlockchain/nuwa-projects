@@ -16,6 +16,7 @@ export function useTransactions() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+        credentials: 'same-origin',
       });
 
       if (!res.ok) {
@@ -42,6 +43,7 @@ export function useTransactions() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+        credentials: 'same-origin',
       });
 
       if (!res.ok) {

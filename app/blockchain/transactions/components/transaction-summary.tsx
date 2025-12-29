@@ -41,7 +41,7 @@ export function TransactionSummary({
     ? !hasSufficientBalance(
         balance.balance_lovelace,
         buildResponse.amount_lovelace,
-        buildResponse.fee_lovelace
+        buildResponse.estimated_fee_lovelace
       )
     : false;
 
@@ -82,49 +82,46 @@ export function TransactionSummary({
 
         <h3 className="text-gray-900 dark:text-white text-lg font-bold mb-6 relative z-10">Transaction Summary</h3>
 
-        <div className="flex flex-col gap-4 relative z-10">
-          {/* Network */}
-          <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-white/5">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Network</span>
-            <span className="text-gray-900 dark:text-white text-sm font-medium">{network}</span>
-          </div>
+        {/* Only show transaction details after building */}
+        {buildResponse ? (
+          <div className="flex flex-col gap-4 relative z-10">
+            {/* Network */}
+            <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-white/5">
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Network</span>
+              <span className="text-gray-900 dark:text-white text-sm font-medium">{network}</span>
+            </div>
 
-          {/* Amount */}
-          <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-white/5">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Amount</span>
-            {buildResponse ? (
+            {/* Amount */}
+            <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-white/5">
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Amount</span>
               <span className="text-gray-900 dark:text-white text-sm font-medium">
                 {lovelaceToAda(buildResponse.amount_lovelace)} ADA
               </span>
-            ) : (
-              <span className="text-gray-500 dark:text-gray-600 text-sm font-medium">-- ADA</span>
-            )}
-          </div>
+            </div>
 
-          {/* Fee */}
-          <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-white/5">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Est. Fee</span>
-            {buildResponse ? (
+            {/* Fee */}
+            <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-white/5">
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Est. Fee</span>
               <span className="text-primary text-sm font-medium">
-                {lovelaceToAda(buildResponse.fee_lovelace)} ADA
+                {lovelaceToAda(buildResponse.estimated_fee_lovelace)} ADA
               </span>
-            ) : (
-              <span className="text-gray-500 dark:text-gray-600 text-sm font-medium">~0.17 ADA</span>
-            )}
-          </div>
+            </div>
 
-          {/* Total */}
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Total</span>
-            {buildResponse ? (
+            {/* Total */}
+            <div className="flex justify-between items-center py-2">
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Total</span>
               <span className="text-gray-900 dark:text-white text-lg font-bold">
-                {lovelaceToAda(buildResponse.total_lovelace)} ADA
+                {lovelaceToAda(buildResponse.amount_lovelace + buildResponse.estimated_fee_lovelace)} ADA
               </span>
-            ) : (
-              <span className="text-gray-500 dark:text-gray-600 text-lg font-bold">-- ADA</span>
-            )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-8 relative z-10">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              Fill in the transaction details and click "Build Transaction" to see the summary.
+            </p>
+          </div>
+        )}
 
         {/* Balance Warning - Show if insufficient balance */}
         {currentStep === 'build' && balance && buildResponse && hasInsufficientBalance && (
@@ -137,7 +134,7 @@ export function TransactionSummary({
                   Available: {formatLovelaceToAda(balance.balance_lovelace, { precision: 2, includeSymbol: true })}
                 </p>
                 <p className="text-xs text-red-600/80 dark:text-red-400/80">
-                  Required: {formatLovelaceToAda(buildResponse.total_lovelace, { precision: 2, includeSymbol: true })}
+                  Required: {formatLovelaceToAda(buildResponse.amount_lovelace + buildResponse.estimated_fee_lovelace, { precision: 2, includeSymbol: true })}
                 </p>
               </div>
             </div>

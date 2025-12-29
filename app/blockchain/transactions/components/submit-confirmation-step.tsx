@@ -65,6 +65,15 @@ export function SubmitConfirmationStep({ submitResponse, onReset }: SubmitConfir
                 <ClipboardDocumentIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
               )}
             </button>
+            <a
+              href={submitResponse.explorer_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 p-2 hover:bg-gray-100 dark:hover:bg-surface-dark rounded-lg transition-colors group"
+              title="View on Explorer"
+            >
+              <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+            </a>
           </div>
         </div>
 
@@ -75,17 +84,6 @@ export function SubmitConfirmationStep({ submitResponse, onReset }: SubmitConfir
             <span className="text-gray-900 dark:text-white text-sm">{formatDate(submitResponse.submitted_at)}</span>
           </div>
         </div>
-
-        {/* Explorer Link */}
-        <a
-          href={submitResponse.explorer_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white text-base font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]"
-        >
-          <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-          View on Explorer
-        </a>
       </div>
 
       {/* Next Steps Card */}

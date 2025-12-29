@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 export function WalletBalanceHeader() {
   const router = useRouter();
   const { isUnlocked, walletId, walletName, walletRole } = useWalletSession();
-  const { balance, loading: balanceLoading, refresh: refreshBalance } = useWalletBalance({
+  const { balance, loading: balanceLoading, error: balanceError, refresh: refreshBalance } = useWalletBalance({
     walletId,
     autoRefresh: true,
     refreshInterval: 30000,
@@ -81,16 +81,16 @@ export function WalletBalanceHeader() {
         <div className="flex items-center gap-3">
           <div className="text-right">
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Balance</p>
-            {balanceLoading && !balance ? (
-              <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
-            ) : balance ? (
+            {balance ? (
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {formatBalanceSmart(balance.balance_lovelace)}
               </p>
-            ) : (
+            ) : balanceError ? (
               <p className="text-sm text-red-600 dark:text-red-400">
                 Failed to load
               </p>
+            ) : (
+              <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
             )}
           </div>
 

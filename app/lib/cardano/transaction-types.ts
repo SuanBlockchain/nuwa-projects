@@ -17,10 +17,12 @@ export interface BuildTransactionResponse {
   from_address: string;
   to_address: string;
   amount_lovelace: number;
-  fee_lovelace: number;
-  total_lovelace: number;
+  amount_ada: number;
+  estimated_fee_lovelace: number;
+  estimated_fee_ada: number;
   metadata?: object;
-  created_at: string;
+  status: string;
+  success?: boolean;
 }
 
 // Sign and submit request

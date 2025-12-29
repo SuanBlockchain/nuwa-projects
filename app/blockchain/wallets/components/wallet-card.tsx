@@ -11,7 +11,7 @@ import { useWalletSession } from '@/app/contexts/wallet-session-context';
 import { useWalletBalance } from '@/app/hooks/use-wallet-balance';
 import { formatBalanceSmart } from '@/app/lib/cardano/format-utils';
 import { hasAutoUnlock } from '@/app/lib/cardano/session-key-manager';
-import { WalletIcon, ArrowUpCircleIcon, CheckCircleIcon, ArrowPathIcon, ShieldCheckIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { WalletIcon, ArrowUpCircleIcon, CheckCircleIcon, ArrowPathIcon, ShieldCheckIcon, Cog6ToothIcon, ClipboardDocumentIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
 interface WalletCardProps {
   wallet: Wallet;
@@ -24,6 +24,7 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
   const [showDelete, setShowDelete] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [lockError, setLockError] = useState<string | null>(null);
+  const [copiedAddress, setCopiedAddress] = useState(false);
   const { lockWallet, promoteWallet, loading, error } = useWallets();
   const { data: session } = useSession();
   const { isUnlocked, walletId: unlockedWalletId, hasCoreWallet, refreshSession } = useWalletSession();
@@ -37,6 +38,16 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
     refreshInterval: 30000, // 30 seconds
     enabled: isThisWalletUnlocked, // Only fetch for unlocked wallets (based on frontend session)
   });
+
+  const handleCopyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(wallet.enterprise_address);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy address:', err);
+    }
+  };
 
   const handleUnlockSuccess = async () => {
     await refreshSession();
@@ -85,9 +96,36 @@ export default function WalletCard({ wallet, onWalletDeleted, onWalletUpdated }:
           </span>
         </div>
 
-        <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2 truncate" title={wallet.enterprise_address}>
-          {wallet.enterprise_address}
-        </p>
+        {/* Wallet Address */}
+        <div className="mb-3">
+          <label className="text-xs text-zinc-500 dark:text-zinc-500 mb-1 block">Address</label>
+          <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg p-2 flex items-center gap-2">
+            <code className="flex-1 text-xs text-zinc-900 dark:text-white font-mono break-all">
+              {wallet.enterprise_address}
+            </code>
+            <button
+              type="button"
+              onClick={handleCopyAddress}
+              className="flex-shrink-0 p-1.5 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded transition-colors group"
+              title="Copy address"
+            >
+              {copiedAddress ? (
+                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+              ) : (
+                <ClipboardDocumentIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
+              )}
+            </button>
+            <a
+              href={`https://preview.cardanoscan.io/address/${wallet.enterprise_address}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 p-1.5 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded transition-colors group"
+              title="View on Explorer"
+            >
+              <ArrowTopRightOnSquareIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
+            </a>
+          </div>
+        </div>
 
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <span className="text-xs text-zinc-500 dark:text-zinc-500">

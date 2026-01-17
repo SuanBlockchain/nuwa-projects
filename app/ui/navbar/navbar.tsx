@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import Image from 'next/image';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -16,25 +17,14 @@ import './navbar.css';
 const Navbar = () => {
     const { t } = useTranslation('common');
     const { data: session, status } = useSession();
+    const pathname = usePathname();
 
     const navigation: NavigationItem[] = [
-        { name: t('navHome'), href: '/', current: true },
-        {
-            name: t('navHowItWorks'),
-            href: '#how-it-works',
-            current: false,
-            scrollTo: true
-        },
+        { name: t('navHome'), href: '/', current: pathname === '/' },
         {
             name: t('navProjects'),
             href: '/dashboard',
-            current: false
-        },
-        {
-            name: t('navAboutUs'),
-            href: '#about-us',
-            current: false,
-            scrollTo: true
+            current: pathname?.startsWith('/dashboard') || false
         },
     ];
 
@@ -102,25 +92,27 @@ const Navbar = () => {
                                                 {link.name}
                                             </Link>
                                         ))}
-                                        {session?.user?.role === 'ADMIN' && (
-                                            <>
-                                                <Link
-                                                    href="/blockchain/wallets"
-                                                    className="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2"
-                                                >
-                                                    Wallets
-                                                </Link>
-                                                <Link
-                                                    href="/blockchain/transactions"
-                                                    className="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2"
-                                                >
-                                                    Transactions
-                                                </Link>
-                                            </>
+                                        {session && (
+                                            <Link
+                                                href="/blockchain"
+                                                className={clsx(
+                                                    "text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors rounded-md px-3 py-2",
+                                                    {
+                                                        'text-primary': pathname?.startsWith('/blockchain')
+                                                    }
+                                                )}
+                                            >
+                                                {t('navBlockchain')}
+                                            </Link>
                                         )}
                                         <Link
                                             href="/upload"
-                                            className="flex items-center justify-center rounded-full h-10 px-4 bg-primary text-slate-900 text-sm font-bold hover:bg-opacity-90 transition-all ml-2"
+                                            className={clsx(
+                                                "flex items-center justify-center rounded-full h-10 px-4 text-sm font-bold transition-all ml-2",
+                                                pathname?.startsWith('/upload')
+                                                    ? "bg-primary text-slate-900"
+                                                    : "border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary"
+                                            )}
                                         >
                                             {t('navUpload')}
                                         </Link>
@@ -194,28 +186,29 @@ const Navbar = () => {
                                     {item.name}
                                 </DisclosureButton>
                             ))}
-                            {session?.user?.role === 'ADMIN' && (
-                                <>
-                                    <DisclosureButton
-                                        as="a"
-                                        href="/blockchain/wallets"
-                                        className="text-slate-700 dark:text-slate-300 hover:text-primary block rounded-md px-3 py-2 text-base font-medium transition-colors"
-                                    >
-                                        Wallets
-                                    </DisclosureButton>
-                                    <DisclosureButton
-                                        as="a"
-                                        href="/blockchain/transactions"
-                                        className="text-slate-700 dark:text-slate-300 hover:text-primary block rounded-md px-3 py-2 text-base font-medium transition-colors"
-                                    >
-                                        Transactions
-                                    </DisclosureButton>
-                                </>
+                            {session && (
+                                <DisclosureButton
+                                    as="a"
+                                    href="/blockchain"
+                                    className={classNames(
+                                        pathname?.startsWith('/blockchain')
+                                            ? 'text-primary'
+                                            : 'text-slate-700 dark:text-slate-300 hover:text-primary',
+                                        'block rounded-md px-3 py-2 text-base font-medium transition-colors'
+                                    )}
+                                >
+                                    {t('navBlockchain')}
+                                </DisclosureButton>
                             )}
                             <DisclosureButton
                                 as="a"
                                 href="/upload"
-                                className="flex items-center justify-center rounded-full h-10 px-4 bg-primary text-slate-900 text-sm font-bold hover:bg-opacity-90 transition-all mx-3 mt-4"
+                                className={clsx(
+                                    "flex items-center justify-center rounded-full h-10 px-4 text-sm font-bold transition-all mx-3 mt-4",
+                                    pathname?.startsWith('/upload')
+                                        ? "bg-primary text-slate-900"
+                                        : "border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-primary hover:text-primary"
+                                )}
                             >
                                 {t('navUpload')}
                             </DisclosureButton>

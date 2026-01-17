@@ -250,6 +250,17 @@ export const cardanoAPI = {
           new_password: newPassword
         }),
       }),
+
+    getUtxos: (walletId: string, addressIndex?: number, minAda?: number) => {
+      const params = new URLSearchParams();
+      if (addressIndex !== undefined) params.append('address_index', addressIndex.toString());
+      if (minAda !== undefined) params.append('min_ada', minAda.toString());
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+
+      return fetchCardanoAPI<any>(`/api/v1/wallets/${walletId}/utxos${queryString}`, {
+        method: 'GET',
+      });
+    },
   },
 
   transactions: {

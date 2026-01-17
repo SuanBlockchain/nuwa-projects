@@ -5,17 +5,17 @@ export default async function CreateWalletPage() {
   await requireAuth();
 
   return (
-    <main className="min-h-screen">
-      <div className="flex-grow md:overflow-y-auto md:p-12">
-        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg rounded-xl shadow-md border border-mint-5 dark:border-mint-8">
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">
-              Wallet Configuration
-            </h1>
-            <WalletConfigTabs />
-          </div>
-        </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          New Wallet
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Create a new wallet or import an existing one
+        </p>
       </div>
-    </main>
+
+      <WalletConfigTabs />
+    </div>
   );
 }

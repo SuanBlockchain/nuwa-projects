@@ -7,7 +7,7 @@ import { signTransactionSchema, type SignTransactionFormData } from '@/app/lib/c
 import type { BuildTransactionResponse, SignAndSubmitResponse } from '@/app/lib/cardano/transaction-types';
 import { useTransactions } from '@/app/hooks/use-transactions';
 import { useWalletSession } from '@/app/contexts/wallet-session-context';
-import { ArrowLeftIcon, ExclamationCircleIcon, DocumentTextIcon, LockClosedIcon, ExclamationTriangleIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowPathIcon, ExclamationCircleIcon, DocumentTextIcon, LockClosedIcon, ExclamationTriangleIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 interface SignTransactionStepProps {
   buildResponse: BuildTransactionResponse;
@@ -32,6 +32,7 @@ export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTr
   const { signAndSubmit, loading } = useTransactions();
   const { ensureSessionValid } = useWalletSession();
   const [error, setError] = useState<string | null>(null);
+  const [isFailedTransaction, setIsFailedTransaction] = useState(false);
 
   const {
     register,
@@ -47,6 +48,7 @@ export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTr
 
   const onSubmit = async (data: SignTransactionFormData) => {
     setError(null);
+    setIsFailedTransaction(false);
     try {
       // Ensure session is valid before signing
       console.log('Checking session validity before signing...');
@@ -65,7 +67,12 @@ export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTr
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign and submit transaction';
 
       // Special handling for different error types
-      if (err.status === 401 || errorMessage.includes('Authentication failed') || errorMessage.includes('session')) {
+      const isFailedState = errorMessage.includes('FAILED') || errorMessage.includes('currently: FAILED');
+
+      if (isFailedState) {
+        setError('This transaction has failed and cannot be signed. This can happen if the transaction was previously attempted or the UTXOs are no longer available.');
+        setIsFailedTransaction(true);
+      } else if (err.status === 401 || errorMessage.includes('Authentication failed') || errorMessage.includes('session')) {
         setError('Your session has expired. Please go back and unlock your wallet again, then rebuild the transaction.');
       } else if (err.status === 404 || errorMessage.includes('not found')) {
         setError('Transaction expired or not found. This usually happens when too much time passes between building and signing. Please go back and rebuild the transaction.');
@@ -79,11 +86,33 @@ export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTr
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       {/* Error Banner */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-          <div className="flex items-center gap-2">
-            <ExclamationCircleIcon className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
-            <span className="text-sm font-medium text-red-600 dark:text-red-400">{error}</span>
-          </div>
+        <div className={`rounded-xl p-4 ${isFailedTransaction
+          ? 'bg-orange-500/10 border border-orange-500/20'
+          : 'bg-red-500/10 border border-red-500/20'}`}>
+          {isFailedTransaction ? (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start gap-3">
+                <ExclamationTriangleIcon className="w-6 h-6 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-orange-600 dark:text-orange-400 text-sm font-bold mb-1">Transaction Failed</h4>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{error}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onBack}
+                className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              >
+                <ArrowPathIcon className="w-5 h-5" />
+                Rebuild Transaction
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <ExclamationCircleIcon className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+              <span className="text-sm font-medium text-red-600 dark:text-red-400">{error}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -199,7 +228,7 @@ export function SignTransactionStep({ buildResponse, onSuccess, onBack }: SignTr
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isFailedTransaction}
           className="flex-[2] h-12 bg-primary hover:bg-primary-hover text-black text-base font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(19,236,146,0.3)] hover:shadow-[0_0_25px_rgba(19,236,146,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
         >
           <PaperAirplaneIcon className="w-5 h-5" />

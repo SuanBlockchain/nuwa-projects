@@ -141,13 +141,15 @@ export function useWallets() {
       clearSessionKey(walletId);
 
       await fetchWallets();
+      // Refresh session state (in case deleted wallet was the active session)
+      await refreshSession();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [fetchWallets]);
+  }, [fetchWallets, refreshSession]);
 
   const promoteWallet = useCallback(async (walletId: string) => {
     setLoading(true);
@@ -219,7 +221,9 @@ export function useWallets() {
 
       // Password changed successfully
       // Backend locks the wallet for security, so we need to:
-      // 1. Refresh wallet list to get updated is_locked status
+      // 1. Clear auto-unlock session key (old password no longer valid)
+      clearSessionKey(walletId);
+      // 2. Refresh wallet list to get updated is_locked status
       await fetchWallets();
 
     } catch (err) {

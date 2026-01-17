@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/app/lib/auth-utils';
 import { cardanoAPI } from '@/app/lib/cardano/api-client';
 import { deleteWalletRecord, checkWalletOwnership } from '@/app/actions/wallet-actions';
+import { getWalletSession, clearWalletSession } from '@/app/lib/cardano/jwt-manager';
 
 export async function DELETE(
   req: Request,
@@ -34,6 +35,12 @@ export async function DELETE(
 
     // Delete from local database
     await deleteWalletRecord(walletId);
+
+    // Clear wallet session if the deleted wallet was the active session
+    const currentSession = await getWalletSession();
+    if (currentSession && currentSession.wallet_id === walletId) {
+      await clearWalletSession();
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
